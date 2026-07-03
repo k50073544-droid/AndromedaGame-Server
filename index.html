@@ -445,8 +445,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <input type="file" id="deco-file" accept="image/*" style="display:none" onchange="handleFileInput(this,'deco')"></div>
 <div class="form-group"><label>Название</label><input type="text" id="deco-name" placeholder="Название..." maxlength="30"></div>
 <div class="form-group"><label>Размер: <span id="deco-size-val">100</span>px</label>
-<input type="range" id="deco-size" min="40" max="120" value="100" step="10" oninput="document.getElementById('deco-size-val').textContent=this.value">
-<div class="range-labels"><span>40px</span><span>80px</span><span>120px</span></div></div>
+<input type="range" id="deco-size" min="20" max="80" value="100" step="10" oninput="document.getElementById('deco-size-val').textContent=this.value">
+<div class="range-labels"><span>20px</span><span>40px</span><span>80px</span></div></div>
 <div class="form-group"><label>Анимация</label><select id="deco-anim">
 <option value="float">🌊 Плавание</option><option value="pulse">💫 Пульсация</option>
 <option value="sway">↔️ Раскачивание</option><option value="wobble">🌀 Покачивание</option>
@@ -499,8 +499,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <input type="file" id="edit-deco-file" accept="image/*" style="display:none" onchange="handleFileInput(this,'editdeco')"></div>
 <div class="form-group"><label>Название</label><input type="text" id="edit-deco-name" maxlength="30"></div>
 <div class="form-group"><label>Размер: <span id="edit-deco-size-val">100</span>px</label>
-<input type="range" id="edit-deco-size" min="40" max="800" value="100" step="10" oninput="document.getElementById('edit-deco-size-val').textContent=this.value">
-<div class="range-labels"><span>40px</span><span>400px</span><span>800px</span></div></div>
+<input type="range" id="edit-deco-size" min="20" max="80" value="100" step="10" oninput="document.getElementById('edit-deco-size-val').textContent=this.value">
+<div class="range-labels"><span>20px</span><span>40px</span><span>80px</span></div></div>
 <div class="form-group"><label>Анимация</label><select id="edit-deco-anim">
 <option value="float">🌊 Плавание</option><option value="pulse">💫 Пульсация</option>
 <option value="sway">↔️ Раскачивание</option><option value="wobble">🌀 Покачивание</option>
