@@ -31,6 +31,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#03050f;font-family:
 .orbit-wrap{position:absolute;pointer-events:none}
 .orbit-wrap.has-orbit{animation:orbitMove var(--orbit-dur,12s) linear infinite}
 @keyframes orbitMove{0%{transform:rotate(0deg) translateX(var(--orbit-r,80px)) rotate(0deg)}100%{transform:rotate(360deg) translateX(var(--orbit-r,80px)) rotate(-360deg)}}
+.orbit-inner{display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-50%);pointer-events:all}
 #topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:linear-gradient(180deg,rgba(3,5,15,0.95) 0%,transparent 100%)}
 #logo{font-size:17px;font-weight:700;background:linear-gradient(90deg,var(--glow-cyan),var(--nebula-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
 #logo span{font-size:9px;display:block;-webkit-text-fill-color:var(--text-dim);font-weight:400;letter-spacing:3px}
@@ -44,6 +45,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#03050f;font-family:
 .btn.warn{background:rgba(245,158,11,0.15);border-color:var(--star-gold);color:var(--star-gold)}
 .btn.small{padding:4px 9px;font-size:11px}
 .btn:disabled{opacity:0.4;cursor:not-allowed}
+.btn.get-account{background:linear-gradient(135deg,#92400e,var(--star-gold));border-color:var(--star-gold);color:white;font-size:11px}
+.btn.get-account:hover{opacity:0.85;color:white}
 .modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
 .modal{background:#0a0f1e;border:1px solid var(--glass-border);border-radius:20px;padding:22px;width:94%;max-width:500px;position:relative;max-height:94vh;overflow-y:auto}
 .modal-close{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer}
@@ -81,16 +84,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#03050f;font-family:
 .pd-volume-row{display:flex;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--glass-border)}
 .pd-volume-row label{font-size:10px;color:var(--text-dim);white-space:nowrap}
 .pd-volume-row input[type=range]{flex:1;height:3px}
-/* ИСПРАВЛЕНИЕ 1: кнопка настроек и всплывающее меню */
-#settings-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-border);background:rgba(8,13,26,0.9);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;position:relative}
-#settings-btn:hover{border-color:var(--glow-cyan);background:rgba(34,211,238,0.08)}
-#settings-popup{position:fixed;bottom:80px;left:22px;z-index:160;background:#080d1a;border:1px solid var(--glass-border);border-radius:14px;padding:14px;width:220px;display:none;flex-direction:column;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.6)}
-#settings-popup.open{display:flex}
-#settings-popup h4{font-size:11px;color:var(--star-gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px}
-.sp-row{display:flex;align-items:center;gap:8px}
-.sp-row label{font-size:11px;color:var(--text-dim);white-space:nowrap}
-.sp-row input[type=range]{flex:1;height:4px}
-.sp-row .sp-val{font-size:11px;color:var(--glow-cyan);min-width:32px;text-align:right}
 #bottom-left{position:fixed;bottom:22px;left:22px;z-index:100;display:flex;gap:8px;align-items:center}
 #bottom-right{position:fixed;bottom:22px;right:22px;z-index:100;display:flex;gap:8px}
 .fab{width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;font-size:19px;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;position:relative}
@@ -101,9 +94,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#03050f;font-family:
 #status-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;padding:4px 18px;display:flex;align-items:center;gap:12px;background:linear-gradient(0deg,rgba(3,5,15,0.9),transparent);font-size:10px;color:var(--text-dim);pointer-events:none}
 .status-dot{width:5px;height:5px;border-radius:50%;background:var(--success);display:inline-block;animation:sdp 2s infinite}
 @keyframes sdp{0%,100%{opacity:1}50%{opacity:0.3}}
-#toast{position:fixed;top:65px;left:50%;transform:translateX(-50%);z-index:300;background:#0a0f1e;border:1px solid var(--glow-cyan);border-radius:10px;padding:8px 16px;font-size:12px;color:var(--glow-cyan);display:none;box-shadow:0 0 18px rgba(34,211,238,0.2);white-space:nowrap;max-width:90vw}
+#toast{position:fixed;top:65px;left:50%;transform:translateX(-50%);z-index:900;background:#0a0f1e;border:1px solid var(--glow-cyan);border-radius:10px;padding:8px 16px;font-size:12px;color:var(--glow-cyan);display:none;box-shadow:0 0 18px rgba(34,211,238,0.2);white-space:nowrap;max-width:90vw}
 #placing-hint{position:fixed;top:65px;left:50%;transform:translateX(-50%);z-index:201;background:rgba(34,211,238,0.12);border:1px solid var(--glow-cyan);border-radius:10px;padding:9px 18px;font-size:12px;color:var(--glow-cyan);display:none;pointer-events:none;white-space:nowrap}
-#maintenance-screen{position:fixed;inset:0;z-index:500;background:rgba(3,5,15,0.98);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px}
+#maintenance-screen{position:fixed;inset:0;z-index:1000;background:rgba(3,5,15,0.98);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px}
 .m-icon{font-size:56px}
 #maintenance-screen h1{font-size:24px;background:linear-gradient(90deg,var(--glow-cyan),var(--nebula-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 #maintenance-screen p{color:var(--text-dim);font-size:14px;max-width:380px;line-height:1.6}
@@ -131,6 +124,161 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .user-limits-table tr:hover td{background:rgba(255,255,255,0.03)}
 .ult-badge{display:inline-block;padding:1px 6px;border-radius:8px;font-size:9px;background:rgba(34,211,238,0.1);color:var(--glow-cyan);border:1px solid rgba(34,211,238,0.2)}
 .ult-inf{color:var(--success);font-size:13px}
+</style>
+<style>
+/* ===== ШТОРКА НОВОСТЕЙ ===== */
+#news-tab-btn{
+  position:fixed;right:0;top:50%;transform:translateY(-50%);
+  z-index:540;writing-mode:vertical-rl;text-orientation:mixed;
+    background:linear-gradient(180deg,#0d1a2e,#0a1220);
+  border:1px solid rgba(34,211,238,0.4);border-right:none;
+  border-radius:12px 0 0 12px;color:var(--glow-cyan);
+  font-size:11px;font-weight:700;letter-spacing:2px;padding:18px 8px;
+  cursor:pointer;box-shadow:-4px 0 20px rgba(34,211,238,0.1);
+  transition:all 0.3s;display:flex;align-items:center;gap:6px;text-transform:uppercase;
+}
+#news-tab-btn:hover{background:linear-gradient(180deg,#122040,#0d1a30);}
+#news-tab-btn .ntb-icon{font-size:14px;writing-mode:horizontal-tb}
+#news-tab-btn .ntb-badge{position:absolute;top:8px;right:8px;width:16px;height:16px;border-radius:50%;background:var(--danger);font-size:9px;display:none;align-items:center;justify-content:center;color:white;writing-mode:horizontal-tb;}
+#news-panel{
+  position:fixed;right:0;top:0;bottom:0;z-index:550;width:360px;
+  background:linear-gradient(180deg,#04091a 0%,#060c1f 40%,#030612 100%);
+  border-left:1px solid rgba(34,211,238,0.25);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  box-shadow:-8px 0 40px rgba(0,0,0,0.7);
+}
+#news-panel.open{transform:translateX(0)}
+#news-panel::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(34,211,238,0.03) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(34,211,238,0.03) 40px);}
+.np-header{position:relative;z-index:1;padding:14px 16px 10px;border-bottom:1px solid rgba(34,211,238,0.2);background:rgba(4,9,26,0.9);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.np-title-wrap{display:flex;align-items:center;gap:10px}
+.np-astronaut-icon{font-size:22px}
+.np-title{font-size:13px;font-weight:700;color:var(--glow-cyan);letter-spacing:2px;text-transform:uppercase}
+.np-subtitle{font-size:9px;color:var(--text-dim);letter-spacing:3px;text-transform:uppercase;margin-top:1px}
+.np-close{background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;padding:4px;border-radius:6px;transition:all 0.2s}
+.np-close:hover{color:var(--glow-cyan);background:rgba(34,211,238,0.1)}
+.np-lights{display:flex;gap:5px;align-items:center}
+.np-light{width:6px;height:6px;border-radius:50%}
+.np-light.red{background:#ef4444;box-shadow:0 0 4px #ef4444;animation:blink-r 2.5s infinite}
+.np-light.yellow{background:#f59e0b;box-shadow:0 0 4px #f59e0b;animation:blink-y 3s infinite}
+.np-light.green{background:#22c55e;box-shadow:0 0 4px #22c55e;animation:blink-g 2s infinite}
+@keyframes blink-r{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes blink-y{0%,100%{opacity:0.4}50%{opacity:1}}
+@keyframes blink-g{0%,100%{opacity:1}33%{opacity:0.3}}
+/* Кнопка создания поста в шторке */
+#news-create-btn-wrap{position:relative;z-index:1;padding:10px 14px;border-bottom:1px solid rgba(34,211,238,0.15);background:rgba(13,26,45,0.7);flex-shrink:0;display:none;}
+/* Панель реакций для admin */
+#news-emoji-admin-panel{position:relative;z-index:1;padding:8px 14px;border-bottom:1px solid rgba(34,211,238,0.1);background:rgba(6,12,31,0.6);flex-shrink:0;display:none;}
+.np-emoji-admin-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.np-emoji-chip{padding:3px 8px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);font-size:13px;display:inline-flex;align-items:center;gap:4px;}
+.np-emoji-chip-del{background:none;border:none;color:var(--danger);cursor:pointer;font-size:10px;padding:0 2px}
+.np-add-emoji-btn{padding:3px 8px;border-radius:20px;border:1px dashed rgba(34,211,238,0.4);background:none;color:var(--glow-cyan);font-size:11px;cursor:pointer}
+#news-list{position:relative;z-index:1;flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:14px;}
+.news-post{background:linear-gradient(135deg,rgba(13,26,45,0.85),rgba(6,12,31,0.95));border:1px solid rgba(34,211,238,0.18);border-radius:12px;padding:12px;position:relative;flex-shrink:0;}
+.news-post::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--glow-cyan),transparent);opacity:0.5;border-radius:12px 12px 0 0;}
+.np-post-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.np-post-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--nebula-purple),var(--glow-cyan));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0;}
+.np-post-author{font-size:11px;font-weight:700;color:var(--star-gold)}
+.np-post-time{font-size:9px;color:var(--text-dim);margin-left:auto;white-space:nowrap}
+.np-post-text{font-size:12px;color:var(--text-main);line-height:1.6;word-break:break-word;white-space:pre-wrap;margin-bottom:4px}
+.np-post-img{width:100%;max-height:220px;object-fit:cover;border-radius:8px;margin-top:8px;border:1px solid rgba(34,211,238,0.15);cursor:zoom-in;transition:opacity 0.2s;display:block;}
+.np-post-img:hover{opacity:0.88}
+.np-post-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px;margin-top:8px}
+.np-post-gallery img{width:100%;height:84px;object-fit:cover;border-radius:7px;cursor:zoom-in;border:1px solid rgba(34,211,238,0.15);transition:opacity 0.2s}
+.np-post-gallery img:hover{opacity:0.85}
+.np-post-admin-actions{display:flex;justify-content:flex-end;gap:6px;margin-top:10px}
+.np-post-edit,.np-post-del{border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;transition:all 0.15s;}
+.np-post-edit{background:rgba(34,211,238,0.08);color:var(--glow-cyan);border:1px solid rgba(34,211,238,0.3)}
+.np-post-edit:hover{background:rgba(34,211,238,0.18)}
+.np-post-del{background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.3)}
+.np-post-del:hover{background:rgba(239,68,68,0.25)}
+.np-reactions{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;align-items:center}
+.np-reaction-btn{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);cursor:pointer;font-size:14px;transition:all 0.18s;}
+.np-reaction-btn:hover{border-color:var(--glow-cyan);background:rgba(34,211,238,0.08)}
+.np-reaction-btn.mine{border-color:var(--glow-cyan);background:rgba(34,211,238,0.18)}
+.np-reaction-count{font-size:10px;font-weight:600;color:var(--text-dim);min-width:10px}
+.np-reaction-btn.mine .np-reaction-count{color:var(--glow-cyan)}
+.np-add-reaction{padding:3px 9px;border-radius:20px;border:1px dashed rgba(255,255,255,0.2);background:none;cursor:pointer;font-size:12px;color:var(--text-dim);transition:all 0.18s;}
+.np-add-reaction:hover{border-color:var(--glow-cyan);color:var(--glow-cyan)}
+.np-emoji-picker{position:absolute;bottom:calc(100% + 6px);left:0;background:#080d1a;border:1px solid rgba(34,211,238,0.25);border-radius:10px;padding:8px;display:flex;flex-wrap:wrap;gap:4px;z-index:10;box-shadow:0 4px 20px rgba(0,0,0,0.6);min-width:140px;}
+.np-emoji-picker button{font-size:18px;padding:4px 6px;border:none;background:none;cursor:pointer;border-radius:6px;transition:background 0.15s;}
+.np-emoji-picker button:hover{background:rgba(34,211,238,0.12)}
+.np-emoji-picker img{width:18px;height:18px;object-fit:contain}
+.np-picker-close{position:absolute;top:2px;right:4px;background:none;border:none;color:var(--text-dim);font-size:12px;cursor:pointer;padding:2px}
+.np-picker-close:hover{color:white}
+.np-picker-add{width:100%;display:flex;gap:5px;align-items:center;border-top:1px solid rgba(255,255,255,0.08);margin-top:6px;padding-top:6px}
+.np-picker-add input[type=text]{width:44px;background:rgba(255,255,255,0.06);border:1px solid var(--glass-border);border-radius:6px;padding:3px 5px;color:var(--text-main);font-size:13px;outline:none}
+.np-picker-upload-btn{cursor:pointer;font-size:15px;padding:3px 5px;border-radius:6px;background:rgba(255,255,255,0.06);border:1px solid var(--glass-border);display:inline-flex;align-items:center}
+.np-picker-upload-btn:hover{background:rgba(34,211,238,0.1)}
+.np-picker-add button{background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.3);border-radius:6px;color:var(--glow-cyan);font-size:12px;padding:3px 7px;cursor:pointer}
+.np-empty{text-align:center;padding:40px 20px;color:var(--text-dim);font-size:12px;line-height:1.8;}
+.np-empty-icon{font-size:36px;margin-bottom:10px;opacity:0.5}
+/* ===== МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ПОСТА ===== */
+#news-post-modal{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.85);display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+#news-post-modal.open{display:flex}
+.npm-inner{
+  background:linear-gradient(180deg,#080f1e,#040a15);
+  border:1px solid rgba(34,211,238,0.3);
+  border-radius:20px 20px 0 0;
+  width:100%;max-width:600px;
+  padding:16px;
+  max-height:90vh;overflow-y:auto;
+}
+.npm-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.npm-title{font-size:14px;font-weight:700;color:var(--glow-cyan);letter-spacing:1px}
+.npm-close{background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;padding:4px}
+.npm-close:hover{color:white}
+.npm-textarea{
+  width:100%;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(34,211,238,0.2);border-radius:10px;
+  padding:10px 12px;color:var(--text-main);font-size:14px;
+  outline:none;font-family:inherit;resize:none;
+  min-height:80px;line-height:1.6;
+  transition:border-color 0.2s;
+}
+.npm-textarea:focus{border-color:var(--glow-cyan)}
+/* Превью фото в модальном окне */
+.npm-previews{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.npm-preview-item{position:relative;width:72px;height:72px;flex-shrink:0}
+.npm-preview-item img{width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid rgba(34,211,238,0.3);display:block}
+.npm-preview-item button{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#ef4444;border:none;color:white;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.npm-actions{display:flex;align-items:center;gap:8px;margin-top:10px}
+/* Кнопка добавления фото - нативный label */
+.npm-photo-label{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:8px 14px;border-radius:8px;
+  border:1px solid rgba(34,211,238,0.3);
+  background:rgba(34,211,238,0.06);
+  color:var(--glow-cyan);font-size:12px;cursor:pointer;
+  transition:all 0.2s;user-select:none;
+}
+.npm-photo-label:hover{background:rgba(34,211,238,0.12)}
+.npm-photo-label input[type=file]{display:none}
+.npm-publish{margin-left:auto;padding:9px 20px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--nebula-purple),var(--nebula-blue));color:white;font-size:13px;font-weight:600;cursor:pointer;transition:opacity 0.2s}
+.npm-publish:hover{opacity:0.85}
+.npm-publish:disabled{opacity:0.4;cursor:not-allowed}
+/* Просмотр фото на весь экран */
+#img-fullscreen{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,0.92);display:none;align-items:center;justify-content:center;cursor:zoom-out;}
+#img-fullscreen img{max-width:95vw;max-height:92vh;object-fit:contain;border-radius:8px}
+#img-fullscreen-close{position:absolute;top:16px;right:16px;background:none;border:none;color:white;font-size:28px;cursor:pointer;opacity:0.7}
+#img-fullscreen-close:hover{opacity:1}
+#fs-prev,#fs-next{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);color:white;font-size:22px;width:44px;height:44px;border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:2}
+#fs-prev:hover,#fs-next:hover{background:rgba(255,255,255,0.2)}
+#fs-prev{left:16px}#fs-next{right:16px}
+#fs-counter{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.7);font-size:12px;background:rgba(0,0,0,0.4);padding:3px 10px;border-radius:20px;display:none}
+@keyframes slideDown{from{transform:translateX(-50%) translateY(-20px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+#news-notify{position:fixed;top:65px;left:50%;transform:translateX(-50%);z-index:610;background:linear-gradient(135deg,#0d1a2e,#061020);border:1px solid var(--glow-cyan);border-radius:12px;padding:10px 18px;font-size:12px;color:var(--glow-cyan);display:none;box-shadow:0 0 20px rgba(34,211,238,0.25);align-items:center;gap:10px;cursor:pointer;animation:slideDown 0.4s ease;white-space:nowrap;}
+#news-notify:hover{background:rgba(34,211,238,0.1)}
+#settings-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-border);background:rgba(8,13,26,0.9);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+#settings-btn:hover{border-color:var(--glow-cyan);background:rgba(34,211,238,0.08)}
+#settings-popup{position:fixed;bottom:80px;left:22px;z-index:160;background:#080d1a;border:1px solid var(--glass-border);border-radius:14px;padding:14px;width:220px;display:none;flex-direction:column;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.6)}
+#settings-popup.open{display:flex}
+#settings-popup h4{font-size:11px;color:var(--star-gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px}
+.sp-row{display:flex;align-items:center;gap:8px}
+.sp-row label{font-size:11px;color:var(--text-dim);white-space:nowrap}
+.sp-row input[type=range]{flex:1;height:4px}
+  .sp-row .sp-val{font-size:11px;color:var(--glow-cyan);min-width:32px;text-align:right}
 </style>
 <style>
 .side-panel{position:fixed;bottom:82px;right:22px;z-index:150;width:320px;background:#080d1a;border:1px solid var(--glass-border);border-radius:16px;display:none;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.6);max-height:70vh}
@@ -238,14 +386,89 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .user-param-row input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--success)}
 </style>
 </head>
-<body>
-<video id="bg-video" muted loop playsinline preload="auto"></video>
+
+  <video id="bg-video" muted loop playsinline preload="auto"></video>
 <img id="bg-image" src="" alt="">
 <div id="video-overlay"></div>
 <canvas id="space-canvas"></canvas>
 <div id="planets-layer"></div>
+<!-- Просмотр фото на весь экран -->
+<div id="img-fullscreen" onclick="closeFullscreen()">
+  <button id="img-fullscreen-close" onclick="closeFullscreen()">✕</button>
+  <button id="fs-prev" onclick="event.stopPropagation();fsNav(-1)">‹</button>
+  <img id="img-fullscreen-img" src="" alt="">
+  <button id="fs-next" onclick="event.stopPropagation();fsNav(1)">›</button>
+  <div id="fs-counter"></div>
+</div>
+<!-- МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ПОСТА (вместо формы в шторке) -->
+<div id="news-post-modal">
+  <div class="npm-inner">
+    <div class="npm-header">
+      <span class="npm-title" id="npm-title">📡 Новый пост</span>
+      <button class="npm-close" onclick="closeNewsPostModal()">✕</button>
+    </div>
+    <textarea class="npm-textarea" id="npm-text" placeholder="Написать сообщение для бустеров..." maxlength="1000"></textarea>
+    <img id="npm-preview" src="" alt="" style="display:none;max-width:120px;max-height:120px;border-radius:8px;margin-top:8px;object-fit:cover">
+    <div class="npm-actions">
+      <label class="npm-photo-label">
+        🖼️ Фото
+        <input type="file" accept="image/*" onchange="npmHandleFile(this)">
+      </label>
+      <button class="npm-publish" id="npm-publish-btn" onclick="npmPublish()">📡 Опубликовать</button>
+    </div>
+  </div>
+</div>
 
-<!-- ИСПРАВЛЕНИЕ 1: всплывающее меню настроек -->
+<!-- КНОПКА ШТОРКИ НОВОСТЕЙ -->
+<button id="news-tab-btn" onclick="toggleNewsPanel()">
+  <span class="ntb-icon">📡</span>
+  <span class="ntb-badge" id="news-badge"></span>
+</button>
+
+<!-- ШТОРКА НОВОСТЕЙ -->
+<div id="news-panel">
+  <div class="np-header">
+    <div class="np-title-wrap">
+      <div class="np-lights">
+        <div class="np-light red"></div>
+        <div class="np-light yellow"></div>
+        <div class="np-light green"></div>
+      </div>
+      <div class="np-astronaut-icon"></div>
+      <div>
+        <div class="np-title">НОВОСТИ</div>
+        <div class="np-subtitle">TheAndrameda Universe</div>
+      </div>
+    </div>
+    <button class="np-close" onclick="toggleNewsPanel()">✕</button>
+  </div>
+  <!-- Управление реакциями для admin -->
+<div id="news-emoji-admin-panel">
+    <div class="nc-label" style="font-size:9px;color:var(--glow-cyan);text-transform:uppercase;letter-spacing:2px;margin-bottom:5px">⚡ Реакции (управление списком)</div>
+    <div class="np-emoji-admin-row" id="news-emoji-list"></div>
+    <div style="font-size:10px;color:var(--text-dim);margin-top:6px">Добавлять новые — прямо в окне выбора реакции под постом (кнопка "+ 😊")</div>
+      </div>
+  <!-- Кнопка создания поста (открывает модальное окно) -->
+  <div id="news-create-btn-wrap">
+    <button onclick="openNewsPostModal()" style="width:100%;padding:9px;border-radius:8px;border:1px dashed rgba(34,211,238,0.4);background:rgba(34,211,238,0.04);color:var(--glow-cyan);font-size:12px;cursor:pointer;transition:all 0.2s">
+      ✏️ Написать пост...
+    </button>
+  </div>
+  <!-- Лента постов -->
+  <div id="news-list">
+    <div class="np-empty">
+      <div class="np-empty-icon">📡</div>
+      Новостей пока нет.<br>Следи за обновлениями!
+    </div>
+  </div>
+</div>
+
+<!-- Уведомление о новом посте -->
+<div id="news-notify" onclick="openNewsPanel()">
+  📡 Новое сообщение! <span style="opacity:0.6;font-size:10px">Нажми чтобы открыть</span>
+</div>
+
+<!-- Настройки попап -->
 <div id="settings-popup">
   <h4>⚙️ Настройки</h4>
   <div id="music-volume-section" style="display:none">
@@ -257,8 +480,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <label>🔊</label>
     </div>
   </div>
-  <div style="font-size:10px;color:var(--text-dim);padding-top:4px">Больше настроек скоро...</div>
+  <div style="font-size:10px;color:var(--text-dim);padding-top:2px">Больше настроек скоро...</div>
 </div>
+
 <div id="maintenance-screen">
 <div class="m-icon">🔧</div><h1>Технический перерыв</h1>
 <p id="maintenance-msg">Скоро вернёмся!</p>
@@ -299,6 +523,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <div id="topbar-right">
 <button class="user-badge-btn" id="user-badge" style="display:none" onclick="openModal('username-modal')"></button>
 <button class="btn" id="admin-toggle-btn" style="display:none" onclick="toggleAdminPanel()">⚙️ Панель</button>
+<a id="get-account-btn" href="https://boosty.to/theandrameda" target="_blank" class="btn get-account" style="display:none">⭐ Получить аккаунт ⭐</a>
 <button class="btn" id="auth-btn" onclick="openModal('auth-modal')">🚀 Войти</button>
 <button class="btn danger small" id="logout-btn" style="display:none" onclick="logout()">Выйти</button>
 </div>
@@ -312,7 +537,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 </div>
 <div id="status-bar"><span class="status-dot"></span><span id="planet-count">Загрузка...</span></div>
 <div id="toast"></div>
-
 <div class="side-panel" id="comm-panel">
 <div class="panel-header">
 <span style="font-size:12px;font-weight:600;color:var(--glow-cyan)">Коммуникации</span>
@@ -340,6 +564,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 </div>
 </div>
 </div>
+
 <div id="admin-panel">
 <div style="padding:11px 14px;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
 <span style="font-size:12px;font-weight:600;color:var(--star-gold)">⚙️ Администратор</span>
@@ -430,19 +655,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <option value="">— выбери —</option></select></div>
 <div id="user-limits-form" style="display:none">
 <div class="param-card" style="margin-bottom:8px"><div class="param-card-title">🪐 Планеты</div>
-<div class="user-param-row"><label>Макс. планет</label><input type="number" id="ul-planet-limit" placeholder="авто" min="0" max="9999"></div>
+<div class="user-param-row"><label>Макс. планет (пусто = глобальный)</label><input type="number" id="ul-planet-limit" placeholder="авто" min="0" max="9999"></div>
 <div class="user-param-row"><label>♾️ Бесконечно</label><input type="checkbox" id="ul-planet-inf"></div>
 <div class="user-param-row"><label>Макс. размер (px)</label><input type="number" id="ul-planet-max-size" placeholder="авто" min="10" max="9999"></div></div>
 <div class="param-card" style="margin-bottom:8px"><div class="param-card-title">🌠 Декорации</div>
-<div class="user-param-row"><label>Макс. декораций</label><input type="number" id="ul-deco-limit" placeholder="авто" min="0" max="9999"></div>
+<div class="user-param-row"><label>Макс. декораций (пусто = глобальный)</label><input type="number" id="ul-deco-limit" placeholder="авто" min="0" max="9999"></div>
 <div class="user-param-row"><label>♾️ Бесконечно</label><input type="checkbox" id="ul-deco-inf"></div>
 <div class="user-param-row"><label>Макс. размер (px)</label><input type="number" id="ul-deco-max-size" placeholder="авто" min="10" max="9999"></div></div>
 <div style="display:flex;gap:7px;margin-bottom:14px">
 <button class="btn primary" style="flex:1" onclick="saveUserLimits()">💾 Сохранить</button>
 <button class="btn danger small" onclick="resetUserLimits()">Сбросить</button>
 </div></div>
-<div class="admin-section-title">📋 Пользователи с индивидуальными лимитами</div>
-<button class="btn small" style="margin-bottom:8px" onclick="loadUserLimitsList()">🔄 Обновить список</button>
+<div class="admin-section-title" style="margin-top:10px">📋 Пользователи с инд. лимитами</div>
+<button class="btn small" style="margin-bottom:8px" onclick="loadUserLimitsList()">🔄 Обновить</button>
 <div id="user-limits-list"><span style="font-size:11px;color:var(--text-dim)">Нажми обновить</span></div>
 </div>
 <div id="admin-tab-custom" style="display:none">
@@ -513,7 +738,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <button class="btn small" style="margin-top:5px" onclick="loadServerStats()">🔄</button>
 </div>
 <div id="admin-tab-settings" style="display:none">
-  <div class="admin-section-title">🔧 Технический перерыв</div>
+<div class="admin-section-title">🔧 Технический перерыв</div>
 <div class="form-group"><label>Для кого</label><select id="maint-for"><option value="viewers">Только зрители</option><option value="boosters">Только бустеры</option><option value="all">Все кроме админов</option></select></div>
 <div class="form-group"><label>Сообщение</label><input type="text" id="maint-msg" value="Технический перерыв. Скоро вернёмся!"></div>
 <div class="form-group"><label>Окончание (пусто = бессрочно)</label><input type="datetime-local" id="maint-until"></div>
@@ -720,30 +945,36 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <div class="form-group"><label>Никнейм</label><input type="text" id="new-username" placeholder="НовыйНик" maxlength="30" onkeydown="if(event.key==='Enter')saveUsername()"></div>
 <div class="form-error" id="username-error"></div>
 <button class="btn primary" style="width:100%" onclick="saveUsername()">💾 Сохранить</button>
-</div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</div></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL='https://gwrrvfrgovmcwpeogdio.supabase.co';
 const SUPABASE_ANON='sb_publishable_I-TykQozBNyzkiMeP3g1lw_v_AwGOz4';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON,{realtime:{params:{eventsPerSecond:10}}});
 let currentUser=null,currentProfile=null,currentRestrictions=null,testRestrictions=null;
-let planetsCache=[],decosCache=[],usersCache=[],chatMessages=[];
+  let planetsCache=[],decosCache=[],usersCache=[],chatMessages=[];
 let activeAudio=null,currentPlanetSound=null,planetSoundVolume=parseFloat(localStorage.getItem('planetSoundVol')||'0.7');
 let adminPanelOpen=false,commPanelOpen=false,currentPanelTab='chat';
-let settingsPopupOpen=false;
+let settingsPopupOpen=false,newsPanelOpen=false;
 let placingMode=null,placingData={},chatChannel=null,presenceTimer=null,maintTimer=null,chatAutoTimer=null;
 let mapLimits={enabled:false,x:3000,y:2000};
 let siteParams={planetMin:40,planetMax:1000,planetMinAdmin:40,planetMaxAdmin:1000,decoMin:40,decoMax:1000,decoMinAdmin:40,decoMaxAdmin:1000,planetLimitBooster:1,planetLimitAdmin:10,decoLimitBooster:3,decoLimitAdmin:20,planetInfBooster:false,planetInfAdmin:false,decoInfBooster:false,decoInfAdmin:false};
 let cam={x:0,y:0},drag={active:false,startX:0,startY:0,camX:0,camY:0};
 let itemDrag={active:false,id:null,type:null,el:null};
 let floatPanelItem={id:null,type:null};
-let reloadTimer,animFrame,toastTimer;
+let reloadTimer,animFrame,toastTimer,newsNotifyTimer,newsRefreshTimer;
+let orbitItems=[],orbitRafId=null;
 const fileData={planet:null,deco:null,edit:null,editdeco:null};
 const soundFileData={planet:null,edit:null};
 let bgFileData={image:null,video:null,music:null,favicon:null};
 let selectedBgTab='none';let currentBg={type:'none',url:''};
 let bgMusicAudio=null,bgMusicUrl='',bgMusicVolume=parseFloat(localStorage.getItem('bgMusicVol')||'0.4');
 let bgMusicActive=false;
+// Данные для модального окна создания поста
+let npmEditingId=null;
+let npmImgArr=[];
+let newsChannel=null,openReactionPickerPostId=null;
+let fsGalleryUrls=[],fsGalleryIndex=0;
+let newsPostsCache=[],newsReactionsCache={},newsEmojisCache=[];
 const canvas=document.getElementById('space-canvas');
 const ctx=canvas.getContext('2d');
 
@@ -753,57 +984,350 @@ function getUserPlanetMaxSize(){const r=getR();if(r.planet_max_size!=null)return
 function getUserDecoMaxSize(){const r=getR();if(r.deco_max_size!=null)return r.deco_max_size;return currentProfile?.role==='admin'?siteParams.decoMaxAdmin:siteParams.decoMax;}
 function getUserPlanetMinSize(){return currentProfile?.role==='admin'?siteParams.planetMinAdmin:siteParams.planetMin;}
 function getUserDecoMinSize(){return currentProfile?.role==='admin'?siteParams.decoMinAdmin:siteParams.decoMin;}
-
-async function getRestrictionsForUser(userId){
-  if(userId===currentUser?.id)return getR();
-  const{data}=await sb.from('user_restrictions').select('planet_limit,deco_limit,infinite_planets,infinite_decos,planet_max_size,deco_max_size').eq('user_id',userId).maybeSingle();
-  if(!data)return {};
-  return{planet_limit:data.planet_limit!=null?data.planet_limit:null,deco_limit:data.deco_limit!=null?data.deco_limit:null,infinite_planets:data.infinite_planets===true,infinite_decos:data.infinite_decos===true,planet_max_size:data.planet_max_size!=null?data.planet_max_size:null,deco_max_size:data.deco_max_size!=null?data.deco_max_size:null};
-}
-function isPlanetLimitReachedFor(count,ownerId,restr){
-  const r=restr||{};
-  if(r.infinite_planets===true)return false;
-  if(r.planet_limit!=null)return count>=r.planet_limit;
-  const isOwnerAdmin=ownerId===currentUser?.id?(currentProfile?.role==='admin'):(usersCache.find(u=>u.id===ownerId)?.role==='admin');
-  if(isOwnerAdmin?siteParams.planetInfAdmin:siteParams.planetInfBooster)return false;
-  return count>=(isOwnerAdmin?siteParams.planetLimitAdmin:siteParams.planetLimitBooster);
-}
-function isDecoLimitReachedFor(count,ownerId,restr){
-  const r=restr||{};
-  if(r.infinite_decos===true)return false;
-  if(r.deco_limit!=null)return count>=r.deco_limit;
-  const isOwnerAdmin=ownerId===currentUser?.id?(currentProfile?.role==='admin'):(usersCache.find(u=>u.id===ownerId)?.role==='admin');
-  if(isOwnerAdmin?siteParams.decoInfAdmin:siteParams.decoInfBooster)return false;
-  return count>=(isOwnerAdmin?siteParams.decoLimitAdmin:siteParams.decoLimitBooster);
-}
+async function getRestrictionsForUser(userId){if(userId===currentUser?.id)return getR();const{data}=await sb.from('user_restrictions').select('planet_limit,deco_limit,infinite_planets,infinite_decos,planet_max_size,deco_max_size').eq('user_id',userId).maybeSingle();if(!data)return {};return{planet_limit:data.planet_limit!=null?data.planet_limit:null,deco_limit:data.deco_limit!=null?data.deco_limit:null,infinite_planets:data.infinite_planets===true,infinite_decos:data.infinite_decos===true,planet_max_size:data.planet_max_size!=null?data.planet_max_size:null,deco_max_size:data.deco_max_size!=null?data.deco_max_size:null};}
+function isPlanetLimitReachedFor(count,ownerId,restr){const r=restr||{};if(r.infinite_planets===true)return false;if(r.planet_limit!=null)return count>=r.planet_limit;const isOwnerAdmin=ownerId===currentUser?.id?(currentProfile?.role==='admin'):(usersCache.find(u=>u.id===ownerId)?.role==='admin');if(isOwnerAdmin?siteParams.planetInfAdmin:siteParams.planetInfBooster)return false;return count>=(isOwnerAdmin?siteParams.planetLimitAdmin:siteParams.planetLimitBooster);}
+function isDecoLimitReachedFor(count,ownerId,restr){const r=restr||{};if(r.infinite_decos===true)return false;if(r.deco_limit!=null)return count>=r.deco_limit;const isOwnerAdmin=ownerId===currentUser?.id?(currentProfile?.role==='admin'):(usersCache.find(u=>u.id===ownerId)?.role==='admin');if(isOwnerAdmin?siteParams.decoInfAdmin:siteParams.decoInfBooster)return false;return count>=(isOwnerAdmin?siteParams.decoLimitAdmin:siteParams.decoLimitBooster);}
 function orbitSpeedToDuration(speed){const s=Math.max(1,Math.min(10,parseInt(speed)||5));return Math.round(3+((10-s)/9)*57)+'s';}
+function orbitSpeedToDurationMs(speed){const s=Math.max(1,Math.min(10,parseInt(speed)||5));return(3+((10-s)/9)*57)*1000;}
+function animateOrbits(now){
+  for(const o of orbitItems){
+    const elapsed=(now-o.start)%o.durationMs;
+    const angle=(elapsed/o.durationMs)*Math.PI*2;
+    const dx=Math.cos(angle)*o.radius,dy=Math.sin(angle)*o.radius;
+    o.el.style.transform='translate('+dx.toFixed(2)+'px,'+dy.toFixed(2)+'px)';
+  }
+  orbitRafId=requestAnimationFrame(animateOrbits);
+}
 function getOrbitValue(rangeId,numId){const n=parseInt(document.getElementById(numId)?.value);if(!isNaN(n)&&n>0)return n;const r=parseInt(document.getElementById(rangeId)?.value);return isNaN(r)?0:r;}
 
-// ИСПРАВЛЕНИЕ 1: кнопка настроек — всплывающее меню
-function toggleSettingsPopup(e){
-  e.stopPropagation();
-  settingsPopupOpen=!settingsPopupOpen;
-  document.getElementById('settings-popup').classList.toggle('open',settingsPopupOpen);
-}
+// Настройки
+function toggleSettingsPopup(e){e.stopPropagation();settingsPopupOpen=!settingsPopupOpen;document.getElementById('settings-popup').classList.toggle('open',settingsPopupOpen);}
 function closeSettingsPopup(){settingsPopupOpen=false;document.getElementById('settings-popup').classList.remove('open');}
-
-// Громкость музыки — для всех пользователей, хранится в localStorage
-function setGlobalMusicVolume(v){
-  bgMusicVolume=parseFloat(v);
-  localStorage.setItem('bgMusicVol',v);
-  if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume;
-  document.getElementById('global-music-vol-val').textContent=Math.round(v*100)+'%';
-  const adminVol=document.getElementById('bg-music-volume');if(adminVol){adminVol.value=v;document.getElementById('bg-music-volume-val').textContent=Math.round(v*100)+'%';}
-}
+function setGlobalMusicVolume(v){bgMusicVolume=parseFloat(v);localStorage.setItem('bgMusicVol',v);if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume;document.getElementById('global-music-vol-val').textContent=Math.round(v*100)+'%';const av=document.getElementById('bg-music-volume');if(av){av.value=v;document.getElementById('bg-music-volume-val').textContent=Math.round(v*100)+'%';}}
 function setBgMusicVolume(v){setGlobalMusicVolume(v);const gv=document.getElementById('global-music-vol');if(gv)gv.value=v;}
-function initMusicVolumeSlider(){
-  const gv=document.getElementById('global-music-vol');const gvv=document.getElementById('global-music-vol-val');
-  if(gv){gv.value=bgMusicVolume;gvv.textContent=Math.round(bgMusicVolume*100)+'%';}
-  const av=document.getElementById('bg-music-volume');if(av){av.value=bgMusicVolume;document.getElementById('bg-music-volume-val').textContent=Math.round(bgMusicVolume*100)+'%';}
-  // Показываем секцию громкости в попапе если музыка активна
-  document.getElementById('music-volume-section').style.display=bgMusicActive?'':'none';
+function initMusicVolumeSlider(){const gv=document.getElementById('global-music-vol');const gvv=document.getElementById('global-music-vol-val');if(gv){gv.value=bgMusicVolume;gvv.textContent=Math.round(bgMusicVolume*100)+'%';}const av=document.getElementById('bg-music-volume');if(av){av.value=bgMusicVolume;document.getElementById('bg-music-volume-val').textContent=Math.round(bgMusicVolume*100)+'%';}document.getElementById('music-volume-section').style.display=bgMusicActive?'':'none';}
+
+// Fullscreen
+function openFullscreen(url,gallery,idx){fsGalleryUrls=(gallery&&gallery.length)?gallery:[url];fsGalleryIndex=Math.max(0,Math.min(fsGalleryUrls.length-1,idx||0));const fs=document.getElementById('img-fullscreen');document.getElementById('img-fullscreen-img').src=fsGalleryUrls[fsGalleryIndex];fs.style.display='flex';updateFsNav();}
+function fsNav(dir){if(fsGalleryUrls.length<2)return;fsGalleryIndex=(fsGalleryIndex+dir+fsGalleryUrls.length)%fsGalleryUrls.length;document.getElementById('img-fullscreen-img').src=fsGalleryUrls[fsGalleryIndex];updateFsNav();}
+function updateFsNav(){const multi=fsGalleryUrls.length>1;document.getElementById('fs-prev').style.display=multi?'flex':'none';document.getElementById('fs-next').style.display=multi?'flex':'none';const counter=document.getElementById('fs-counter');counter.style.display=multi?'block':'none';if(multi)counter.textContent=(fsGalleryIndex+1)+' / '+fsGalleryUrls.length;}
+function closeFullscreen(){document.getElementById('img-fullscreen').style.display='none';}
+document.getElementById('img-fullscreen').addEventListener('click',e=>{if(e.target===e.currentTarget)closeFullscreen();});
+
+// ===== МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ПОСТА =====
+// Ключевое отличие: modal находится в body напрямую (z-index:700),
+// НЕ внутри шторки. label+input работают без ограничений.
+let npmImgData=null;
+function openNewsPostModal(){
+  npmEditingId=null;npmImgData=null;
+  document.getElementById('npm-title').textContent='📡 Новый пост';
+  document.getElementById('npm-publish-btn').textContent='📡 Опубликовать';
+  document.getElementById('npm-text').value='';
+  const prev=document.getElementById('npm-preview');prev.src='';prev.style.display='none';
+  document.getElementById('news-post-modal').classList.add('open');
+}
+function openEditNewsPost(id){
+  const p=newsPostsCache.find(p=>p.id===id);if(!p)return;
+  npmEditingId=id;
+  document.getElementById('npm-title').textContent='✏️ Редактировать пост';
+  document.getElementById('npm-publish-btn').textContent='💾 Сохранить';
+  document.getElementById('npm-text').value=p.content||'';
+  npmImgData=p.image_url||null;
+  const prev=document.getElementById('npm-preview');
+  if(npmImgData){prev.src=npmImgData;prev.style.display='block';}else{prev.src='';prev.style.display='none';}
+  document.getElementById('news-post-modal').classList.add('open');
+}
+function closeNewsPostModal(){
+  document.getElementById('news-post-modal').classList.remove('open');
+  npmEditingId=null;npmImgData=null;
+}
+function npmHandleFile(input){
+  const file=input.files&&input.files[0];
+  if(!file)return;
+  if(file.size>10*1024*1024){showToast('❌ Файл больше 10MB');input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    npmImgData=e.target.result;
+    const prev=document.getElementById('npm-preview');
+    prev.src=npmImgData;prev.style.display='block';
+  };
+  reader.readAsDataURL(file);
+  setTimeout(()=>{input.value='';},500);
+}
+async function npmUploadImage(dataUrl){
+  const parts=dataUrl.split(';base64,');
+  const mime=parts[0].replace('data:','');
+  const binary=atob(parts[1]);
+  const bytes=new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+  const blob=new Blob([bytes],{type:mime});
+  const ext=mime.includes('gif')?'gif':mime.includes('png')?'png':'jpg';
+  const path='news/'+Date.now()+'-'+Math.random().toString(36).slice(2,6)+'.'+ext;
+  const{error}=await sb.storage.from('background').upload(path,blob,{contentType:mime,upsert:true});
+  if(error)throw new Error(error.message);
+  return sb.storage.from('background').getPublicUrl(path).data.publicUrl;
+}
+async function npmPublish(){
+  const text=document.getElementById('npm-text').value.trim();
+  if(!text&&!npmImgData){showToast('❌ Напиши текст или добавь фото');return;}
+  if(!currentProfile||currentProfile.role!=='admin'){showToast('❌ Только администраторы');return;}
+  const btn=document.getElementById('npm-publish-btn');
+  if(btn){btn.disabled=true;btn.textContent='⏳ ...';}
+  try{
+    let imageUrl=npmImgData;
+    if(imageUrl&&imageUrl.startsWith('data:')){
+      imageUrl=await npmUploadImage(imageUrl);
+    }
+    const payload={content:text,image_url:imageUrl||null};
+    let error,data;
+    if(npmEditingId){
+      ({error,data}=await sb.from('news_posts').update(payload).eq('id',npmEditingId).select());
+      console.log('npmPublish update result:',data,error);
+      if(!error&&(!data||!data.length)){
+        showToast('⚠️ Пост не найден или нет прав на изменение (RLS)');
+        if(btn){btn.disabled=false;btn.textContent='💾 Сохранить';}
+        return;
+      }
+    }else{
+      ({error,data}=await sb.from('news_posts').insert({user_id:currentUser.id,username:currentProfile.username,...payload}).select());
+      console.log('npmPublish insert result:',data,error);
+    }
+    if(error)throw error;
+    closeNewsPostModal();
+    showToast(npmEditingId?'✅ Пост обновлён':'📡 Пост опубликован!');
+    await loadNewsPosts();
+  }catch(e){showToast('❌ '+e.message);console.error(e);}
+  if(btn){btn.disabled=false;btn.textContent=npmEditingId?'💾 Сохранить':'📡 Опубликовать';}
+}
+</script>
+<script>
+// ===== ШТОРКА НОВОСТЕЙ =====
+function toggleNewsPanel(){newsPanelOpen=!newsPanelOpen;document.getElementById('news-panel').classList.toggle('open',newsPanelOpen);if(newsPanelOpen){hideBadge();renderNewsPosts(newsPostsCache);}}
+function openNewsPanel(){newsPanelOpen=true;document.getElementById('news-panel').classList.add('open');hideBadge();renderNewsPosts(newsPostsCache);}
+function hideBadge(){const b=document.getElementById('news-badge');b.style.display='none';document.getElementById('news-notify').style.display='none';if(newsNotifyTimer)clearTimeout(newsNotifyTimer);}
+
+async function loadNewsPosts(){
+  const[{data:posts},{data:reactions}]=await Promise.all([
+    sb.from('news_posts').select('*').order('created_at',{ascending:false}).limit(30),
+    sb.from('news_reactions').select('*')
+  ]);
+  newsPostsCache=posts||[];
+  newsReactionsCache={};
+  (reactions||[]).forEach(r=>{if(!newsReactionsCache[r.post_id])newsReactionsCache[r.post_id]=[];newsReactionsCache[r.post_id].push(r);});
+  if(newsPanelOpen)renderNewsPosts(newsPostsCache);
 }
 
+async function loadNewsEmojis(){
+  const{data}=await sb.from('news_emojis').select('*').order('created_at',{ascending:true});
+  newsEmojisCache=data||[];
+  renderNewsEmojiAdminPanel();
+}
+
+function reactionGlyph(e){return e&&e.image_url?'<img src="'+e.image_url+'" alt="" style="width:16px;height:16px;object-fit:contain;vertical-align:middle">':escHtml(e?e.emoji:'');}
+function reactionGlyphByKey(key){const meta=newsEmojisCache.find(e=>(e.image_url||e.emoji)===key);return meta?reactionGlyph(meta):escHtml(key);}
+
+function renderNewsEmojiAdminPanel(){
+  const el=document.getElementById('news-emoji-list');if(!el)return;
+  const isAdmin=currentProfile?.role==='admin';
+  if(!isAdmin){document.getElementById('news-emoji-admin-panel').style.display='none';return;}
+  document.getElementById('news-emoji-admin-panel').style.display='block';
+  el.innerHTML=newsEmojisCache.map(e=>`<span class="np-emoji-chip">${reactionGlyph(e)}<button class="np-emoji-chip-del" onclick="deleteNewsEmoji('${e.id}')">✕</button></span>`).join('');
+}
+
+async function addNewsEmoji(){
+  const inp=document.getElementById('new-emoji-input');const emoji=inp.value.trim();
+    if(!emoji){showToast('Введи эмодзи');return;}
+  const{error}=await sb.from('news_emojis').insert({emoji});
+  if(error){showToast('❌ '+error.message);return;}
+  inp.value='';await loadNewsEmojis();showToast('✅ Реакция добавлена');
+}
+async function deleteNewsEmoji(id){
+  await sb.from('news_emojis').delete().eq('id',id);
+  await loadNewsEmojis();showToast('🗑️ Реакция удалена');
+}
+
+async function addNewsEmojiImage(input){
+  const file=input.files&&input.files[0];if(!file)return;
+  if(file.size>3*1024*1024){showToast('❌ Картинка слишком большая (макс 3MB)');input.value='';return;}
+  try{
+    showToast('⏳ Загружаем реакцию...');
+    const data=await compressImage(file,96,0.85);
+    const parts=data.split(';base64,');
+    const binary=atob(parts[1]);
+    const bytes=new Uint8Array(binary.length);
+    for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+    const blob=new Blob([bytes],{type:'image/webp'});
+    const path='reactions/'+Date.now()+'-'+Math.random().toString(36).slice(2,7)+'.webp';
+    const{error:upErr}=await sb.storage.from('background').upload(path,blob,{contentType:'image/webp',upsert:true});
+    if(upErr)throw upErr;
+    const url=sb.storage.from('background').getPublicUrl(path).data.publicUrl;
+    const{error}=await sb.from('news_emojis').insert({image_url:url,emoji:''});
+    if(error)throw error;
+    input.value='';await loadNewsEmojis();showToast('✅ Реакция добавлена');
+  }catch(err){showToast('❌ '+err.message);input.value='';}
+}
+
+function renderNewsPosts(posts){
+  const el=document.getElementById('news-list');if(!el)return;
+  const isAdmin=currentProfile?.role==='admin';
+  const isLoggedIn=!!currentUser;
+  if(!posts.length){el.innerHTML='<div class="np-empty"><div class="np-empty-icon">📡</div>Новостей пока нет.<br>Следи за обновлениями!</div>';return;}
+  el.innerHTML=posts.map(p=>{
+    const time=new Date(p.created_at).toLocaleString('ru',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const letter=(p.username||'A')[0].toUpperCase();
+    const postReactions=newsReactionsCache[p.id]||[];
+    const byEmoji={};
+    postReactions.forEach(r=>{if(!byEmoji[r.emoji])byEmoji[r.emoji]=[];byEmoji[r.emoji].push(r.user_id);});
+    const reactBtns=Object.entries(byEmoji).map(([emoji,uids])=>{
+      const mine=currentUser&&uids.includes(currentUser.id);
+      const keyAttr=emoji.replace(/'/g,"\\'");
+      return`<button class="np-reaction-btn${mine?' mine':''}" onclick="toggleReaction('${p.id}','${keyAttr}')">${reactionGlyphByKey(emoji)}<span class="np-reaction-count">${uids.length}</span></button>`;
+    }).join('');
+    const addBtn=isLoggedIn?`<button class="np-add-reaction" onclick="showEmojiPicker(event,'${p.id}')">+ 😊</button>`:'';
+    const imgHtml=p.image_url?`<img class="np-post-img" src="${p.image_url}" loading="lazy" onclick="openFullscreen('${p.image_url}')">`:'';
+    const adminActions=isAdmin?`<div class="np-post-admin-actions"><button class="np-post-edit" onclick="openEditNewsPost('${p.id}')">✏️ Изменить</button><button class="np-post-del" onclick="deleteNewsPost('${p.id}')">🗑️ Удалить</button></div>`:'';
+    return`<div class="news-post">
+      <div class="np-post-header">
+        <div class="np-post-avatar">${letter}</div>
+        <div><div class="np-post-author">${escHtml(p.username)} 👑</div></div>
+        <div class="np-post-time">${time}</div>
+      </div>
+      ${p.content?`<div class="np-post-text">${escHtml(p.content)}</div>`:''}
+      ${imgHtml}
+      <div class="np-reactions" style="position:relative">${reactBtns}${addBtn}</div>
+      ${adminActions}
+    </div>`;
+  }).join('');
+}
+
+let npEmojiPickerBtn=null;
+function showEmojiPicker(e,postId){
+  e.stopPropagation();
+  document.querySelectorAll('.np-emoji-picker').forEach(p=>p.remove());
+  openReactionPickerPostId=postId;
+  npEmojiPickerBtn=e.currentTarget;
+  mountEmojiPicker(postId);
+}
+function mountEmojiPicker(postId){
+  document.querySelectorAll('.np-emoji-picker').forEach(p=>p.remove());
+  if(!npEmojiPickerBtn)return;
+  const isAdmin=currentProfile?.role==='admin';
+  const picker=document.createElement('div');
+  picker.className='np-emoji-picker';
+  const closeBtn=document.createElement('button');
+  closeBtn.type='button';closeBtn.className='np-picker-close';closeBtn.textContent='✕';
+  closeBtn.addEventListener('click',()=>closeEmojiPicker());
+  picker.appendChild(closeBtn);
+  if(!newsEmojisCache.length){
+    const span=document.createElement('span');
+    span.style.cssText='font-size:11px;color:var(--text-dim);padding:4px';
+    span.textContent='Нет реакций';
+    picker.appendChild(span);
+  }else{
+    newsEmojisCache.forEach(em=>{
+      const b=document.createElement('button');
+      b.type='button';
+      b.innerHTML=reactionGlyph(em);
+      const key=em.image_url||em.emoji||'';
+      b.addEventListener('click',()=>{toggleReaction(postId,key);closeEmojiPicker();});
+      picker.appendChild(b);
+    });
+  }
+  if(isAdmin){
+    const addRow=document.createElement('div');
+    addRow.className='np-picker-add';
+    const input2=document.createElement('input');
+    input2.type='text';input2.className='np-picker-emoji-input';input2.maxLength=4;input2.placeholder='😀';
+    const addBtn2=document.createElement('button');
+    addBtn2.type='button';addBtn2.textContent='✔️';
+    addBtn2.addEventListener('click',async()=>{
+      const val=input2.value.trim();if(!val)return;
+      const{error}=await sb.from('news_emojis').insert({emoji:val});
+      if(error){showToast('❌ '+error.message);return;}
+      await loadNewsEmojis();mountEmojiPicker(postId);
+    });
+    const uploadLabel=document.createElement('label');
+    uploadLabel.className='np-picker-upload-btn';
+    uploadLabel.textContent='🖼️';
+    const imgInput=document.createElement('input');
+    imgInput.type='file';imgInput.accept='image/*';imgInput.style.display='none';
+    imgInput.addEventListener('change',async()=>{
+      const file=imgInput.files[0];if(!file)return;
+      if(file.size>3*1024*1024){showToast('❌ Картинка слишком большая (макс 3MB)');return;}
+      try{
+        showToast('⏳ Загружаем реакцию...');
+        const data=await compressImage(file,96,0.85);
+        const parts=data.split(';base64,');
+        const binary=atob(parts[1]);const bytes=new Uint8Array(binary.length);
+        for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+        const blob=new Blob([bytes],{type:'image/webp'});
+        const path='reactions/'+Date.now()+'-'+Math.random().toString(36).slice(2,7)+'.webp';
+        const{error:upErr}=await sb.storage.from('background').upload(path,blob,{contentType:'image/webp',upsert:true});
+        if(upErr)throw upErr;
+        const url=sb.storage.from('background').getPublicUrl(path).data.publicUrl;
+        const{error}=await sb.from('news_emojis').insert({image_url:url,emoji:''});
+        if(error)throw error;
+        await loadNewsEmojis();mountEmojiPicker(postId);
+        showToast('✅ Реакция добавлена');
+      }catch(err){showToast('❌ '+err.message);}
+    });
+    uploadLabel.appendChild(imgInput);
+    addRow.appendChild(input2);addRow.appendChild(addBtn2);addRow.appendChild(uploadLabel);
+    picker.appendChild(addRow);
+  }
+  picker.addEventListener('click',ev=>ev.stopPropagation());
+  npEmojiPickerBtn.parentElement.style.position='relative';
+  npEmojiPickerBtn.parentElement.appendChild(picker);
+  document.removeEventListener('click',outsidePickerClose);
+  setTimeout(()=>document.addEventListener('click',outsidePickerClose),0);
+}
+function closeEmojiPicker(){
+  document.querySelectorAll('.np-emoji-picker').forEach(p=>p.remove());
+  openReactionPickerPostId=null;npEmojiPickerBtn=null;
+  document.removeEventListener('click',outsidePickerClose);
+}
+function outsidePickerClose(e){
+  if(e.target.closest('.np-emoji-picker')||e.target.closest('.np-add-reaction'))return;
+  closeEmojiPicker();
+}
+
+async function toggleReaction(postId,emoji){
+  if(!currentUser){showToast('Войди чтобы ставить реакции');return;}
+  const existing=(newsReactionsCache[postId]||[]).find(r=>r.user_id===currentUser.id&&r.emoji===emoji);
+  if(existing){await sb.from('news_reactions').delete().eq('id',existing.id);}
+  else{await sb.from('news_reactions').insert({post_id:postId,user_id:currentUser.id,emoji});}
+  await loadNewsPosts();
+}
+
+async function deleteNewsPost(id){if(!confirm('Удалить пост?'))return;await sb.from('news_posts').delete().eq('id',id);await loadNewsPosts();showToast('🗑️ Пост удалён');}
+
+function initNewsRealtime(){
+  if(newsChannel){try{newsChannel.unsubscribe();}catch(e){}}
+  newsChannel=sb.channel('news-rt')
+    .on('postgres_changes',{event:'*',schema:'public',table:'news_posts'},()=>{loadNewsPosts();if(!newsPanelOpen)showNewsNotification();})
+    .on('postgres_changes',{event:'*',schema:'public',table:'news_reactions'},()=>{loadNewsPosts();})
+    .on('postgres_changes',{event:'*',schema:'public',table:'news_emojis'},()=>{loadNewsEmojis();})
+    .subscribe();
+  if(newsRefreshTimer)clearInterval(newsRefreshTimer);
+  newsRefreshTimer=setInterval(()=>{
+    if(openReactionPickerPostId)return;
+    const focused=document.activeElement;
+    const inNewsModal=focused&&document.getElementById('news-post-modal')?.contains(focused);
+    if(inNewsModal)return;
+    if(document.getElementById('news-post-modal')?.classList.contains('open'))return;
+    loadNewsPosts();
+  },1000);
+}
+function showNewsNotification(){
+  const b=document.getElementById('news-badge');b.style.cssText='display:flex;align-items:center;justify-content:center';b.textContent='!';
+  const notify=document.getElementById('news-notify');notify.style.display='flex';
+  if(newsNotifyTimer)clearTimeout(newsNotifyTimer);
+  newsNotifyTimer=setTimeout(()=>{notify.style.display='none';},8000);
+  if(Notification.permission==='granted'){new Notification('📡 TheAndrameda Universe',{body:'Новое сообщение от администратора'});}
+  else if(Notification.permission==='default'){Notification.requestPermission();}
+}
+</script>
+<script>
 function initStars(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
 function drawSpace(){ctx.clearRect(0,0,canvas.width,canvas.height);if(mapLimits.enabled){const mx=cam.x,my=cam.y,mw=mapLimits.x,mh=mapLimits.y;ctx.save();ctx.fillStyle='rgba(0,0,0,0.75)';if(mx>0)ctx.fillRect(0,0,mx,canvas.height);const rx=mx+mw;if(rx<canvas.width)ctx.fillRect(rx,0,canvas.width-rx,canvas.height);if(my>0)ctx.fillRect(0,0,canvas.width,my);const ry=my+mh;if(ry<canvas.height)ctx.fillRect(0,ry,canvas.width,canvas.height-ry);ctx.strokeStyle='rgba(34,211,238,0.18)';ctx.lineWidth=2;ctx.setLineDash([10,10]);ctx.strokeRect(mx,my,mw,mh);ctx.restore();}animFrame=requestAnimationFrame(drawSpace);}
 function clampCam(){if(!mapLimits.enabled)return;cam.x=Math.max(canvas.width-mapLimits.x,Math.min(0,cam.x));cam.y=Math.max(canvas.height-mapLimits.y,Math.min(0,cam.y));}
@@ -813,45 +1337,27 @@ window.addEventListener('mousemove',e=>{if(itemDrag.active){itemDrag.el.style.le
 canvas.addEventListener('touchmove',e=>{if(itemDrag.active){const t=e.touches[0];itemDrag.el.style.left=t.clientX+'px';itemDrag.el.style.top=t.clientY+'px';return;}if(!drag.active)return;const t=e.touches[0];cam.x=drag.camX+(t.clientX-drag.startX);cam.y=drag.camY+(t.clientY-drag.startY);clampCam();updateAllPos();},{passive:true});
 window.addEventListener('mouseup',async e=>{if(itemDrag.active){await saveItemPos(itemDrag.type,itemDrag.id,e.clientX-cam.x,e.clientY-cam.y);itemDrag.el.style.opacity='1';itemDrag={active:false,id:null,type:null,el:null};showToast('✅ Позиция сохранена');return;}drag.active=false;});
 window.addEventListener('touchend',async e=>{if(itemDrag.active){const t=e.changedTouches[0];await saveItemPos(itemDrag.type,itemDrag.id,t.clientX-cam.x,t.clientY-cam.y);itemDrag.el.style.opacity='1';itemDrag={active:false,id:null,type:null,el:null};showToast('✅ Позиция сохранена');return;}drag.active=false;});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(placingMode)cancelPlacing();if(itemDrag.active){itemDrag.el.style.opacity='1';itemDrag={active:false,id:null,type:null,el:null};}closeSettingsPopup();}});
-// Закрываем попап настроек при клике снаружи
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(placingMode)cancelPlacing();if(itemDrag.active){itemDrag.el.style.opacity='1';itemDrag={active:false,id:null,type:null,el:null};}closeSettingsPopup();closeFullscreen();closeNewsPostModal();}});
 document.addEventListener('click',e=>{
   if(settingsPopupOpen&&!e.target.closest('#settings-popup')&&!e.target.closest('#settings-btn'))closeSettingsPopup();
   const d=document.getElementById('planet-dialog');
-  // ИСПРАВЛЕНИЕ 2: закрываем planet-dialog только если клик НЕ на planet-dialog И НЕ на элементе планеты
-  if(d.style.display==='block'&&!e.target.closest('#planet-dialog')&&!e.target.closest('[data-planet-id]'))closePlanetDialog();
-  // ИСПРАВЛЕНИЕ 2: закрываем float panel только если клик НЕ внутри float panel И НЕ на планете/декорации
-  if(!e.target.closest('#item-float-panel')&&!e.target.closest('[data-planet-id]')&&!e.target.closest('[data-deco-id]'))closeFloatPanel();
-});
+  if(d.style.display==='block'&&!e.target.closest('#planet-dialog')&&!e.target.closest('[data-planet-id]')&&!e.target.closest('[data-planet-inner]'))closePlanetDialog();
+  if(!e.target.closest('#item-float-panel')&&!e.target.closest('[data-planet-id]')&&!e.target.closest('[data-deco-id]')&&!e.target.closest('[data-planet-inner]')&&!e.target.closest('[data-deco-inner]'))closeFloatPanel();
+  if(newsPanelOpen&&!e.target.closest('#news-panel')&&!e.target.closest('#news-tab-btn')&&!e.target.closest('#news-notify')&&!e.target.closest('#news-post-modal'))toggleNewsPanel();
+  });
 document.addEventListener('touchend',e=>{
   if(settingsPopupOpen&&!e.target.closest('#settings-popup')&&!e.target.closest('#settings-btn'))closeSettingsPopup();
   const d=document.getElementById('planet-dialog');
-  if(d.style.display==='block'&&!e.target.closest('#planet-dialog')&&!e.target.closest('[data-planet-id]'))closePlanetDialog();
-  if(!e.target.closest('#item-float-panel')&&!e.target.closest('[data-planet-id]')&&!e.target.closest('[data-deco-id]'))closeFloatPanel();
+  if(d.style.display==='block'&&!e.target.closest('#planet-dialog')&&!e.target.closest('[data-planet-id]')&&!e.target.closest('[data-planet-inner]'))closePlanetDialog();
+  if(!e.target.closest('#item-float-panel')&&!e.target.closest('[data-planet-id]')&&!e.target.closest('[data-deco-id]')&&!e.target.closest('[data-planet-inner]')&&!e.target.closest('[data-deco-inner]'))closeFloatPanel();
 },{passive:true});
+// Закрытие модального окна поста при клике на фон
+document.getElementById('news-post-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeNewsPostModal();});
 
 function updateAllPos(){document.querySelectorAll('[data-planet-id],[data-deco-id]').forEach(el=>{const pid=el.dataset.planetId,did=el.dataset.decoId;const item=pid?planetsCache.find(p=>p.id===pid):decosCache.find(d=>d.id===did);if(!item)return;el.style.left=(item.x_pos+cam.x)+'px';el.style.top=(item.y_pos+cam.y)+'px';});}
 async function saveItemPos(type,id,x,y){const table=type==='planet'?'planets':'decorations';await sb.from(table).update({x_pos:x,y_pos:y}).eq('id',id);const cache=type==='planet'?planetsCache:decosCache;const item=cache.find(i=>i.id===id);if(item){item.x_pos=x;item.y_pos=y;}}
 function startMoveItem(type,id){closeFloatPanel();const sel='[data-'+(type==='planet'?'planet':'deco')+'-id="'+id+'"]';const el=document.querySelector(sel);if(!el)return;el.style.opacity='0.6';itemDrag={active:true,id,type,el};showToast('✋ Перетащи и отпусти · ESC — отмена');}
-
-// ИСПРАВЛЕНИЕ 2: showFloatPanel — всегда показывает для админа, правильно вычисляет права
-function showFloatPanel(type,id){
-  floatPanelItem={type,id};
-  const isAdmin=currentProfile?.role==='admin'&&!testRestrictions;
-  const r=getR();
-  const item=type==='planet'?planetsCache.find(p=>p.id===id):decosCache.find(d=>d.id===id);
-  const isOwner=currentUser?.id===item?.user_id;
-  // Для админа всегда все кнопки, для владельца — по правам
-  const canEdit=isAdmin||(isOwner&&(type==='planet'?getBool(r.can_edit_planet):true));
-  const canMove=isAdmin||(isOwner&&(type==='planet'?getBool(r.can_move_planet):getBool(r.can_move_deco)));
-  const canDel=isAdmin||(isOwner&&(type==='planet'?getBool(r.can_delete_planet):getBool(r.can_delete_deco)));
-  if(!canEdit&&!canMove&&!canDel)return; // никому нечего показывать
-  document.getElementById('ifp-title').textContent=type==='planet'?'🪐 @'+(item?.username||''):'🌠 '+(item?.name||'Декорация');
-  document.getElementById('ifp-edit-btn').style.display=canEdit?'':'none';
-  document.getElementById('ifp-move-btn').style.display=canMove?'':'none';
-  document.getElementById('ifp-delete-btn').style.display=canDel?'':'none';
-  document.getElementById('item-float-panel').classList.add('visible');
-}
+function showFloatPanel(type,id){floatPanelItem={type,id};const isAdmin=currentProfile?.role==='admin'&&!testRestrictions;const r=getR();const item=type==='planet'?planetsCache.find(p=>p.id===id):decosCache.find(d=>d.id===id);const isOwner=currentUser?.id===item?.user_id;const canEdit=isAdmin||(isOwner&&(type==='planet'?getBool(r.can_edit_planet):true));const canMove=isAdmin||(isOwner&&(type==='planet'?getBool(r.can_move_planet):getBool(r.can_move_deco)));const canDel=isAdmin||(isOwner&&(type==='planet'?getBool(r.can_delete_planet):getBool(r.can_delete_deco)));if(!canEdit&&!canMove&&!canDel)return;document.getElementById('ifp-title').textContent=type==='planet'?'🪐 @'+(item?.username||''):'🌠 '+(item?.name||'Декорация');document.getElementById('ifp-edit-btn').style.display=canEdit?'':'none';document.getElementById('ifp-move-btn').style.display=canMove?'':'none';document.getElementById('ifp-delete-btn').style.display=canDel?'':'none';document.getElementById('item-float-panel').classList.add('visible');}
 function closeFloatPanel(){document.getElementById('item-float-panel').classList.remove('visible');floatPanelItem={id:null,type:null};}
 function ifpEdit(){const{type,id}=floatPanelItem;closeFloatPanel();if(type==='planet')openEditPlanet(id);else openEditDeco(id);}
 function ifpMove(){const{type,id}=floatPanelItem;closeFloatPanel();startMoveItem(type,id);}
@@ -859,65 +1365,17 @@ async function ifpDelete(){const{type,id}=floatPanelItem;closeFloatPanel();if(ty
 function stopTestRestrictions(){testRestrictions=null;document.getElementById('test-restrictions-bar').classList.remove('visible');updateUIForRole();renderAll();showToast('✅ Тест ограничений выключен');}
 function setPlanetSoundVolume(v){planetSoundVolume=parseFloat(v);localStorage.setItem('planetSoundVol',v);if(activeAudio)activeAudio.volume=planetSoundVolume;document.getElementById('pd-volume-val').textContent=Math.round(v*100)+'%';}
 function toggleInfLimit(type,role){const numEl=document.getElementById((type==='planet'?'planet':'deco')+'-limit-'+role);const isInf=document.getElementById((type==='planet'?'planet':'deco')+'-limit-'+role+'-inf').checked;if(numEl)numEl.disabled=isInf;}
+function applyParamsToSliders(){const pMin=getUserPlanetMinSize(),pMax=getUserPlanetMaxSize(),dMin=getUserDecoMinSize(),dMax=getUserDecoMaxSize();const ps=document.getElementById('planet-size');if(ps){ps.min=pMin;ps.max=pMax;const v=parseInt(ps.value);ps.value=Math.max(pMin,Math.min(pMax,v));document.getElementById('size-val').textContent=ps.value;document.getElementById('planet-size-min-lbl').textContent=pMin+'px';document.getElementById('planet-size-max-lbl').textContent=pMax+'px';}const ds=document.getElementById('deco-size');if(ds){ds.min=dMin;ds.max=dMax;const v=parseInt(ds.value);ds.value=Math.max(dMin,Math.min(dMax,v));document.getElementById('deco-size-val').textContent=ds.value;document.getElementById('deco-size-min-lbl').textContent=dMin+'px';document.getElementById('deco-size-max-lbl').textContent=dMax+'px';}const eps=document.getElementById('edit-planet-size');if(eps){eps.min=pMin;eps.max=pMax;document.getElementById('edit-planet-size-min-lbl').textContent=pMin+'px';document.getElementById('edit-planet-size-max-lbl').textContent=pMax+'px';}const eds=document.getElementById('edit-deco-size');if(eds){eds.min=dMin;eds.max=dMax;document.getElementById('edit-deco-size-min-lbl').textContent=dMin+'px';document.getElementById('edit-deco-size-max-lbl').textContent=dMax+'px';}}
 </script>
 <script>
-function applyParamsToSliders(){
-  const pMin=getUserPlanetMinSize(),pMax=getUserPlanetMaxSize(),dMin=getUserDecoMinSize(),dMax=getUserDecoMaxSize();
-  const ps=document.getElementById('planet-size');if(ps){ps.min=pMin;ps.max=pMax;const v=parseInt(ps.value);ps.value=Math.max(pMin,Math.min(pMax,v));document.getElementById('size-val').textContent=ps.value;document.getElementById('planet-size-min-lbl').textContent=pMin+'px';document.getElementById('planet-size-max-lbl').textContent=pMax+'px';}
-  const ds=document.getElementById('deco-size');if(ds){ds.min=dMin;ds.max=dMax;const v=parseInt(ds.value);ds.value=Math.max(dMin,Math.min(dMax,v));document.getElementById('deco-size-val').textContent=ds.value;document.getElementById('deco-size-min-lbl').textContent=dMin+'px';document.getElementById('deco-size-max-lbl').textContent=dMax+'px';}
-  const eps=document.getElementById('edit-planet-size');if(eps){eps.min=pMin;eps.max=pMax;document.getElementById('edit-planet-size-min-lbl').textContent=pMin+'px';document.getElementById('edit-planet-size-max-lbl').textContent=pMax+'px';}
-  const eds=document.getElementById('edit-deco-size');if(eds){eds.min=dMin;eds.max=dMax;document.getElementById('edit-deco-size-min-lbl').textContent=dMin+'px';document.getElementById('edit-deco-size-max-lbl').textContent=dMax+'px';}
-}
-async function loadSiteParams(){
-  const keys=['planet_min_size','planet_max_size','planet_min_size_admin','planet_max_size_admin','deco_min_size','deco_max_size','deco_min_size_admin','deco_max_size_admin','planet_limit_booster','planet_limit_admin','deco_limit_booster','deco_limit_admin','planet_limit_infinite_booster','planet_limit_infinite_admin','deco_limit_infinite_booster','deco_limit_infinite_admin'];
-  const{data}=await sb.from('site_settings').select('*').in('key',keys);
-  const s={};(data||[]).forEach(r=>{s[r.key]=r.value;});
-  siteParams={planetMin:parseInt(s.planet_min_size)||40,planetMax:parseInt(s.planet_max_size)||1000,planetMinAdmin:parseInt(s.planet_min_size_admin)||40,planetMaxAdmin:parseInt(s.planet_max_size_admin)||1000,decoMin:parseInt(s.deco_min_size)||40,decoMax:parseInt(s.deco_max_size)||1000,decoMinAdmin:parseInt(s.deco_min_size_admin)||40,decoMaxAdmin:parseInt(s.deco_max_size_admin)||1000,planetLimitBooster:parseInt(s.planet_limit_booster)||1,planetLimitAdmin:parseInt(s.planet_limit_admin)||10,decoLimitBooster:parseInt(s.deco_limit_booster)||3,decoLimitAdmin:parseInt(s.deco_limit_admin)||20,planetInfBooster:s.planet_limit_infinite_booster==='true',planetInfAdmin:s.planet_limit_infinite_admin==='true',decoInfBooster:s.deco_limit_infinite_booster==='true',decoInfAdmin:s.deco_limit_infinite_admin==='true'};
-  applyParamsToSliders();
-  const f=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v;};
-  const fc=(id,v)=>{const el=document.getElementById(id);if(el){el.checked=v;if(v){const nid=id.replace('-inf','');const nel=document.getElementById(nid);if(nel)nel.disabled=true;}}};
-  f('planet-min-size',siteParams.planetMin);f('planet-max-size',siteParams.planetMax);f('planet-min-size-admin',siteParams.planetMinAdmin);f('planet-max-size-admin',siteParams.planetMaxAdmin);f('planet-limit-booster',siteParams.planetLimitBooster);f('planet-limit-admin',siteParams.planetLimitAdmin);fc('planet-limit-booster-inf',siteParams.planetInfBooster);fc('planet-limit-admin-inf',siteParams.planetInfAdmin);f('deco-min-size',siteParams.decoMin);f('deco-max-size',siteParams.decoMax);f('deco-min-size-admin',siteParams.decoMinAdmin);f('deco-max-size-admin',siteParams.decoMaxAdmin);f('deco-limit-booster',siteParams.decoLimitBooster);f('deco-limit-admin',siteParams.decoLimitAdmin);fc('deco-limit-booster-inf',siteParams.decoInfBooster);fc('deco-limit-admin-inf',siteParams.decoInfAdmin);
-}
-async function saveParams(type){
-  if(type==='planet'){const infB=document.getElementById('planet-limit-booster-inf').checked;const infA=document.getElementById('planet-limit-admin-inf').checked;await sb.from('site_settings').upsert([{key:'planet_min_size',value:String(parseInt(document.getElementById('planet-min-size').value)||40)},{key:'planet_max_size',value:String(parseInt(document.getElementById('planet-max-size').value)||1000)},{key:'planet_min_size_admin',value:String(parseInt(document.getElementById('planet-min-size-admin').value)||40)},{key:'planet_max_size_admin',value:String(parseInt(document.getElementById('planet-max-size-admin').value)||1000)},{key:'planet_limit_booster',value:String(parseInt(document.getElementById('planet-limit-booster').value)||1)},{key:'planet_limit_admin',value:String(parseInt(document.getElementById('planet-limit-admin').value)||10)},{key:'planet_limit_infinite_booster',value:String(infB)},{key:'planet_limit_infinite_admin',value:String(infA)}],{onConflict:'key'});showToast('✅ Параметры планет сохранены');}
-  else{const infB=document.getElementById('deco-limit-booster-inf').checked;const infA=document.getElementById('deco-limit-admin-inf').checked;await sb.from('site_settings').upsert([{key:'deco_min_size',value:String(parseInt(document.getElementById('deco-min-size').value)||40)},{key:'deco_max_size',value:String(parseInt(document.getElementById('deco-max-size').value)||1000)},{key:'deco_min_size_admin',value:String(parseInt(document.getElementById('deco-min-size-admin').value)||40)},{key:'deco_max_size_admin',value:String(parseInt(document.getElementById('deco-max-size-admin').value)||1000)},{key:'deco_limit_booster',value:String(parseInt(document.getElementById('deco-limit-booster').value)||3)},{key:'deco_limit_admin',value:String(parseInt(document.getElementById('deco-limit-admin').value)||20)},{key:'deco_limit_infinite_booster',value:String(infB)},{key:'deco_limit_infinite_admin',value:String(infA)}],{onConflict:'key'});showToast('✅ Параметры декораций сохранены');}
-  await loadSiteParams();
-}
+async function loadSiteParams(){const keys=['planet_min_size','planet_max_size','planet_min_size_admin','planet_max_size_admin','deco_min_size','deco_max_size','deco_min_size_admin','deco_max_size_admin','planet_limit_booster','planet_limit_admin','deco_limit_booster','deco_limit_admin','planet_limit_infinite_booster','planet_limit_infinite_admin','deco_limit_infinite_booster','deco_limit_infinite_admin'];const{data}=await sb.from('site_settings').select('*').in('key',keys);const s={};(data||[]).forEach(r=>{s[r.key]=r.value;});siteParams={planetMin:parseInt(s.planet_min_size)||40,planetMax:parseInt(s.planet_max_size)||1000,planetMinAdmin:parseInt(s.planet_min_size_admin)||40,planetMaxAdmin:parseInt(s.planet_max_size_admin)||1000,decoMin:parseInt(s.deco_min_size)||40,decoMax:parseInt(s.deco_max_size)||1000,decoMinAdmin:parseInt(s.deco_min_size_admin)||40,decoMaxAdmin:parseInt(s.deco_max_size_admin)||1000,planetLimitBooster:parseInt(s.planet_limit_booster)||1,planetLimitAdmin:parseInt(s.planet_limit_admin)||10,decoLimitBooster:parseInt(s.deco_limit_booster)||3,decoLimitAdmin:parseInt(s.deco_limit_admin)||20,planetInfBooster:s.planet_limit_infinite_booster==='true',planetInfAdmin:s.planet_limit_infinite_admin==='true',decoInfBooster:s.deco_limit_infinite_booster==='true',decoInfAdmin:s.deco_limit_infinite_admin==='true'};applyParamsToSliders();const f=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v;};const fc=(id,v)=>{const el=document.getElementById(id);if(el){el.checked=v;if(v){const nid=id.replace('-inf','');const nel=document.getElementById(nid);if(nel)nel.disabled=true;}}};f('planet-min-size',siteParams.planetMin);f('planet-max-size',siteParams.planetMax);f('planet-min-size-admin',siteParams.planetMinAdmin);f('planet-max-size-admin',siteParams.planetMaxAdmin);f('planet-limit-booster',siteParams.planetLimitBooster);f('planet-limit-admin',siteParams.planetLimitAdmin);fc('planet-limit-booster-inf',siteParams.planetInfBooster);fc('planet-limit-admin-inf',siteParams.planetInfAdmin);f('deco-min-size',siteParams.decoMin);f('deco-max-size',siteParams.decoMax);f('deco-min-size-admin',siteParams.decoMinAdmin);f('deco-max-size-admin',siteParams.decoMaxAdmin);f('deco-limit-booster',siteParams.decoLimitBooster);f('deco-limit-admin',siteParams.decoLimitAdmin);fc('deco-limit-booster-inf',siteParams.decoInfBooster);fc('deco-limit-admin-inf',siteParams.decoInfAdmin);}
+async function saveParams(type){if(type==='planet'){const infB=document.getElementById('planet-limit-booster-inf').checked;const infA=document.getElementById('planet-limit-admin-inf').checked;await sb.from('site_settings').upsert([{key:'planet_min_size',value:String(parseInt(document.getElementById('planet-min-size').value)||40)},{key:'planet_max_size',value:String(parseInt(document.getElementById('planet-max-size').value)||1000)},{key:'planet_min_size_admin',value:String(parseInt(document.getElementById('planet-min-size-admin').value)||40)},{key:'planet_max_size_admin',value:String(parseInt(document.getElementById('planet-max-size-admin').value)||1000)},{key:'planet_limit_booster',value:String(parseInt(document.getElementById('planet-limit-booster').value)||1)},{key:'planet_limit_admin',value:String(parseInt(document.getElementById('planet-limit-admin').value)||10)},{key:'planet_limit_infinite_booster',value:String(infB)},{key:'planet_limit_infinite_admin',value:String(infA)}],{onConflict:'key'});showToast('✅ Параметры планет сохранены');}else{const infB=document.getElementById('deco-limit-booster-inf').checked;const infA=document.getElementById('deco-limit-admin-inf').checked;await sb.from('site_settings').upsert([{key:'deco_min_size',value:String(parseInt(document.getElementById('deco-min-size').value)||40)},{key:'deco_max_size',value:String(parseInt(document.getElementById('deco-max-size').value)||1000)},{key:'deco_min_size_admin',value:String(parseInt(document.getElementById('deco-min-size-admin').value)||40)},{key:'deco_max_size_admin',value:String(parseInt(document.getElementById('deco-max-size-admin').value)||1000)},{key:'deco_limit_booster',value:String(parseInt(document.getElementById('deco-limit-booster').value)||3)},{key:'deco_limit_admin',value:String(parseInt(document.getElementById('deco-limit-admin').value)||20)},{key:'deco_limit_infinite_booster',value:String(infB)},{key:'deco_limit_infinite_admin',value:String(infA)}],{onConflict:'key'});showToast('✅ Параметры декораций сохранены');}await loadSiteParams();}
 async function loadUserLimitsSelect(){const sel=document.getElementById('user-limit-select');if(!sel)return;const{data}=await sb.from('profiles').select('id,username,role').order('username');sel.innerHTML='<option value="">— выбери —</option>'+(data||[]).map(u=>'<option value="'+u.id+'">@'+escHtml(u.username)+' ('+u.role+')</option>').join('');}
-async function loadUserLimits(userId){
-  const form=document.getElementById('user-limits-form');if(!userId){form.style.display='none';return;}form.style.display='block';
-  const{data}=await sb.from('user_restrictions').select('planet_limit,deco_limit,planet_max_size,deco_max_size,infinite_planets,infinite_decos').eq('user_id',userId).maybeSingle();
-  const pInf=data?.infinite_planets===true,dInf=data?.infinite_decos===true;
-  const plEl=document.getElementById('ul-planet-limit'),dlEl=document.getElementById('ul-deco-limit');
-  const piEl=document.getElementById('ul-planet-inf'),diEl=document.getElementById('ul-deco-inf');
-  if(plEl){plEl.value=data?.planet_limit!=null?data.planet_limit:'';plEl.disabled=pInf;}
-  if(piEl){piEl.checked=pInf;piEl.onchange=function(){if(plEl)plEl.disabled=this.checked;};}
-  if(dlEl){dlEl.value=data?.deco_limit!=null?data.deco_limit:'';dlEl.disabled=dInf;}
-  if(diEl){diEl.checked=dInf;diEl.onchange=function(){if(dlEl)dlEl.disabled=this.checked;};}
-  const pmsEl=document.getElementById('ul-planet-max-size'),dmsEl=document.getElementById('ul-deco-max-size');
-  if(pmsEl)pmsEl.value=data?.planet_max_size!=null?data.planet_max_size:'';
-  if(dmsEl)dmsEl.value=data?.deco_max_size!=null?data.deco_max_size:'';
-}
-async function saveUserLimits(){
-  const userId=document.getElementById('user-limit-select').value;if(!userId)return;
-  const pl=document.getElementById('ul-planet-limit').value,dl=document.getElementById('ul-deco-limit').value;
-  const pms=document.getElementById('ul-planet-max-size').value,dms=document.getElementById('ul-deco-max-size').value;
-  const pInf=document.getElementById('ul-planet-inf').checked,dInf=document.getElementById('ul-deco-inf').checked;
-  const{error}=await sb.from('user_restrictions').upsert({user_id:userId,planet_limit:(!pInf&&pl!=='')?parseInt(pl):null,deco_limit:(!dInf&&dl!=='')?parseInt(dl):null,planet_max_size:pms!==''?parseInt(pms):null,deco_max_size:dms!==''?parseInt(dms):null,infinite_planets:pInf,infinite_decos:dInf},{onConflict:'user_id'});
-  if(error){showToast('❌ '+error.message);return;}
-  showToast('✅ Индивидуальные лимиты сохранены');await loadUserLimitsList();
-}
+async function loadUserLimits(userId){const form=document.getElementById('user-limits-form');if(!userId){form.style.display='none';return;}form.style.display='block';const{data}=await sb.from('user_restrictions').select('planet_limit,deco_limit,planet_max_size,deco_max_size,infinite_planets,infinite_decos').eq('user_id',userId).maybeSingle();const pInf=data?.infinite_planets===true,dInf=data?.infinite_decos===true;const plEl=document.getElementById('ul-planet-limit'),dlEl=document.getElementById('ul-deco-limit');const piEl=document.getElementById('ul-planet-inf'),diEl=document.getElementById('ul-deco-inf');if(plEl){plEl.value=data?.planet_limit!=null?data.planet_limit:'';plEl.disabled=pInf;}if(piEl){piEl.checked=pInf;piEl.onchange=function(){if(plEl)plEl.disabled=this.checked;};}if(dlEl){dlEl.value=data?.deco_limit!=null?data.deco_limit:'';dlEl.disabled=dInf;}if(diEl){diEl.checked=dInf;diEl.onchange=function(){if(dlEl)dlEl.disabled=this.checked;};}const pmsEl=document.getElementById('ul-planet-max-size'),dmsEl=document.getElementById('ul-deco-max-size');if(pmsEl)pmsEl.value=data?.planet_max_size!=null?data.planet_max_size:'';if(dmsEl)dmsEl.value=data?.deco_max_size!=null?data.deco_max_size:'';}
+async function saveUserLimits(){const userId=document.getElementById('user-limit-select').value;if(!userId)return;const pl=document.getElementById('ul-planet-limit').value,dl=document.getElementById('ul-deco-limit').value;const pms=document.getElementById('ul-planet-max-size').value,dms=document.getElementById('ul-deco-max-size').value;const pInf=document.getElementById('ul-planet-inf').checked,dInf=document.getElementById('ul-deco-inf').checked;const{error}=await sb.from('user_restrictions').upsert({user_id:userId,planet_limit:(!pInf&&pl!=='')?parseInt(pl):null,deco_limit:(!dInf&&dl!=='')?parseInt(dl):null,planet_max_size:pms!==''?parseInt(pms):null,deco_max_size:dms!==''?parseInt(dms):null,infinite_planets:pInf,infinite_decos:dInf},{onConflict:'user_id'});if(error){showToast('❌ '+error.message);return;}showToast('✅ Индивидуальные лимиты сохранены');await loadUserLimitsList();}
 async function resetUserLimits(){const userId=document.getElementById('user-limit-select').value;if(!userId)return;await sb.from('user_restrictions').update({planet_limit:null,deco_limit:null,planet_max_size:null,deco_max_size:null,infinite_planets:false,infinite_decos:false}).eq('user_id',userId);loadUserLimits(userId);showToast('🔄 Индивидуальные лимиты сброшены');await loadUserLimitsList();}
-async function loadUserLimitsList(){
-  const el=document.getElementById('user-limits-list');if(!el)return;
-  const{data:restrictions}=await sb.from('user_restrictions').select('user_id,planet_limit,deco_limit,infinite_planets,infinite_decos').or('planet_limit.not.is.null,deco_limit.not.is.null,infinite_planets.eq.true,infinite_decos.eq.true');
-  if(!restrictions?.length){el.innerHTML='<span style="font-size:11px;color:var(--text-dim)">Нет пользователей с индивидуальными лимитами</span>';return;}
-  const ids=restrictions.map(r=>r.user_id);
-  const{data:profiles}=await sb.from('profiles').select('id,username,role').in('id',ids);
-  const pm={};(profiles||[]).forEach(p=>{pm[p.id]=p;});
-  el.innerHTML='<table class="user-limits-table"><thead><tr><th>Пользователь</th><th>🪐</th><th>🌠</th><th></th></tr></thead><tbody>'+restrictions.map(r=>{const p=pm[r.user_id]||{username:'?'};const pL=r.infinite_planets?'<span class="ult-inf">♾️</span>':(r.planet_limit!=null?'<span class="ult-badge">'+r.planet_limit+'</span>':'—');const dL=r.infinite_decos?'<span class="ult-inf">♾️</span>':(r.deco_limit!=null?'<span class="ult-badge">'+r.deco_limit+'</span>':'—');return'<tr><td style="color:var(--glow-cyan)">@'+escHtml(p.username)+'</td><td>'+pL+'</td><td>'+dL+'</td><td><button class="btn small" onclick="quickEditUserLimits(\''+r.user_id+'\',\''+escHtml(p.username)+'\')">✏️</button></td></tr>';}).join('')+'</tbody></table>';
-}
-async function quickEditUserLimits(userId,username){const sel=document.getElementById('user-limit-select');if(sel)sel.value=userId;await loadUserLimits(userId);document.getElementById('user-limits-form').style.display='block';showToast('✏️ Редактируешь @'+username);}
+async function loadUserLimitsList(){const el=document.getElementById('user-limits-list');if(!el)return;const{data:restrictions}=await sb.from('user_restrictions').select('user_id,planet_limit,deco_limit,infinite_planets,infinite_decos').or('planet_limit.not.is.null,deco_limit.not.is.null,infinite_planets.eq.true,infinite_decos.eq.true');if(!restrictions?.length){el.innerHTML='<span style="font-size:11px;color:var(--text-dim)">Нет пользователей с инд. лимитами</span>';return;}const ids=restrictions.map(r=>r.user_id);const{data:profiles}=await sb.from('profiles').select('id,username,role').in('id',ids);const pm={};(profiles||[]).forEach(p=>{pm[p.id]=p;});el.innerHTML='<table class="user-limits-table"><thead><tr><th>Пользователь</th><th>🪐</th><th>🌠</th><th></th></tr></thead><tbody>'+restrictions.map(r=>{const p=pm[r.user_id]||{username:'?'};const pL=r.infinite_planets?'<span class="ult-inf">♾️</span>':(r.planet_limit!=null?'<span class="ult-badge">'+r.planet_limit+'</span>':'—');const dL=r.infinite_decos?'<span class="ult-inf">♾️</span>':(r.deco_limit!=null?'<span class="ult-badge">'+r.deco_limit+'</span>':'—');return'<tr><td style="color:var(--glow-cyan)">@'+escHtml(p.username)+'</td><td>'+pL+'</td><td>'+dL+'</td><td><button class="btn small" onclick="quickEditUserLimits(\''+r.user_id+'\',\''+escHtml(p.username)+'\')">✏️</button></td></tr>';}).join('')+'</tbody></table>';}
+  async function quickEditUserLimits(userId,username){const sel=document.getElementById('user-limit-select');if(sel)sel.value=userId;await loadUserLimits(userId);document.getElementById('user-limits-form').style.display='block';showToast('✏️ Редактируешь @'+username);}
 function switchBgTab(tab){selectedBgTab=tab;['none','image','video'].forEach(t=>{document.getElementById('bgtab-'+t).classList.toggle('active',t===tab);document.getElementById('bg-content-'+t).style.display=t===tab?'':'none';});}
 async function handleBgFile(input,type){if(!input.files[0])return;const file=input.files[0];const errEl=document.getElementById('bg-error');errEl.textContent='';if(type==='image'){const data=await compressImage(file,1920,0.85);bgFileData.image=data;const prev=document.getElementById('bg-image-preview');prev.src=data;prev.style.display='block';document.getElementById('bg-image-upload-text').innerHTML='✅ ~'+Math.round(data.length*0.75/1024)+'KB · Нажми снова';}else{if(file.size>50*1024*1024){errEl.textContent='Видео слишком большое (макс 50MB)';return;}bgFileData.video=file;document.getElementById('bg-video-upload-text').innerHTML='✅ '+(file.size/1024/1024).toFixed(1)+'MB · '+escHtml(file.name);}}
 async function saveBackground(){const errEl=document.getElementById('bg-error');errEl.textContent='';if(selectedBgTab==='none'){await sb.from('site_settings').upsert([{key:'bg_type',value:'none'},{key:'bg_url',value:''}],{onConflict:'key'});showToast('✅ Фон выключен');await loadBackground();return;}if(selectedBgTab==='image'){if(!bgFileData.image){errEl.textContent='Сначала выбери картинку';return;}showToast('⏳ Загружаем...');try{const res=await fetch(bgFileData.image);const blob=await res.blob();const path='bg-'+Date.now()+'.webp';const{error}=await sb.storage.from('background').upload(path,blob,{contentType:'image/webp',upsert:true});if(error)throw error;const url=sb.storage.from('background').getPublicUrl(path).data.publicUrl;await sb.from('site_settings').upsert([{key:'bg_type',value:'image'},{key:'bg_url',value:url}],{onConflict:'key'});showToast('✅ Фон-картинка применён!');await loadBackground();}catch(e){errEl.textContent=e.message;}}else if(selectedBgTab==='video'){if(!bgFileData.video){errEl.textContent='Сначала выбери видео';return;}showToast('⏳ Загружаем видео...');document.getElementById('bg-video-progress').style.display='block';try{const file=bgFileData.video;const path='bg-'+Date.now()+'.'+file.name.split('.').pop();const{error}=await sb.storage.from('background').upload(path,file,{contentType:file.type,upsert:true});if(error)throw error;document.getElementById('bg-video-progress-bar').style.width='100%';const url=sb.storage.from('background').getPublicUrl(path).data.publicUrl;await sb.from('site_settings').upsert([{key:'bg_type',value:'video'},{key:'bg_url',value:url}],{onConflict:'key'});showToast('✅ Видео-фон применён!');await loadBackground();}catch(e){errEl.textContent=e.message;}document.getElementById('bg-video-progress').style.display='none';}}
@@ -928,38 +1386,20 @@ async function handleBgMusicFile(input){if(!input.files[0])return;const file=inp
 async function saveBgMusic(){const errEl=document.getElementById('bg-music-error');errEl.textContent='';if(!bgFileData.music){errEl.textContent='Сначала выбери файл';return;}showToast('⏳ Загружаем музыку...');document.getElementById('bg-music-progress').style.display='block';try{const file=bgFileData.music;const path='music-'+Date.now()+'.'+file.name.split('.').pop();const{error}=await sb.storage.from('background').upload(path,file,{contentType:file.type,upsert:true});if(error)throw error;document.getElementById('bg-music-progress-bar').style.width='100%';const url=sb.storage.from('background').getPublicUrl(path).data.publicUrl;await sb.from('site_settings').upsert([{key:'bg_music_url',value:url},{key:'bg_music_enabled',value:'true'}],{onConflict:'key'});showToast('🎵 Музыка включена!');await loadBgMusic();}catch(e){errEl.textContent=e.message;}document.getElementById('bg-music-progress').style.display='none';}
 async function stopBgMusic(){await sb.from('site_settings').upsert([{key:'bg_music_enabled',value:'false'}],{onConflict:'key'});if(bgMusicAudio){bgMusicAudio.pause();bgMusicAudio=null;}bgMusicUrl='';bgMusicActive=false;document.getElementById('music-volume-section').style.display='none';showToast('⛔ Музыка выключена');await loadBgMusic();}
 async function removeCurrentMusic(){if(!confirm('Удалить текущую музыку?'))return;const{data}=await sb.from('site_settings').select('value').eq('key','bg_music_url').maybeSingle();if(data?.value){try{const path=data.value.split('/background/')[1]?.split('?')[0];if(path)await sb.storage.from('background').remove([decodeURIComponent(path)]);}catch(e){}}await sb.from('site_settings').upsert([{key:'bg_music_url',value:''},{key:'bg_music_enabled',value:'false'}],{onConflict:'key'});if(bgMusicAudio){bgMusicAudio.pause();bgMusicAudio=null;}bgMusicUrl='';bgMusicActive=false;document.getElementById('music-volume-section').style.display='none';showToast('🗑️ Музыка удалена');await loadBgMusic();}
-async function loadBgMusic(){
-  const{data}=await sb.from('site_settings').select('*').in('key',['bg_music_url','bg_music_enabled']);
-  const s={};(data||[]).forEach(r=>{s[r.key]=r.value;});
-  const infoEl=document.getElementById('bg-music-current');
-  if(s.bg_music_enabled==='true'&&s.bg_music_url){
-    if(infoEl)infoEl.innerHTML='▶️ Включена: <span style="font-size:10px;color:var(--text-dim)">'+escHtml((s.bg_music_url||'').split('/').pop().slice(0,40))+'</span>';
-    bgMusicActive=true;
-    document.getElementById('music-volume-section').style.display='';
-    applyBgMusic(s.bg_music_url);
-    initMusicVolumeSlider();
-  }else{
-    if(infoEl)infoEl.textContent='Музыка выключена';
-    if(bgMusicAudio){bgMusicAudio.pause();bgMusicAudio=null;}bgMusicUrl='';bgMusicActive=false;
-    document.getElementById('music-volume-section').style.display='none';
-  }
-}
-function applyBgMusic(url){
-  if(bgMusicUrl===url)return;bgMusicUrl=url;
-  if(bgMusicAudio){bgMusicAudio.pause();bgMusicAudio=null;}
-  bgMusicAudio=new Audio(url);bgMusicAudio.loop=true;bgMusicAudio.volume=bgMusicVolume;
-  bgMusicAudio.play().catch(()=>{const h=()=>{if(bgMusicAudio)bgMusicAudio.play().catch(()=>{});document.removeEventListener('click',h);document.removeEventListener('touchstart',h);};document.addEventListener('click',h,{once:true});document.addEventListener('touchstart',h,{once:true});});
-}
+async function loadBgMusic(){const{data}=await sb.from('site_settings').select('*').in('key',['bg_music_url','bg_music_enabled']);const s={};(data||[]).forEach(r=>{s[r.key]=r.value;});const infoEl=document.getElementById('bg-music-current');if(s.bg_music_enabled==='true'&&s.bg_music_url){if(infoEl)infoEl.innerHTML='▶️ Включена: <span style="font-size:10px;color:var(--text-dim)">'+escHtml((s.bg_music_url||'').split('/').pop().slice(0,40))+'</span>';bgMusicActive=true;document.getElementById('music-volume-section').style.display='';applyBgMusic(s.bg_music_url);initMusicVolumeSlider();}else{if(infoEl)infoEl.textContent='Музыка выключена';if(bgMusicAudio){bgMusicAudio.pause();bgMusicAudio=null;}bgMusicUrl='';bgMusicActive=false;document.getElementById('music-volume-section').style.display='none';}}
+function applyBgMusic(url){if(bgMusicUrl===url)return;bgMusicUrl=url;if(bgMusicAudio){bgMusicAudio.pause();bgMusicAudio=null;}bgMusicAudio=new Audio(url);bgMusicAudio.loop=true;bgMusicAudio.volume=bgMusicVolume;bgMusicAudio.play().catch(()=>{const h=()=>{if(bgMusicAudio)bgMusicAudio.play().catch(()=>{});document.removeEventListener('click',h);document.removeEventListener('touchstart',h);};document.addEventListener('click',h,{once:true});document.addEventListener('touchstart',h,{once:true});});}
 async function handleFaviconFile(input){if(!input.files[0])return;const file=input.files[0];const errEl=document.getElementById('favicon-error');errEl.textContent='';if(file.size>2*1024*1024){errEl.textContent='Файл слишком большой (макс 2MB)';return;}const reader=new FileReader();reader.onload=e=>{bgFileData.favicon=e.target.result;const prev=document.getElementById('favicon-preview');prev.src=e.target.result;prev.style.display='block';document.getElementById('favicon-upload-text').innerHTML='✅ '+escHtml(file.name);};reader.readAsDataURL(file);}
 async function saveFavicon(){const errEl=document.getElementById('favicon-error');errEl.textContent='';if(!bgFileData.favicon){errEl.textContent='Сначала выбери файл иконки';return;}showToast('⏳ Загружаем иконку...');try{const res=await fetch(bgFileData.favicon);const blob=await res.blob();const ext=blob.type.includes('svg')?'svg':blob.type.includes('png')?'png':'ico';const path='favicon-'+Date.now()+'.'+ext;const{error}=await sb.storage.from('background').upload(path,blob,{contentType:blob.type,upsert:true});if(error)throw error;const url=sb.storage.from('background').getPublicUrl(path).data.publicUrl;await sb.from('site_settings').upsert([{key:'site_favicon',value:url}],{onConflict:'key'});applyFavicon(url);showToast('✅ Иконка применена!');await loadFaviconInfo();}catch(e){errEl.textContent=e.message;}}
 async function removeCurrentFavicon(){if(!confirm('Удалить иконку сайта?'))return;const{data}=await sb.from('site_settings').select('value').eq('key','site_favicon').maybeSingle();if(data?.value){try{const path=data.value.split('/background/')[1]?.split('?')[0];if(path)await sb.storage.from('background').remove([decodeURIComponent(path)]);}catch(e){}}await sb.from('site_settings').upsert([{key:'site_favicon',value:''}],{onConflict:'key'});applyFavicon('');showToast('🗑️ Иконка удалена');await loadFaviconInfo();}
 function applyFavicon(url){document.getElementById('site-favicon').href=url||"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪐</text></svg>";}
 async function loadFaviconInfo(){const{data}=await sb.from('site_settings').select('value').eq('key','site_favicon').maybeSingle();const infoEl=document.getElementById('favicon-current');if(data?.value){if(infoEl)infoEl.innerHTML='✅ Установлена: <span style="font-size:10px;color:var(--text-dim)">'+escHtml(data.value.split('/').pop().slice(0,40))+'</span>';applyFavicon(data.value);}else{if(infoEl)infoEl.textContent='Иконка не установлена (используется 🪐)';}}
+</script>
+<script>
 function updateChatUI(){const loggedIn=!!currentUser;const commBtn=document.getElementById('comm-btn');if(commBtn)commBtn.style.display=loggedIn?'flex':'none';const supportTab=document.getElementById('ptab-support');if(supportTab)supportTab.style.display=loggedIn?'':'none';if(!loggedIn&&currentPanelTab==='support')currentPanelTab='chat';if(!loggedIn&&commPanelOpen){commPanelOpen=false;document.getElementById('comm-panel').classList.remove('open');}}
 function toggleCommPanel(){if(!currentUser){openModal('auth-modal');return;}commPanelOpen=!commPanelOpen;const panel=document.getElementById('comm-panel');if(commPanelOpen){panel.classList.add('open');const b=document.getElementById('comm-badge');b.style.display='none';b.textContent='';switchPanelTab(currentPanelTab);loadMyTickets();renderChat();setTimeout(()=>{const cm=document.getElementById('chat-messages');if(cm)cm.scrollTop=cm.scrollHeight;},80);}else panel.classList.remove('open');}
 function switchPanelTab(tab){if(tab==='support'&&!currentUser)tab='chat';currentPanelTab=tab;document.getElementById('panel-chat').style.display=tab==='chat'?'flex':'none';document.getElementById('panel-support').style.display=tab==='support'?'flex':'none';document.getElementById('ptab-chat').classList.toggle('active',tab==='chat');document.getElementById('ptab-support').classList.toggle('active',tab==='support');if(tab==='support'&&currentUser)loadMyTickets();if(tab==='chat'){renderChat();setTimeout(()=>{const cm=document.getElementById('chat-messages');if(cm)cm.scrollTop=cm.scrollHeight;},80);}}
 async function initChat(){if(!currentUser)return;const{data}=await sb.from('chat_messages').select('*').order('created_at',{ascending:true}).limit(60);chatMessages=data||[];if(chatChannel){try{chatChannel.unsubscribe();}catch(e){}}chatChannel=sb.channel('chat-v9').on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},payload=>{if(!chatMessages.find(m=>m.id===payload.new.id)){chatMessages.push(payload.new);if(chatMessages.length>100)chatMessages.shift();if(commPanelOpen&&currentPanelTab==='chat')renderChat();}if(!commPanelOpen||currentPanelTab!=='chat'){const b=document.getElementById('comm-badge');b.style.cssText='display:flex;align-items:center;justify-content:center';b.textContent='!';}}).on('postgres_changes',{event:'DELETE',schema:'public',table:'chat_messages'},()=>{sb.from('chat_messages').select('*').order('created_at',{ascending:true}).limit(60).then(({data})=>{chatMessages=data||[];if(commPanelOpen&&currentPanelTab==='chat')renderChat();});}).subscribe();if(chatAutoTimer)clearInterval(chatAutoTimer);chatAutoTimer=setInterval(async()=>{if(!currentUser)return;const{data:fresh}=await sb.from('chat_messages').select('*').order('created_at',{ascending:true}).limit(60);if(!fresh)return;if(fresh.map(m=>m.id).join(',')!==chatMessages.map(m=>m.id).join(',')){chatMessages=fresh;if(commPanelOpen&&currentPanelTab==='chat')renderChat();if(!commPanelOpen||currentPanelTab!=='chat'){const b=document.getElementById('comm-badge');b.style.cssText='display:flex;align-items:center;justify-content:center';b.textContent='!';}}},2000);}
-function renderChat(){const el=document.getElementById('chat-messages');if(!el)return;const isAdmin=currentProfile?.role==='admin'&&!testRestrictions;const wasBottom=el.scrollHeight-el.scrollTop-el.clientHeight<80;el.innerHTML=chatMessages.map(m=>{const mine=m.user_id===currentUser?.id,canDel=mine||isAdmin;const time=new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});const lv=m.boosty_level?'<span class="c-level">'+escHtml(m.boosty_level)+'</span>':'';const del=canDel?'<button class="c-del" onclick="deleteChatMsg(\''+m.id+'\')">✕</button>':'';return'<div class="chat-msg '+(mine?'mine':'other')+'">'+((!mine)?'<div class="c-header"><span class="c-name">'+escHtml(m.username)+'</span>'+lv+'</div>':'')+del+'<div class="c-text">'+escHtml(m.message)+'</div><div class="c-time">'+time+'</div></div>';}).join('');if(wasBottom)el.scrollTop=el.scrollHeight;}
+  function renderChat(){const el=document.getElementById('chat-messages');if(!el)return;const isAdmin=currentProfile?.role==='admin'&&!testRestrictions;const wasBottom=el.scrollHeight-el.scrollTop-el.clientHeight<80;el.innerHTML=chatMessages.map(m=>{const mine=m.user_id===currentUser?.id,canDel=mine||isAdmin;const time=new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});const lv=m.boosty_level?'<span class="c-level">'+escHtml(m.boosty_level)+'</span>':'';const del=canDel?'<button class="c-del" onclick="deleteChatMsg(\''+m.id+'\')">✕</button>':'';return'<div class="chat-msg '+(mine?'mine':'other')+'">'+((!mine)?'<div class="c-header"><span class="c-name">'+escHtml(m.username)+'</span>'+lv+'</div>':'')+del+'<div class="c-text">'+escHtml(m.message)+'</div><div class="c-time">'+time+'</div></div>';}).join('');if(wasBottom)el.scrollTop=el.scrollHeight;}
 async function deleteChatMsg(id){await sb.from('chat_messages').delete().eq('id',id);chatMessages=chatMessages.filter(m=>m.id!==id);renderChat();}
 async function sendChat(){if(!currentUser){showToast('❌ Войди чтобы писать');return;}const r=getR();if(!getBool(r.can_chat)&&!(currentProfile?.role==='admin'&&!testRestrictions)){showToast('❌ Чат ограничен');return;}const input=document.getElementById('chat-input'),msg=input.value.trim();if(!msg)return;input.value='';const{error}=await sb.from('chat_messages').insert({user_id:currentUser.id,username:currentProfile.username,boosty_level:currentProfile.boosty_level||null,message:msg});if(error)showToast('Ошибка: '+error.message);}
 document.getElementById('chat-input').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat();});
@@ -969,85 +1409,16 @@ async function handleSoundFile(input,type){if(!input.files[0])return;const file=
 async function uploadSoundFile(type,userId){const key=type==='planet'?'planet':'edit';const file=soundFileData[key];if(!file)return null;const ext=file.name.split('.').pop()||'mp3';const path=userId+'/sound-'+Date.now()+'.'+ext;const{error}=await sb.storage.from('planets').upload(path,file,{contentType:file.type,upsert:true});if(error)throw error;return sb.storage.from('planets').getPublicUrl(path).data.publicUrl;}
 </script>
 <script>
-function startPlacing(type){
-  if(type==='planet'&&!fileData.planet){document.getElementById('planet-error').textContent='Сначала выбери картинку';return;}
-  if(type==='deco'&&!fileData.deco){document.getElementById('deco-error').textContent='Сначала выбери картинку';return;}
-  const isAdmin=currentProfile?.role==='admin'&&!testRestrictions;
-  const pMin=getUserPlanetMinSize(),pMax=getUserPlanetMaxSize(),dMin=getUserDecoMinSize(),dMax=getUserDecoMaxSize();
-  if(type==='planet'){const sz=parseInt(document.getElementById('planet-size').value);const orb=getOrbitValue('planet-orbit','planet-orbit-num');const spd=parseInt(document.getElementById('planet-orbit-speed').value)||5;placingData={size:isNaN(sz)?80:Math.max(pMin,Math.min(pMax,sz)),orbit_radius:orb,orbit_speed:spd,comment:document.getElementById('planet-comment').value.trim(),animation:document.getElementById('planet-anim').value,glow_color:document.getElementById('planet-glow-color').value,sound_volume:parseFloat(document.getElementById('planet-sound-volume').value)||0.7,forUserId:isAdmin?(document.getElementById('planet-for-user').value||null):null};}
-  else{const sz=parseInt(document.getElementById('deco-size').value);const orb=getOrbitValue('deco-orbit','deco-orbit-num');const spd=parseInt(document.getElementById('deco-orbit-speed').value)||5;placingData={size:isNaN(sz)?80:Math.max(dMin,Math.min(dMax,sz)),orbit_radius:orb,orbit_speed:spd,name:document.getElementById('deco-name').value.trim(),animation:document.getElementById('deco-anim').value,glow_color:document.getElementById('deco-glow-color').value,forUserId:isAdmin?(document.getElementById('deco-for-user').value||null):null};}
-  placingMode=type;closeModal('add-content-modal');document.getElementById('placing-hint').style.display='block';canvas.style.cursor='crosshair';
-}
+function startPlacing(type){if(type==='planet'&&!fileData.planet){document.getElementById('planet-error').textContent='Сначала выбери картинку';return;}if(type==='deco'&&!fileData.deco){document.getElementById('deco-error').textContent='Сначала выбери картинку';return;}const isAdmin=currentProfile?.role==='admin'&&!testRestrictions;const pMin=getUserPlanetMinSize(),pMax=getUserPlanetMaxSize(),dMin=getUserDecoMinSize(),dMax=getUserDecoMaxSize();if(type==='planet'){const sz=parseInt(document.getElementById('planet-size').value);const orb=getOrbitValue('planet-orbit','planet-orbit-num');const spd=parseInt(document.getElementById('planet-orbit-speed').value)||5;placingData={size:isNaN(sz)?80:Math.max(pMin,Math.min(pMax,sz)),orbit_radius:orb,orbit_speed:spd,comment:document.getElementById('planet-comment').value.trim(),animation:document.getElementById('planet-anim').value,glow_color:document.getElementById('planet-glow-color').value,sound_volume:parseFloat(document.getElementById('planet-sound-volume').value)||0.7,forUserId:isAdmin?(document.getElementById('planet-for-user').value||null):null};}else{const sz=parseInt(document.getElementById('deco-size').value);const orb=getOrbitValue('deco-orbit','deco-orbit-num');const spd=parseInt(document.getElementById('deco-orbit-speed').value)||5;placingData={size:isNaN(sz)?80:Math.max(dMin,Math.min(dMax,sz)),orbit_radius:orb,orbit_speed:spd,name:document.getElementById('deco-name').value.trim(),animation:document.getElementById('deco-anim').value,glow_color:document.getElementById('deco-glow-color').value,forUserId:isAdmin?(document.getElementById('deco-for-user').value||null):null};}placingMode=type;closeModal('add-content-modal');document.getElementById('placing-hint').style.display='block';canvas.style.cursor='crosshair';}
 function cancelPlacing(){placingMode=null;document.getElementById('placing-hint').style.display='none';canvas.style.cursor='grab';}
-async function handlePlaceClick(clientX,clientY){
-  if(!placingMode)return;
-  const type=placingMode,data={...placingData},x=clientX-cam.x,y=clientY-cam.y;cancelPlacing();
-  const isSuperAdmin=currentProfile?.role==='admin'&&!testRestrictions;const r=getR();
-  if(type==='planet'&&!isSuperAdmin&&!getBool(r.can_upload_planet)){showToast('❌ Загрузка планет ограничена');return;}
-  if(type==='deco'&&!isSuperAdmin&&!getBool(r.can_upload_deco)){showToast('❌ Загрузка декораций ограничена');return;}
-  showToast('⏳ Загружаем...');
-  try{
-    let ownerId=currentUser.id,ownerUsername=currentProfile.username;
-    const placingForOther=isSuperAdmin&&data.forUserId&&data.forUserId!=='';
-    if(placingForOther){const found=usersCache.find(u=>u.id===data.forUserId);if(found){ownerId=found.id;ownerUsername=found.username;}}
-    if(type==='planet'){
-      if(!placingForOther){const ownerRestr=await getRestrictionsForUser(ownerId);const{count:pc,error:ce}=await sb.from('planets').select('*',{count:'exact',head:true}).eq('user_id',ownerId);if(ce){showToast('❌ Ошибка проверки лимита');return;}if(isPlanetLimitReachedFor(pc||0,ownerId,ownerRestr)){const isOA=ownerId===currentUser.id?(currentProfile?.role==='admin'):(usersCache.find(u=>u.id===ownerId)?.role==='admin');const lim=ownerRestr.planet_limit!=null?ownerRestr.planet_limit:(isOA?siteParams.planetLimitAdmin:siteParams.planetLimitBooster);showToast('❌ Лимит планет ('+lim+')');return;}}
-      const imageUrl=await uploadToStorage('planets',fileData.planet,ownerId);let soundUrl=null;if(soundFileData.planet){try{soundUrl=await uploadSoundFile('planet',ownerId);}catch(e){}}
-      const{error:dbError}=await sb.from('planets').insert({user_id:ownerId,username:ownerUsername,image_url:imageUrl,size:data.size,orbit_radius:data.orbit_radius||0,orbit_speed:data.orbit_speed||5,x_pos:x,y_pos:y,sound_url:soundUrl,sound_volume:data.sound_volume||0.7,comment:data.comment||null,animation:data.animation||'float',glow_color:data.glow_color||'#22d3ee'});
-      if(dbError){showToast('❌ '+dbError.message);return;}
-      fileData.planet=null;soundFileData.planet=null;document.getElementById('planet-upload-preview').style.display='none';document.getElementById('planet-upload-text').innerHTML='📁 Нажми или перетащи<br><span style="font-size:10px">PNG, JPG, GIF до 5MB</span>';document.getElementById('planet-sound-upload-text').innerHTML='🎵 Нажми чтобы выбрать звук<br><span style="font-size:10px">MP3, OGG, WAV до 5MB</span>';document.getElementById('planet-orbit').value=0;document.getElementById('planet-orbit-num').value=0;document.getElementById('orbit-val').textContent='0';document.getElementById('planet-orbit-speed').value=5;document.getElementById('orbit-speed-val').textContent='5';showToast('🚀 Планета размещена!');
-    }else{
-      if(!placingForOther){const ownerRestr=await getRestrictionsForUser(ownerId);const{count:dc,error:ce}=await sb.from('decorations').select('*',{count:'exact',head:true}).eq('user_id',ownerId);if(ce){showToast('❌ Ошибка проверки лимита');return;}if(isDecoLimitReachedFor(dc||0,ownerId,ownerRestr)){const isOA=ownerId===currentUser.id?(currentProfile?.role==='admin'):(usersCache.find(u=>u.id===ownerId)?.role==='admin');const lim=ownerRestr.deco_limit!=null?ownerRestr.deco_limit:(isOA?siteParams.decoLimitAdmin:siteParams.decoLimitBooster);showToast('❌ Лимит декораций ('+lim+')');return;}}
-      const imageUrl=await uploadToStorage('decorations',fileData.deco,ownerId);
-      const{error}=await sb.from('decorations').insert({user_id:ownerId,image_url:imageUrl,name:data.name||null,orbit_radius:data.orbit_radius||0,orbit_speed:data.orbit_speed||5,x_pos:x,y_pos:y,size:data.size,animation:data.animation||'float',glow_color:data.glow_color||'#ffffff'});
-      if(error){showToast('❌ '+error.message);return;}
-      fileData.deco=null;document.getElementById('deco-upload-preview').style.display='none';document.getElementById('deco-upload-text').innerHTML='📁 Нажми или перетащи<br><span style="font-size:10px">Сожмётся автоматически</span>';document.getElementById('deco-orbit').value=0;document.getElementById('deco-orbit-num').value=0;document.getElementById('deco-orbit-val').textContent='0';document.getElementById('deco-orbit-speed').value=5;document.getElementById('deco-orbit-speed-val').textContent='5';showToast('🌠 Декорация размещена!');
-    }
-    await new Promise(r=>setTimeout(r,500));await loadPlanets();checkAddContentLimit();
-  }catch(err){showToast('❌ '+err.message);console.error(err);}
-}
+async function handlePlaceClick(clientX,clientY){if(!placingMode)return;const type=placingMode,data={...placingData},x=clientX-cam.x,y=clientY-cam.y;cancelPlacing();const isSuperAdmin=currentProfile?.role==='admin'&&!testRestrictions;const r=getR();if(type==='planet'&&!isSuperAdmin&&!getBool(r.can_upload_planet)){showToast('❌ Загрузка планет ограничена');return;}if(type==='deco'&&!isSuperAdmin&&!getBool(r.can_upload_deco)){showToast('❌ Загрузка декораций ограничена');return;}showToast('⏳ Загружаем...');try{let ownerId=currentUser.id,ownerUsername=currentProfile.username;const placingForOther=isSuperAdmin&&data.forUserId&&data.forUserId!=='';if(placingForOther){const found=usersCache.find(u=>u.id===data.forUserId);if(found){ownerId=found.id;ownerUsername=found.username;}}if(type==='planet'){if(!placingForOther){const ownerRestr=await getRestrictionsForUser(ownerId);const{count:pc,error:ce}=await sb.from('planets').select('*',{count:'exact',head:true}).eq('user_id',ownerId);if(ce){showToast('❌ Ошибка проверки лимита');return;}if(isPlanetLimitReachedFor(pc||0,ownerId,ownerRestr)){const isOA=ownerId===currentUser.id?(currentProfile?.role==='admin'):(usersCache.find(u=>u.id===ownerId)?.role==='admin');const lim=ownerRestr.planet_limit!=null?ownerRestr.planet_limit:(isOA?siteParams.planetLimitAdmin:siteParams.planetLimitBooster);showToast('❌ Лимит планет ('+lim+')');return;}}const imageUrl=await uploadToStorage('planets',fileData.planet,ownerId);let soundUrl=null;if(soundFileData.planet){try{soundUrl=await uploadSoundFile('planet',ownerId);}catch(e){}}const{error:dbError}=await sb.from('planets').insert({user_id:ownerId,username:ownerUsername,image_url:imageUrl,size:data.size,orbit_radius:data.orbit_radius||0,orbit_speed:data.orbit_speed||5,x_pos:x,y_pos:y,sound_url:soundUrl,sound_volume:data.sound_volume||0.7,comment:data.comment||null,animation:data.animation||'float',glow_color:data.glow_color||'#22d3ee'});if(dbError){showToast('❌ '+dbError.message);return;}fileData.planet=null;soundFileData.planet=null;document.getElementById('planet-upload-preview').style.display='none';document.getElementById('planet-upload-text').innerHTML='📁 Нажми или перетащи<br><span style="font-size:10px">PNG, JPG, GIF до 5MB</span>';document.getElementById('planet-sound-upload-text').innerHTML='🎵 Нажми чтобы выбрать звук<br><span style="font-size:10px">MP3, OGG, WAV до 5MB</span>';document.getElementById('planet-orbit').value=0;document.getElementById('planet-orbit-num').value=0;document.getElementById('orbit-val').textContent='0';document.getElementById('planet-orbit-speed').value=5;document.getElementById('orbit-speed-val').textContent='5';showToast('🚀 Планета размещена!');}else{if(!placingForOther){const ownerRestr=await getRestrictionsForUser(ownerId);const{count:dc,error:ce}=await sb.from('decorations').select('*',{count:'exact',head:true}).eq('user_id',ownerId);if(ce){showToast('❌ Ошибка проверки лимита');return;}if(isDecoLimitReachedFor(dc||0,ownerId,ownerRestr)){const isOA=ownerId===currentUser.id?(currentProfile?.role==='admin'):(usersCache.find(u=>u.id===ownerId)?.role==='admin');const lim=ownerRestr.deco_limit!=null?ownerRestr.deco_limit:(isOA?siteParams.decoLimitAdmin:siteParams.decoLimitBooster);showToast('❌ Лимит декораций ('+lim+')');return;}}const imageUrl=await uploadToStorage('decorations',fileData.deco,ownerId);const{error}=await sb.from('decorations').insert({user_id:ownerId,image_url:imageUrl,name:data.name||null,orbit_radius:data.orbit_radius||0,orbit_speed:data.orbit_speed||5,x_pos:x,y_pos:y,size:data.size,animation:data.animation||'float',glow_color:data.glow_color||'#ffffff'});if(error){showToast('❌ '+error.message);return;}fileData.deco=null;document.getElementById('deco-upload-preview').style.display='none';document.getElementById('deco-upload-text').innerHTML='📁 Нажми или перетащи<br><span style="font-size:10px">Сожмётся автоматически</span>';document.getElementById('deco-orbit').value=0;document.getElementById('deco-orbit-num').value=0;document.getElementById('deco-orbit-val').textContent='0';document.getElementById('deco-orbit-speed').value=5;document.getElementById('deco-orbit-speed-val').textContent='5';showToast('🌠 Декорация размещена!');}await new Promise(r=>setTimeout(r,500));await loadPlanets();checkAddContentLimit();}catch(err){showToast('❌ '+err.message);console.error(err);}}
 const DEFAULT_RESTRICTIONS={can_upload_planet:true,can_upload_deco:true,can_chat:true,can_move_planet:true,can_delete_planet:true,can_edit_planet:true,can_move_deco:true,can_delete_deco:true,can_change_planet_image:true,can_change_planet_size:true,can_change_planet_anim:true,can_change_planet_glow:true,can_change_planet_sound:true,can_change_planet_comment:true,can_use_orbit:true,planet_limit:null,deco_limit:null,planet_max_size:null,deco_max_size:null,infinite_planets:false,infinite_decos:false};
-async function loadMyRestrictions(){
-  if(!currentUser)return;
-  try{
-    const{data:restr}=await sb.from('user_restrictions').select('*').eq('user_id',currentUser.id).maybeSingle();
-    // ИСПРАВЛЕНИЕ 2: индивидуальный лимит (planet_limit/deco_limit) всегда в приоритете над общим —
-    // и выше, и ниже общего значения. Сравнение с siteParams происходит только если индивидуальный лимит не задан (null).
-    if(restr){currentRestrictions={can_upload_planet:getBool(restr.can_upload_planet),can_upload_deco:getBool(restr.can_upload_deco),can_chat:getBool(restr.can_chat),can_move_planet:getBool(restr.can_move_planet),can_delete_planet:getBool(restr.can_delete_planet),can_edit_planet:getBool(restr.can_edit_planet),can_move_deco:getBool(restr.can_move_deco),can_delete_deco:getBool(restr.can_delete_deco),can_change_planet_image:getBool(restr.can_change_planet_image),can_change_planet_size:getBool(restr.can_change_planet_size),can_change_planet_anim:getBool(restr.can_change_planet_anim),can_change_planet_glow:getBool(restr.can_change_planet_glow),can_change_planet_sound:getBool(restr.can_change_planet_sound),can_change_planet_comment:getBool(restr.can_change_planet_comment),can_use_orbit:getBool(restr.can_use_orbit),planet_limit:restr.planet_limit!=null?restr.planet_limit:null,deco_limit:restr.deco_limit!=null?restr.deco_limit:null,planet_max_size:restr.planet_max_size!=null?restr.planet_max_size:null,deco_max_size:restr.deco_max_size!=null?restr.deco_max_size:null,infinite_planets:restr.infinite_planets===true,infinite_decos:restr.infinite_decos===true};}
-    else{currentRestrictions={...DEFAULT_RESTRICTIONS};}
-  }catch(e){currentRestrictions={...DEFAULT_RESTRICTIONS};}
-  checkAddContentLimit();renderAll();
-}
-async function onLogin(user){
-  currentUser=user;let profile=null;
-  for(let i=0;i<5;i++){const{data}=await sb.from('profiles').select('*').eq('id',user.id).single();if(data){profile=data;break;}await new Promise(r=>setTimeout(r,700));}
-  currentProfile=profile;
-  if(currentProfile?.is_banned){const banUntil=currentProfile.ban_until;if(!banUntil||new Date(banUntil)>new Date()){const reason=currentProfile.ban_reason||'Нарушение правил';const until=banUntil?'до '+new Date(banUntil).toLocaleString('ru'):'навсегда';document.getElementById('login-ban-msg').innerHTML='❄️ Заморожен <b>'+until+'</b><br>Причина: '+escHtml(reason);document.getElementById('login-ban-msg').style.display='block';await sb.auth.signOut();return;}else{await sb.from('profiles').update({is_banned:false,ban_until:null,ban_reason:null}).eq('id',user.id);currentProfile.is_banned=false;}}
-  await loadMyRestrictions();
-  updateUIForRole();updateChatUI();closeModal('auth-modal');
-  await checkMaintenance();await loadMapLimits();await loadBackground();await loadBgMusic();await loadFaviconInfo();await loadSiteParams();await initChat();
-  updatePresence();presenceTimer=setInterval(updatePresence,25000);
-}
-function onLogout(){currentUser=currentProfile=currentRestrictions=testRestrictions=null;if(presenceTimer)clearInterval(presenceTimer);if(chatAutoTimer){clearInterval(chatAutoTimer);chatAutoTimer=null;}if(chatChannel){try{chatChannel.unsubscribe();}catch(e){}chatChannel=null;}document.getElementById('test-restrictions-bar').classList.remove('visible');updateUIForRole();updateChatUI();loadSiteParams();}
-async function updatePresence(){if(!currentUser||!currentProfile)return;try{await sb.rpc('update_user_presence',{p_user_id:currentUser.id,p_username:currentProfile.username,p_online:true});}catch(e){await sb.from('user_presence').upsert({user_id:currentUser.id,username:currentProfile.username,last_seen:new Date().toISOString(),is_online:true},{onConflict:'user_id'});}}
-async function updateUIForRole(){
-  const role=currentProfile?.role||'visitor';const badge=document.getElementById('user-badge');
-  if(currentUser){badge.style.display='';const lv=currentProfile?.boosty_level?' · '+currentProfile.boosty_level:'';const ri=role==='admin'?'👑':role==='booster'?'⭐':'';badge.textContent='👤 '+(currentProfile?.username||'')+lv+(ri?' '+ri:'');}else badge.style.display='none';
-  document.getElementById('auth-btn').style.display=currentUser?'none':'';document.getElementById('logout-btn').style.display=currentUser?'':'none';
-  const isRealAdmin=role==='admin'&&!testRestrictions;const isBooster=['booster','admin'].includes(role);
-  document.getElementById('admin-toggle-btn').style.display=isRealAdmin?'':'none';
-  if(isBooster){const r=getR();const canP=getBool(r.can_upload_planet),canD=getBool(r.can_upload_deco);document.getElementById('add-content-btn').style.display=(canP||canD)?'flex':'none';if(canP||canD)checkAddContentLimit();}
-  else{document.getElementById('add-content-btn').style.display='none';}
-}
-async function checkAddContentLimit(){
-  if(!currentUser||!currentProfile)return;const btn=document.getElementById('add-content-btn');if(!btn||btn.style.display==='none')return;
-  const ownerRestr=await getRestrictionsForUser(currentUser.id);const r=getR();
-  const[{count:pCount},{count:dCount}]=await Promise.all([sb.from('planets').select('*',{count:'exact',head:true}).eq('user_id',currentUser.id),sb.from('decorations').select('*',{count:'exact',head:true}).eq('user_id',currentUser.id)]);
-  const canPlanet=getBool(r.can_upload_planet!==undefined?r.can_upload_planet:true)&&!isPlanetLimitReachedFor(pCount||0,currentUser.id,ownerRestr);
-  const canDeco=getBool(r.can_upload_deco!==undefined?r.can_upload_deco:true)&&!isDecoLimitReachedFor(dCount||0,currentUser.id,ownerRestr);
-  if(!canPlanet&&!canDeco){btn.disabled=true;btn.style.opacity='0.4';btn.title='Все лимиты исчерпаны';}
-  else{btn.disabled=false;btn.style.opacity='';btn.title='';}
-}
+async function loadMyRestrictions(){if(!currentUser)return;try{const{data:restr}=await sb.from('user_restrictions').select('*').eq('user_id',currentUser.id).maybeSingle();if(restr){currentRestrictions={can_upload_planet:getBool(restr.can_upload_planet),can_upload_deco:getBool(restr.can_upload_deco),can_chat:getBool(restr.can_chat),can_move_planet:getBool(restr.can_move_planet),can_delete_planet:getBool(restr.can_delete_planet),can_edit_planet:getBool(restr.can_edit_planet),can_move_deco:getBool(restr.can_move_deco),can_delete_deco:getBool(restr.can_delete_deco),can_change_planet_image:getBool(restr.can_change_planet_image),can_change_planet_size:getBool(restr.can_change_planet_size),can_change_planet_anim:getBool(restr.can_change_planet_anim),can_change_planet_glow:getBool(restr.can_change_planet_glow),can_change_planet_sound:getBool(restr.can_change_planet_sound),can_change_planet_comment:getBool(restr.can_change_planet_comment),can_use_orbit:getBool(restr.can_use_orbit),planet_limit:restr.planet_limit!=null?restr.planet_limit:null,deco_limit:restr.deco_limit!=null?restr.deco_limit:null,planet_max_size:restr.planet_max_size!=null?restr.planet_max_size:null,deco_max_size:restr.deco_max_size!=null?restr.deco_max_size:null,infinite_planets:restr.infinite_planets===true,infinite_decos:restr.infinite_decos===true};}else{currentRestrictions={...DEFAULT_RESTRICTIONS};}}catch(e){currentRestrictions={...DEFAULT_RESTRICTIONS};}checkAddContentLimit();renderAll();}
+async function onLogin(user){currentUser=user;let profile=null;for(let i=0;i<5;i++){const{data}=await sb.from('profiles').select('*').eq('id',user.id).single();if(data){profile=data;break;}await new Promise(r=>setTimeout(r,700));}currentProfile=profile;if(currentProfile?.is_banned){const banUntil=currentProfile.ban_until;if(!banUntil||new Date(banUntil)>new Date()){const reason=currentProfile.ban_reason||'Нарушение правил';const until=banUntil?'до '+new Date(banUntil).toLocaleString('ru'):'навсегда';document.getElementById('login-ban-msg').innerHTML='❄️ Заморожен <b>'+until+'</b><br>Причина: '+escHtml(reason);document.getElementById('login-ban-msg').style.display='block';await sb.auth.signOut();return;}else{await sb.from('profiles').update({is_banned:false,ban_until:null,ban_reason:null}).eq('id',user.id);currentProfile.is_banned=false;}}await loadMyRestrictions();if(currentProfile?.role==='admin'){document.getElementById('news-create-btn-wrap').style.display='block';document.getElementById('news-emoji-admin-panel').style.display='block';}await loadNewsEmojis();renderNewsPosts(newsPostsCache);updateUIForRole();updateChatUI();closeModal('auth-modal');await checkMaintenance();await loadMapLimits();await loadBackground();await loadBgMusic();await loadFaviconInfo();await loadSiteParams();await initChat();updatePresence();presenceTimer=setInterval(updatePresence,25000);}
+function onLogout(){currentUser=currentProfile=currentRestrictions=testRestrictions=null;if(presenceTimer)clearInterval(presenceTimer);if(chatAutoTimer){clearInterval(chatAutoTimer);chatAutoTimer=null;}if(chatChannel){try{chatChannel.unsubscribe();}catch(e){}chatChannel=null;}document.getElementById('test-restrictions-bar').classList.remove('visible');document.getElementById('news-create-btn-wrap').style.display='none';document.getElementById('news-emoji-admin-panel').style.display='none';renderNewsPosts(newsPostsCache);updateUIForRole();updateChatUI();loadSiteParams();}
+  async function updatePresence(){if(!currentUser||!currentProfile)return;try{await sb.rpc('update_user_presence',{p_user_id:currentUser.id,p_username:currentProfile.username,p_online:true});}catch(e){await sb.from('user_presence').upsert({user_id:currentUser.id,username:currentProfile.username,last_seen:new Date().toISOString(),is_online:true},{onConflict:'user_id'});}}
+async function updateUIForRole(){const role=currentProfile?.role||'visitor';const badge=document.getElementById('user-badge');if(currentUser){badge.style.display='';const lv=currentProfile?.boosty_level?' · '+currentProfile.boosty_level:'';const ri=role==='admin'?'👑':role==='booster'?'⭐':'';badge.textContent='👤 '+(currentProfile?.username||'')+lv+(ri?' '+ri:'');}else badge.style.display='none';document.getElementById('auth-btn').style.display=currentUser?'none':'';document.getElementById('logout-btn').style.display=currentUser?'':'none';document.getElementById('get-account-btn').style.display=currentUser?'none':'';const isRealAdmin=role==='admin'&&!testRestrictions;const isBooster=['booster','admin'].includes(role);document.getElementById('admin-toggle-btn').style.display=isRealAdmin?'':'none';if(isBooster){const r=getR();const canP=getBool(r.can_upload_planet),canD=getBool(r.can_upload_deco);document.getElementById('add-content-btn').style.display=(canP||canD)?'flex':'none';if(canP||canD)checkAddContentLimit();}else{document.getElementById('add-content-btn').style.display='none';}}
+async function checkAddContentLimit(){if(!currentUser||!currentProfile)return;const btn=document.getElementById('add-content-btn');if(!btn||btn.style.display==='none')return;const ownerRestr=await getRestrictionsForUser(currentUser.id);const r=getR();const[{count:pCount},{count:dCount}]=await Promise.all([sb.from('planets').select('*',{count:'exact',head:true}).eq('user_id',currentUser.id),sb.from('decorations').select('*',{count:'exact',head:true}).eq('user_id',currentUser.id)]);const canPlanet=getBool(r.can_upload_planet!==undefined?r.can_upload_planet:true)&&!isPlanetLimitReachedFor(pCount||0,currentUser.id,ownerRestr);const canDeco=getBool(r.can_upload_deco!==undefined?r.can_upload_deco:true)&&!isDecoLimitReachedFor(dCount||0,currentUser.id,ownerRestr);if(!canPlanet&&!canDeco){btn.disabled=true;btn.style.opacity='0.4';btn.title='Все лимиты исчерпаны';}else{btn.disabled=false;btn.style.opacity='';btn.title='';}}
 async function doLogin(){const email=document.getElementById('login-email').value.trim(),pass=document.getElementById('login-password').value;const errEl=document.getElementById('login-error'),btn=document.getElementById('login-btn');errEl.textContent='';document.getElementById('login-ban-msg').style.display='none';if(!email||!pass){errEl.textContent='Заполни все поля';return;}btn.textContent='Входим...';btn.disabled=true;const{error}=await sb.auth.signInWithPassword({email,password:pass});btn.textContent='Войти';btn.disabled=false;if(error)errEl.textContent=error.message.includes('Invalid')?'Неверный email или пароль':error.message;}
 async function logout(){if(currentUser){try{await sb.rpc('update_user_presence',{p_user_id:currentUser.id,p_username:currentProfile?.username||'',p_online:false});}catch(e){}}await sb.auth.signOut();showToast('До встречи! 🚀');}
 </script>
@@ -1064,212 +1435,22 @@ async function handleFileInput(input,type){if(!input.files[0])return;const file=
 function handleFileDrop(e,type){e.preventDefault();document.getElementById(type+'-upload-area')?.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/')){const dt=new DataTransfer();dt.items.add(f);const inp=document.getElementById(type+'-file');inp.files=dt.files;handleFileInput(inp,type);}}
 async function uploadToStorage(bucket,base64,userId){const res=await fetch(base64);const blob=await res.blob();const ext=blob.type.includes('gif')?'gif':'webp';const path=userId+'/'+Date.now()+'.'+ext;const{error}=await sb.storage.from(bucket).upload(path,blob,{contentType:blob.type,upsert:true});if(error)throw error;return sb.storage.from(bucket).getPublicUrl(path).data.publicUrl;}
 async function loadPlanets(){try{const[{data:planets},{data:decos}]=await Promise.all([sb.from('planets').select('*').order('created_at',{ascending:false}).limit(200),sb.from('decorations').select('*').order('created_at',{ascending:false}).limit(200)]);planetsCache=planets||[];decosCache=decos||[];const{data:profiles}=await sb.from('profiles').select('id,username,boosty_level,role').limit(500);usersCache=profiles||[];renderAll();document.getElementById('planet-count').textContent='🪐 '+planetsCache.length+' планет · 🌠 '+decosCache.length+' декораций';checkAddContentLimit();}catch(err){console.error(err);showToast('❌ Ошибка загрузки');}}
-function renderAll(){const layer=document.getElementById('planets-layer');layer.innerHTML='';decosCache.forEach(d=>layer.appendChild(createDecoEl(d)));planetsCache.forEach(p=>layer.appendChild(createPlanetEl(p)));}
+function renderAll(){orbitItems=[];const layer=document.getElementById('planets-layer');layer.innerHTML='';decosCache.forEach(d=>layer.appendChild(createDecoEl(d)));planetsCache.forEach(p=>layer.appendChild(createPlanetEl(p)));}
 function getAnimClass(anim){const m={'float':'anim-float','pulse':'anim-pulse','spin':'anim-spin','wobble':'anim-wobble','bounce':'anim-bounce','sway':'anim-sway','none':'anim-none'};return m[anim]||'anim-float';}
-
-// ИСПРАВЛЕНИЕ 2: createPlanetEl — флаг data-interactive чтобы click-listener правильно работал
-function createPlanetEl(planet){
-  const isOwner=currentUser?.id===planet.user_id;
-  const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;
-  const glow=planet.glow_color||'#22d3ee';const r=planet.orbit_radius||0;
-  const canManage=isOwner||isRealAdmin;
-
-  const makeInner=()=>{
-    const inner=document.createElement('div');
-    inner.style.cssText='pointer-events:all;cursor:pointer;text-align:center';
-    inner.setAttribute('data-planet-inner',planet.id);
-    const img=document.createElement('img');img.className=getAnimClass(planet.animation||'float');img.style.cssText='display:block;object-fit:contain;width:'+planet.size+'px;height:'+planet.size+'px;filter:drop-shadow(0 0 12px '+glow+')';img.src=planet.image_url;img.alt=planet.username;img.loading='lazy';img.onerror=()=>{img.src='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="40" fill="%236b21d4"/><text x="40" y="52" text-anchor="middle" fill="white" font-size="28">🪐</text></svg>';};
-    const label=document.createElement('div');label.style.cssText='text-align:center;font-size:11px;color:#22d3ee;margin-top:3px;white-space:nowrap;pointer-events:none;text-shadow:0 0 8px #22d3ee';label.textContent=planet.username;
-    inner.appendChild(img);inner.appendChild(label);
-    inner.addEventListener('click',e=>{
-      e.stopPropagation();
-      if(itemDrag.active)return;
-      showPlanetDialog(planet,inner);
-      if(canManage)showFloatPanel('planet',planet.id);
-    });
-    return inner;
-  };
-
-  if(r>0){
-    const dur=orbitSpeedToDuration(planet.orbit_speed||5);
-    const orbitEl=document.createElement('div');orbitEl.dataset.planetId=planet.id;
-    orbitEl.style.cssText='position:absolute;left:'+(planet.x_pos+cam.x)+'px;top:'+(planet.y_pos+cam.y)+'px;width:0;height:0;pointer-events:none;z-index:2';
-    orbitEl.style.setProperty('--orbit-r',r+'px');orbitEl.style.setProperty('--orbit-dur',dur);
-    orbitEl.classList.add('orbit-wrap','has-orbit');
-    const inner=makeInner();inner.style.transform='translate(-50%,-50%)';orbitEl.appendChild(inner);return orbitEl;
-  }
-
-  const inner=makeInner();
-  inner.style.position='absolute';
-  inner.style.left=(planet.x_pos+cam.x)+'px';
-  inner.style.top=(planet.y_pos+cam.y)+'px';
-  inner.style.transform='translate(-50%,-50%)';
-  inner.style.zIndex=2;
-  inner.dataset.planetId=planet.id;
-  return inner;}
-
-function createDecoEl(deco){
-  const isOwner=currentUser?.id===deco.user_id;
-  const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;
-  const glow=deco.glow_color||'#22d3ee';const r=deco.orbit_radius||0;
-  const canManage=isOwner||isRealAdmin;
-
-  const makeInner=()=>{
-    const inner=document.createElement('div');inner.style.cssText='pointer-events:all;cursor:pointer;text-align:center';
-    inner.setAttribute('data-deco-inner',deco.id);
-    const img=document.createElement('img');img.className=getAnimClass(deco.animation||'float');img.src=deco.image_url;img.loading='lazy';img.style.cssText='display:block;object-fit:contain;width:'+deco.size+'px;height:'+deco.size+'px;filter:drop-shadow(0 0 8px '+glow+')';
-    inner.appendChild(img);
-    if(deco.name){const lbl=document.createElement('div');lbl.style.cssText='text-align:center;font-size:10px;color:rgba(255,255,255,0.85);margin-top:2px;white-space:nowrap;pointer-events:none';lbl.textContent=deco.name;inner.appendChild(lbl);}
-    const owner=usersCache.find(u=>u.id===deco.user_id);
-    const auth=document.createElement('div');auth.style.cssText='text-align:center;font-size:9px;color:#94a3b8;pointer-events:none';auth.textContent='@'+(owner?.username||'?');inner.appendChild(auth);
-    if(canManage){inner.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showFloatPanel('deco',deco.id);});}
-    return inner;
-  };
-
-  if(r>0){
-    const dur=orbitSpeedToDuration(deco.orbit_speed||5);
-    const orbitEl=document.createElement('div');orbitEl.dataset.decoId=deco.id;
-    orbitEl.style.cssText='position:absolute;left:'+(deco.x_pos+cam.x)+'px;top:'+(deco.y_pos+cam.y)+'px;width:0;height:0;pointer-events:none;z-index:2';
-    orbitEl.style.setProperty('--orbit-r',r+'px');orbitEl.style.setProperty('--orbit-dur',dur);
-    orbitEl.classList.add('orbit-wrap','has-orbit');
-    const inner=makeInner();inner.style.transform='translate(-50%,-50%)';orbitEl.appendChild(inner);return orbitEl;
-  }
-
-  const wrap=document.createElement('div');wrap.dataset.decoId=deco.id;
-  wrap.style.cssText='position:absolute;pointer-events:all;cursor:pointer;z-index:2;left:'+(deco.x_pos+cam.x)+'px;top:'+(deco.y_pos+cam.y)+'px;transform:translate(-50%,-50%);text-align:center';
-  const img=document.createElement('img');img.className=getAnimClass(deco.animation||'float');img.src=deco.image_url;img.loading='lazy';img.style.cssText='display:block;object-fit:contain;width:'+deco.size+'px;height:'+deco.size+'px;filter:drop-shadow(0 0 8px '+glow+')';
-  wrap.appendChild(img);
-  if(deco.name){const lbl=document.createElement('div');lbl.style.cssText='text-align:center;font-size:10px;color:rgba(255,255,255,0.85);margin-top:2px;white-space:nowrap;pointer-events:none';lbl.textContent=deco.name;wrap.appendChild(lbl);}
-  const owner=usersCache.find(u=>u.id===deco.user_id);
-  const auth=document.createElement('div');auth.style.cssText='text-align:center;font-size:9px;color:#94a3b8;pointer-events:none';auth.textContent='@'+(owner?.username||'?');wrap.appendChild(auth);
-  if(canManage){wrap.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showFloatPanel('deco',deco.id);});}
-  return wrap;
-}
-
-function showPlanetDialog(planet,wrapEl){
-  if(activeAudio){activeAudio.pause();activeAudio=null;}
-  currentPlanetSound=planet.sound_url||null;
-  document.getElementById('pd-avatar').src=planet.image_url;document.getElementById('pd-username').textContent='🌌 '+planet.username;
-  const profile=usersCache.find(u=>u.id===planet.user_id);const level=profile?.boosty_level||null;const lvWrap=document.getElementById('pd-level-wrap');
-  if(level){document.getElementById('pd-level').textContent='⭐ '+level;lvWrap.style.display='';}else lvWrap.style.display='none';
-  const commentEl=document.getElementById('pd-comment'),noEl=document.getElementById('pd-no-comment');
-  if(planet.comment&&planet.comment.trim()){commentEl.textContent=planet.comment;commentEl.style.display='block';noEl.style.display='none';}else{commentEl.style.display='none';noEl.style.display='block';}
-  const soundEl=document.getElementById('pd-sound-badge');const volRow=document.getElementById('pd-volume-row');
-  if(planet.sound_url){soundEl.style.display='inline-flex';soundEl.textContent='🔊 Нажми для звука';const vol=planetSoundVolume;volRow.style.display='flex';document.getElementById('pd-volume-slider').value=vol;document.getElementById('pd-volume-val').textContent=Math.round(vol*100)+'%';
-    // Приглушаем фоновую музыку
-    if(bgMusicAudio&&!bgMusicAudio.paused)bgMusicAudio.volume=bgMusicVolume*0.15;
-    try{activeAudio=new Audio(planet.sound_url);activeAudio.volume=vol;activeAudio.play().then(()=>{soundEl.textContent='🔊 Играет...';}).catch(()=>{soundEl.textContent='🔊 Нажми для звука';});activeAudio.onended=()=>{soundEl.textContent='🔊 Нажми снова';if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume;};}catch(e){}
-  }else{soundEl.style.display='none';volRow.style.display='none';}
-  const dialog=document.getElementById('planet-dialog');dialog.style.display='block';
-  const rect=wrapEl.getBoundingClientRect();let left=rect.right+12,top=rect.top;
-  if(left+310>window.innerWidth)left=Math.max(8,rect.left-310);top=Math.max(8,Math.min(top,window.innerHeight-380));
-  dialog.style.left=left+'px';dialog.style.top=top+'px';
-}
+function createPlanetEl(planet){const isOwner=currentUser?.id===planet.user_id;const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;const glow=planet.glow_color||'#22d3ee';const orbitR=planet.orbit_radius||0;const canManage=isOwner||isRealAdmin;function makeContent(){const img=document.createElement('img');img.className=getAnimClass(planet.animation||'float');img.style.cssText='display:block;object-fit:contain;width:'+planet.size+'px;height:'+planet.size+'px;filter:drop-shadow(0 0 12px '+glow+');margin:0 auto';img.src=planet.image_url;img.alt=planet.username;img.loading='lazy';img.onerror=()=>{img.src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'><circle cx='40' cy='40' r='40' fill='%236b21d4'/><text x='40' y='52' text-anchor='middle' fill='white' font-size='28'>🪐</text></svg>";};const label=document.createElement('div');label.style.cssText='text-align:center;font-size:11px;color:#22d3ee;margin-top:3px;white-space:nowrap;pointer-events:none;text-shadow:0 0 8px #22d3ee';label.textContent=planet.username;return{img,label};}if(orbitR>0){const orbitEl=document.createElement('div');orbitEl.dataset.planetId=planet.id;orbitEl.style.cssText='position:absolute;left:'+(planet.x_pos+cam.x)+'px;top:'+(planet.y_pos+cam.y)+'px;width:0;height:0;pointer-events:none;z-index:2';orbitEl.classList.add('orbit-wrap');const inner=document.createElement('div');inner.className='orbit-inner';inner.setAttribute('data-planet-inner',planet.id);inner.style.position='absolute';inner.style.left='0';inner.style.top='0';inner.style.pointerEvents='all';inner.style.cursor='pointer';const{img,label}=makeContent();inner.appendChild(img);inner.appendChild(label);inner.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showPlanetDialog(planet,inner);if(canManage)showFloatPanel('planet',planet.id);});orbitEl.appendChild(inner);orbitItems.push({el:orbitEl,radius:orbitR,durationMs:orbitSpeedToDurationMs(planet.orbit_speed||5),start:performance.now()});return orbitEl;}const wrap=document.createElement('div');wrap.dataset.planetId=planet.id;wrap.setAttribute('data-planet-inner',planet.id);wrap.style.cssText='position:absolute;pointer-events:all;cursor:pointer;z-index:2;left:'+(planet.x_pos+cam.x)+'px;top:'+(planet.y_pos+cam.y)+'px;transform:translate(-50%,-50%);text-align:center;display:flex;flex-direction:column;align-items:center';const{img,label}=makeContent();wrap.appendChild(img);wrap.appendChild(label);wrap.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showPlanetDialog(planet,wrap);if(canManage)showFloatPanel('planet',planet.id);});return wrap;}
+function createDecoEl(deco){const isOwner=currentUser?.id===deco.user_id;const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;const glow=deco.glow_color||'rgba(255,255,255,0.3)';const orbitR=deco.orbit_radius||0;const canManage=isOwner||isRealAdmin;const owner=usersCache.find(u=>u.id===deco.user_id);function makeContent(){const img=document.createElement('img');img.className=getAnimClass(deco.animation||'float');img.src=deco.image_url;img.loading='lazy';img.style.cssText='display:block;object-fit:contain;width:'+deco.size+'px;height:'+deco.size+'px;filter:drop-shadow(0 0 8px '+glow+');margin:0 auto';const els=[img];if(deco.name){const lbl=document.createElement('div');lbl.style.cssText='text-align:center;font-size:10px;color:rgba(255,255,255,0.85);margin-top:2px;white-space:nowrap;pointer-events:none';lbl.textContent=deco.name;els.push(lbl);}const auth=document.createElement('div');auth.style.cssText='text-align:center;font-size:9px;color:#94a3b8;pointer-events:none';auth.textContent='@'+(owner?.username||'?');els.push(auth);return els;}if(orbitR>0){const orbitEl=document.createElement('div');orbitEl.dataset.decoId=deco.id;orbitEl.style.cssText='position:absolute;left:'+(deco.x_pos+cam.x)+'px;top:'+(deco.y_pos+cam.y)+'px;width:0;height:0;pointer-events:none;z-index:2';orbitEl.classList.add('orbit-wrap');const inner=document.createElement('div');inner.className='orbit-inner';inner.setAttribute('data-deco-inner',deco.id);inner.style.position='absolute';inner.style.left='0';inner.style.top='0';inner.style.pointerEvents=canManage?'all':'none';if(canManage)inner.style.cursor='pointer';makeContent().forEach(el=>inner.appendChild(el));if(canManage)inner.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showFloatPanel('deco',deco.id);});orbitEl.appendChild(inner);orbitItems.push({el:orbitEl,radius:orbitR,durationMs:orbitSpeedToDurationMs(deco.orbit_speed||5),start:performance.now()});return orbitEl;}const wrap=document.createElement('div');wrap.dataset.decoId=deco.id;wrap.setAttribute('data-deco-inner',deco.id);wrap.style.cssText='position:absolute;z-index:2;left:'+(deco.x_pos+cam.x)+'px;top:'+(deco.y_pos+cam.y)+'px;transform:translate(-50%,-50%);text-align:center;display:flex;flex-direction:column;align-items:center;pointer-events:'+(canManage?'all':'none');if(canManage)wrap.style.cursor='pointer';makeContent().forEach(el=>wrap.appendChild(el));if(canManage)wrap.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showFloatPanel('deco',deco.id);});return wrap;}
+  function showPlanetDialog(planet,wrapEl){if(activeAudio){activeAudio.pause();activeAudio=null;}currentPlanetSound=planet.sound_url||null;document.getElementById('pd-avatar').src=planet.image_url;document.getElementById('pd-username').textContent='🌌 '+planet.username;const profile=usersCache.find(u=>u.id===planet.user_id);const level=profile?.boosty_level||null;const lvWrap=document.getElementById('pd-level-wrap');if(level){document.getElementById('pd-level').textContent='⭐ '+level;lvWrap.style.display='';}else lvWrap.style.display='none';const commentEl=document.getElementById('pd-comment'),noEl=document.getElementById('pd-no-comment');if(planet.comment&&planet.comment.trim()){commentEl.textContent=planet.comment;commentEl.style.display='block';noEl.style.display='none';}else{commentEl.style.display='none';noEl.style.display='block';}const soundEl=document.getElementById('pd-sound-badge');const volRow=document.getElementById('pd-volume-row');if(planet.sound_url){soundEl.style.display='inline-flex';soundEl.textContent='🔊 Нажми для звука';const vol=planet.sound_volume!=null?planet.sound_volume:planetSoundVolume;volRow.style.display='flex';document.getElementById('pd-volume-slider').value=vol;document.getElementById('pd-volume-val').textContent=Math.round(vol*100)+'%';planetSoundVolume=vol;if(bgMusicAudio&&!bgMusicAudio.paused)bgMusicAudio.volume=bgMusicVolume*0.15;try{activeAudio=new Audio(planet.sound_url);activeAudio.volume=vol;activeAudio.play().then(()=>{soundEl.textContent='🔊 Играет...';}).catch(()=>{soundEl.textContent='🔊 Нажми для звука';});activeAudio.onended=()=>{soundEl.textContent='🔊 Нажми снова';if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume;};}catch(e){}}else{soundEl.style.display='none';volRow.style.display='none';}const dialog=document.getElementById('planet-dialog');dialog.style.display='block';const rect=wrapEl.getBoundingClientRect();let left=rect.right+12,top=rect.top;if(left+310>window.innerWidth)left=Math.max(8,rect.left-310);top=Math.max(8,Math.min(top,window.innerHeight-380));dialog.style.left=left+'px';dialog.style.top=top+'px';}
 function playPlanetSound(){if(!currentPlanetSound)return;if(activeAudio)activeAudio.pause();const badge=document.getElementById('pd-sound-badge');if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume*0.15;try{activeAudio=new Audio(currentPlanetSound);activeAudio.volume=planetSoundVolume;activeAudio.play();badge.textContent='🔊 Играет...';activeAudio.onended=()=>{badge.textContent='🔊 Нажми снова';if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume;};}catch(e){}}
 function closePlanetDialog(){document.getElementById('planet-dialog').style.display='none';if(activeAudio){activeAudio.pause();activeAudio=null;}currentPlanetSound=null;if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume;}
 </script>
 <script>
-document.getElementById('add-content-btn').onclick=async()=>{
-  if(document.getElementById('add-content-btn').disabled)return;
-  const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;const r=getR();
-  fileData.planet=null;fileData.deco=null;soundFileData.planet=null;
-  ['planet-upload-preview','deco-upload-preview'].forEach(id=>{document.getElementById(id).style.display='none';});
-  document.getElementById('planet-upload-text').innerHTML='📁 Нажми или перетащи<br><span style="font-size:10px">PNG, JPG, GIF до 5MB</span>';
-  document.getElementById('deco-upload-text').innerHTML='📁 Нажми или перетащи<br><span style="font-size:10px">Сожмётся автоматически</span>';
-  document.getElementById('planet-sound-upload-text').innerHTML='🎵 Нажми чтобы выбрать звук<br><span style="font-size:10px">MP3, OGG, WAV до 5MB</span>';
-  document.getElementById('planet-sound-volume').value=planetSoundVolume;document.getElementById('planet-sound-volume-val').textContent=Math.round(planetSoundVolume*100)+'%';
-  ['planet-orbit','planet-orbit-num'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=0;});document.getElementById('orbit-val').textContent='0';document.getElementById('planet-orbit-speed').value=5;document.getElementById('orbit-speed-val').textContent='5';
-  ['deco-orbit','deco-orbit-num'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=0;});document.getElementById('deco-orbit-val').textContent='0';document.getElementById('deco-orbit-speed').value=5;document.getElementById('deco-orbit-speed-val').textContent='5';
-  ['planet-error','deco-error'].forEach(id=>{document.getElementById(id).textContent='';});
-  document.getElementById('planet-comment').value='';document.getElementById('deco-name').value='';
-  applyParamsToSliders();
-  const canOrbit=isRealAdmin||getBool(r.can_use_orbit);
-  document.getElementById('planet-orbit-group').style.display=canOrbit?'':'none';document.getElementById('deco-orbit-group').style.display=canOrbit?'':'none';
-  const pfug=document.getElementById('planet-for-user-group');const dfug=document.getElementById('deco-for-user-group');
-  if(pfug)pfug.style.display=isRealAdmin?'':'none';if(dfug)dfug.style.display=isRealAdmin?'':'none';
-  if(isRealAdmin){const{data:freshUsers}=await sb.from('profiles').select('id,username,role,boosty_level').order('username');if(freshUsers)usersCache=freshUsers;const opts=usersCache.filter(u=>u.id!==currentUser?.id).map(u=>'<option value="'+u.id+'">@'+escHtml(u.username)+' ('+u.role+')</option>').join('');document.getElementById('planet-for-user').innerHTML='<option value="">— своя планета —</option>'+opts;document.getElementById('deco-for-user').innerHTML='<option value="">— своя декорация —</option>'+opts;}
-  const ownerRestr=await getRestrictionsForUser(currentUser.id);
-  let canPlanet=getBool(r.can_upload_planet);let canDeco=getBool(r.can_upload_deco);
-  const[{count:pCount},{count:dCount}]=await Promise.all([sb.from('planets').select('*',{count:'exact',head:true}).eq('user_id',currentUser.id),sb.from('decorations').select('*',{count:'exact',head:true}).eq('user_id',currentUser.id)]);
-  if(canPlanet&&isPlanetLimitReachedFor(pCount||0,currentUser.id,ownerRestr))canPlanet=false;
-  if(canDeco&&isDecoLimitReachedFor(dCount||0,currentUser.id,ownerRestr))canDeco=false;
-  document.getElementById('ctab-planet').style.display=canPlanet?'':'none';document.getElementById('ctab-deco').style.display=canDeco?'':'none';
-  if(!canPlanet&&!canDeco){showToast('❌ Все лимиты исчерпаны');return;}
-  if(!canPlanet&&canDeco)switchContentTab('deco');else switchContentTab('planet');
-  openModal('add-content-modal');
-};
+document.getElementById('add-content-btn').onclick=async()=>{if(document.getElementById('add-content-btn').disabled)return;const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;const r=getR();fileData.planet=null;fileData.deco=null;soundFileData.planet=null;['planet-upload-preview','deco-upload-preview'].forEach(id=>{document.getElementById(id).style.display='none';});document.getElementById('planet-upload-text').innerHTML='📁 Нажми или перетащи<br><span style="font-size:10px">PNG, JPG, GIF до 5MB</span>';document.getElementById('deco-upload-text').innerHTML='📁 Нажми или перетащи<br><span style="font-size:10px">Сожмётся автоматически</span>';document.getElementById('planet-sound-upload-text').innerHTML='🎵 Нажми чтобы выбрать звук<br><span style="font-size:10px">MP3, OGG, WAV до 5MB</span>';document.getElementById('planet-sound-volume').value=planetSoundVolume;document.getElementById('planet-sound-volume-val').textContent=Math.round(planetSoundVolume*100)+'%';['planet-orbit','planet-orbit-num'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=0;});document.getElementById('orbit-val').textContent='0';document.getElementById('planet-orbit-speed').value=5;document.getElementById('orbit-speed-val').textContent='5';['deco-orbit','deco-orbit-num'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=0;});document.getElementById('deco-orbit-val').textContent='0';document.getElementById('deco-orbit-speed').value=5;document.getElementById('deco-orbit-speed-val').textContent='5';['planet-error','deco-error'].forEach(id=>{document.getElementById(id).textContent='';});document.getElementById('planet-comment').value='';document.getElementById('deco-name').value='';applyParamsToSliders();const canOrbit=isRealAdmin||getBool(r.can_use_orbit);document.getElementById('planet-orbit-group').style.display=canOrbit?'':'none';document.getElementById('deco-orbit-group').style.display=canOrbit?'':'none';const pfug=document.getElementById('planet-for-user-group');const dfug=document.getElementById('deco-for-user-group');if(pfug)pfug.style.display=isRealAdmin?'':'none';if(dfug)dfug.style.display=isRealAdmin?'':'none';if(isRealAdmin){const{data:freshUsers}=await sb.from('profiles').select('id,username,role,boosty_level').order('username');if(freshUsers)usersCache=freshUsers;const opts=usersCache.filter(u=>u.id!==currentUser?.id).map(u=>'<option value="'+u.id+'">@'+escHtml(u.username)+' ('+u.role+')</option>').join('');document.getElementById('planet-for-user').innerHTML='<option value="">— своя планета —</option>'+opts;document.getElementById('deco-for-user').innerHTML='<option value="">— своя декорация —</option>'+opts;}const ownerRestr=await getRestrictionsForUser(currentUser.id);let canPlanet=getBool(r.can_upload_planet);let canDeco=getBool(r.can_upload_deco);const[{count:pCount},{count:dCount}]=await Promise.all([sb.from('planets').select('*',{count:'exact',head:true}).eq('user_id',currentUser.id),sb.from('decorations').select('*',{count:'exact',head:true}).eq('user_id',currentUser.id)]);if(canPlanet&&isPlanetLimitReachedFor(pCount||0,currentUser.id,ownerRestr))canPlanet=false;if(canDeco&&isDecoLimitReachedFor(dCount||0,currentUser.id,ownerRestr))canDeco=false;document.getElementById('ctab-planet').style.display=canPlanet?'':'none';document.getElementById('ctab-deco').style.display=canDeco?'':'none';if(!canPlanet&&!canDeco){showToast('❌ Все лимиты исчерпаны');return;}if(!canPlanet&&canDeco)switchContentTab('deco');else switchContentTab('planet');openModal('add-content-modal');};
 function switchContentTab(tab){document.getElementById('content-planet').style.display=tab==='planet'?'':'none';document.getElementById('content-deco').style.display=tab==='deco'?'':'none';document.getElementById('ctab-planet').classList.toggle('active',tab==='planet');document.getElementById('ctab-deco').classList.toggle('active',tab==='deco');}
-function openEditPlanet(id){
-  const p=planetsCache.find(p=>p.id===id);if(!p)return;
-  const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;const r=getR();
-  const pMin=getUserPlanetMinSize(),pMax=getUserPlanetMaxSize();
-  fileData.edit=null;soundFileData.edit=null;
-  document.getElementById('edit-planet-id').value=id;document.getElementById('edit-planet-user-id').value=p.user_id;
-  const eps=document.getElementById('edit-planet-size');eps.min=pMin;eps.max=pMax;document.getElementById('edit-planet-size-min-lbl').textContent=pMin+'px';document.getElementById('edit-planet-size-max-lbl').textContent=pMax+'px';
-  const sz=Math.max(pMin,Math.min(pMax,p.size||80));eps.value=sz;document.getElementById('edit-size-val').textContent=sz;
-  const orb=p.orbit_radius||0;document.getElementById('edit-planet-orbit').value=Math.min(1000,orb);document.getElementById('edit-orbit-num').value=orb;document.getElementById('edit-orbit-val').textContent=orb;
-  const spd=p.orbit_speed||5;document.getElementById('edit-planet-orbit-speed').value=spd;document.getElementById('edit-orbit-speed-val').textContent=spd;
-  document.getElementById('edit-sound-url').value=p.sound_url||'';document.getElementById('edit-sound-upload-text').innerHTML='🎵 '+(p.sound_url?'Звук есть · нажми чтобы заменить':'Нажми чтобы добавить звук');
-  const vol=p.sound_volume!=null?p.sound_volume:0.7;const volEl=document.getElementById('edit-planet-volume');if(volEl){volEl.value=vol;document.getElementById('edit-volume-val').textContent=Math.round(vol*100)+'%';}
-  document.getElementById('edit-comment').value=p.comment||'';document.getElementById('edit-planet-anim').value=p.animation||'float';document.getElementById('edit-glow-color').value=p.glow_color||'#22d3ee';
-  document.getElementById('edit-upload-preview').style.display='none';document.getElementById('edit-upload-text').innerHTML='📁 Загрузить новую картинку';document.getElementById('edit-planet-error').textContent='';
-  document.getElementById('edit-planet-image-group').style.display=(isRealAdmin||getBool(r.can_change_planet_image))?'':'none';
-  document.getElementById('edit-planet-size-group').style.display=(isRealAdmin||getBool(r.can_change_planet_size))?'':'none';
-  document.getElementById('edit-planet-anim-group').style.display=(isRealAdmin||getBool(r.can_change_planet_anim))?'':'none';
-  document.getElementById('edit-planet-orbit-group').style.display=(isRealAdmin||getBool(r.can_use_orbit))?'':'none';
-  document.getElementById('edit-planet-glow-group').style.display=(isRealAdmin||getBool(r.can_change_planet_glow))?'':'none';
-  document.getElementById('edit-planet-sound-group').style.display=(isRealAdmin||getBool(r.can_change_planet_sound))?'':'none';
-  const vg=document.getElementById('edit-planet-volume-group');if(vg)vg.style.display=(isRealAdmin||getBool(r.can_change_planet_sound))?'':'none';
-  document.getElementById('edit-planet-comment-group').style.display=(isRealAdmin||getBool(r.can_change_planet_comment))?'':'none';
-  openModal('edit-planet-modal');
-}
-async function updatePlanet(){
-  const id=document.getElementById('edit-planet-id').value,userId=document.getElementById('edit-planet-user-id').value;
-  const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;const r=getR();
-  const pMin=getUserPlanetMinSize(),pMax=getUserPlanetMaxSize();
-  const sz=parseInt(document.getElementById('edit-planet-size').value);const size=isNaN(sz)?80:Math.max(pMin,Math.min(pMax,sz));
-  const errEl=document.getElementById('edit-planet-error');errEl.textContent='';
-  const update={updated_at:new Date().toISOString()};
-  if(isRealAdmin||getBool(r.can_change_planet_size))update.size=size;
-  if(isRealAdmin||getBool(r.can_change_planet_anim))update.animation=document.getElementById('edit-planet-anim').value;
-  if(isRealAdmin||getBool(r.can_use_orbit)){update.orbit_radius=getOrbitValue('edit-planet-orbit','edit-orbit-num');update.orbit_speed=parseInt(document.getElementById('edit-planet-orbit-speed').value)||5;}
-  if(isRealAdmin||getBool(r.can_change_planet_glow))update.glow_color=document.getElementById('edit-glow-color').value;
-  if(isRealAdmin||getBool(r.can_change_planet_sound)){if(soundFileData.edit){try{update.sound_url=await uploadSoundFile('edit',userId);}catch(e){errEl.textContent='Ошибка звука: '+e.message;return;}}const volEl=document.getElementById('edit-planet-volume');if(volEl)update.sound_volume=parseFloat(volEl.value)||0.7;}
-  if(isRealAdmin||getBool(r.can_change_planet_comment))update.comment=document.getElementById('edit-comment').value.trim()||null;
-  if(fileData.edit&&(isRealAdmin||getBool(r.can_change_planet_image))){showToast('⏳ Загружаем...');try{update.image_url=await uploadToStorage('planets',fileData.edit,userId);}catch(e){errEl.textContent=e.message;return;}}
-  const{error}=await sb.from('planets').update(update).eq('id',id);if(error){errEl.textContent=error.message;return;}
-  closeModal('edit-planet-modal');showToast('✅ Планета обновлена!');await new Promise(r=>setTimeout(r,300));await loadPlanets();
-}
-function openEditDeco(id){
-  const d=decosCache.find(d=>d.id===id);if(!d)return;
-  const isAdmin=currentProfile?.role==='admin'&&!testRestrictions;const r=getR();
-  const dMin=getUserDecoMinSize(),dMax=getUserDecoMaxSize();
-  fileData.editdeco=null;
-  document.getElementById('edit-deco-id').value=d.id;document.getElementById('edit-deco-user-id').value=d.user_id;document.getElementById('edit-deco-name').value=d.name||'';
-  const eds=document.getElementById('edit-deco-size');eds.min=dMin;eds.max=dMax;document.getElementById('edit-deco-size-min-lbl').textContent=dMin+'px';document.getElementById('edit-deco-size-max-lbl').textContent=dMax+'px';
-  const sz=Math.max(dMin,Math.min(dMax,d.size||80));eds.value=sz;document.getElementById('edit-deco-size-val').textContent=sz;
-  const orb=d.orbit_radius||0;document.getElementById('edit-deco-orbit').value=Math.min(1000,orb);document.getElementById('edit-deco-orbit-num').value=orb;document.getElementById('edit-deco-orbit-val').textContent=orb;
-  const spd=d.orbit_speed||5;document.getElementById('edit-deco-orbit-speed').value=spd;document.getElementById('edit-deco-orbit-speed-val').textContent=spd;
-  document.getElementById('edit-deco-anim').value=d.animation||'float';document.getElementById('edit-deco-glow').value=d.glow_color||'#ffffff';
-  document.getElementById('edit-deco-upload-preview').style.display='none';document.getElementById('edit-deco-upload-text').innerHTML='📁 Загрузить новую';document.getElementById('edit-deco-error').textContent='';
-  document.getElementById('edit-deco-orbit-group').style.display=(isAdmin||getBool(r.can_use_orbit))?'':'none';
-  openModal('edit-deco-modal');
-}
-async function updateDeco(){
-  const id=document.getElementById('edit-deco-id').value,userId=document.getElementById('edit-deco-user-id').value,name=document.getElementById('edit-deco-name').value.trim();
-  const isAdmin=currentProfile?.role==='admin'&&!testRestrictions;const r=getR();
-  const dMin=getUserDecoMinSize(),dMax=getUserDecoMaxSize();
-  const sz=parseInt(document.getElementById('edit-deco-size').value);const size=isNaN(sz)?80:Math.max(dMin,Math.min(dMax,sz));
-  const orb=getOrbitValue('edit-deco-orbit','edit-deco-orbit-num');const spd=parseInt(document.getElementById('edit-deco-orbit-speed').value)||5;
-  const anim=document.getElementById('edit-deco-anim').value,glow=document.getElementById('edit-deco-glow').value;
-  const errEl=document.getElementById('edit-deco-error');errEl.textContent='';
-  const update={name:name||null,size,animation:anim,glow_color:glow};
-  if(isAdmin||getBool(r.can_use_orbit)){update.orbit_radius=orb;update.orbit_speed=spd;}
-  if(fileData.editdeco){showToast('⏳ Загружаем...');try{update.image_url=await uploadToStorage('decorations',fileData.editdeco,userId);}catch(e){errEl.textContent=e.message;return;}}
-  const{error}=await sb.from('decorations').update(update).eq('id',id);if(error){errEl.textContent=error.message;return;}
-  closeModal('edit-deco-modal');showToast('✅ Декорация обновлена!');await new Promise(r=>setTimeout(r,300));await loadPlanets();
-}
-async function saveUsername(){const newName=document.getElementById('new-username').value.trim(),errEl=document.getElementById('username-error');errEl.textContent='';if(!newName||newName.length<2){errEl.textContent='Минимум 2 символа';return;}const{data:exists}=await sb.from('profiles').select('id').eq('username',newName).maybeSingle();if(exists&&exists.id!==currentUser.id){errEl.textContent='Ник уже занят';return;}await sb.from('profiles').update({username:newName}).eq('id',currentUser.id);await sb.from('planets').update({username:newName}).eq('user_id',currentUser.id);currentProfile.username=newName;updateUIForRole();closeModal('username-modal');showToast('✅ Никнейм обновлён!');await loadPlanets();}
+function openEditPlanet(id){const p=planetsCache.find(p=>p.id===id);if(!p)return;const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;const r=getR();const pMin=getUserPlanetMinSize(),pMax=getUserPlanetMaxSize();fileData.edit=null;soundFileData.edit=null;document.getElementById('edit-planet-id').value=id;document.getElementById('edit-planet-user-id').value=p.user_id;const eps=document.getElementById('edit-planet-size');eps.min=pMin;eps.max=pMax;document.getElementById('edit-planet-size-min-lbl').textContent=pMin+'px';document.getElementById('edit-planet-size-max-lbl').textContent=pMax+'px';const sz=Math.max(pMin,Math.min(pMax,p.size||80));eps.value=sz;document.getElementById('edit-size-val').textContent=sz;const orb=p.orbit_radius||0;document.getElementById('edit-planet-orbit').value=Math.min(1000,orb);document.getElementById('edit-orbit-num').value=orb;document.getElementById('edit-orbit-val').textContent=orb;const spd=p.orbit_speed||5;document.getElementById('edit-planet-orbit-speed').value=spd;document.getElementById('edit-orbit-speed-val').textContent=spd;document.getElementById('edit-sound-url').value=p.sound_url||'';document.getElementById('edit-sound-upload-text').innerHTML='🎵 '+(p.sound_url?'Звук есть · нажми чтобы заменить':'Нажми чтобы добавить звук');const vol=p.sound_volume!=null?p.sound_volume:0.7;const volEl=document.getElementById('edit-planet-volume');if(volEl){volEl.value=vol;document.getElementById('edit-volume-val').textContent=Math.round(vol*100)+'%';}document.getElementById('edit-comment').value=p.comment||'';document.getElementById('edit-planet-anim').value=p.animation||'float';document.getElementById('edit-glow-color').value=p.glow_color||'#22d3ee';document.getElementById('edit-upload-preview').style.display='none';document.getElementById('edit-upload-text').innerHTML='📁 Загрузить новую картинку';document.getElementById('edit-planet-error').textContent='';document.getElementById('edit-planet-image-group').style.display=(isRealAdmin||getBool(r.can_change_planet_image))?'':'none';document.getElementById('edit-planet-size-group').style.display=(isRealAdmin||getBool(r.can_change_planet_size))?'':'none';document.getElementById('edit-planet-anim-group').style.display=(isRealAdmin||getBool(r.can_change_planet_anim))?'':'none';document.getElementById('edit-planet-orbit-group').style.display=(isRealAdmin||getBool(r.can_use_orbit))?'':'none';document.getElementById('edit-planet-glow-group').style.display=(isRealAdmin||getBool(r.can_change_planet_glow))?'':'none';document.getElementById('edit-planet-sound-group').style.display=(isRealAdmin||getBool(r.can_change_planet_sound))?'':'none';const vg=document.getElementById('edit-planet-volume-group');if(vg)vg.style.display=(isRealAdmin||getBool(r.can_change_planet_sound))?'':'none';document.getElementById('edit-planet-comment-group').style.display=(isRealAdmin||getBool(r.can_change_planet_comment))?'':'none';openModal('edit-planet-modal');}
+async function updatePlanet(){const id=document.getElementById('edit-planet-id').value,userId=document.getElementById('edit-planet-user-id').value;const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;const r=getR();const pMin=getUserPlanetMinSize(),pMax=getUserPlanetMaxSize();const sz=parseInt(document.getElementById('edit-planet-size').value);const size=isNaN(sz)?80:Math.max(pMin,Math.min(pMax,sz));const errEl=document.getElementById('edit-planet-error');errEl.textContent='';const update={updated_at:new Date().toISOString()};if(isRealAdmin||getBool(r.can_change_planet_size))update.size=size;if(isRealAdmin||getBool(r.can_change_planet_anim))update.animation=document.getElementById('edit-planet-anim').value;if(isRealAdmin||getBool(r.can_use_orbit)){update.orbit_radius=getOrbitValue('edit-planet-orbit','edit-orbit-num');update.orbit_speed=parseInt(document.getElementById('edit-planet-orbit-speed').value)||5;}if(isRealAdmin||getBool(r.can_change_planet_glow))update.glow_color=document.getElementById('edit-glow-color').value;if(isRealAdmin||getBool(r.can_change_planet_sound)){if(soundFileData.edit){try{update.sound_url=await uploadSoundFile('edit',userId);}catch(e){errEl.textContent='Ошибка звука: '+e.message;return;}}const volEl=document.getElementById('edit-planet-volume');if(volEl)update.sound_volume=parseFloat(volEl.value)||0.7;}if(isRealAdmin||getBool(r.can_change_planet_comment))update.comment=document.getElementById('edit-comment').value.trim()||null;if(fileData.edit&&(isRealAdmin||getBool(r.can_change_planet_image))){showToast('⏳ Загружаем...');try{update.image_url=await uploadToStorage('planets',fileData.edit,userId);}catch(e){errEl.textContent=e.message;return;}}const{error}=await sb.from('planets').update(update).eq('id',id);if(error){errEl.textContent=error.message;return;}closeModal('edit-planet-modal');showToast('✅ Планета обновлена!');await new Promise(r=>setTimeout(r,300));await loadPlanets();}
+function openEditDeco(id){const d=decosCache.find(d=>d.id===id);if(!d)return;const isAdmin=currentProfile?.role==='admin'&&!testRestrictions;const r=getR();const dMin=getUserDecoMinSize(),dMax=getUserDecoMaxSize();fileData.editdeco=null;document.getElementById('edit-deco-id').value=d.id;document.getElementById('edit-deco-user-id').value=d.user_id;document.getElementById('edit-deco-name').value=d.name||'';const eds=document.getElementById('edit-deco-size');eds.min=dMin;eds.max=dMax;document.getElementById('edit-deco-size-min-lbl').textContent=dMin+'px';document.getElementById('edit-deco-size-max-lbl').textContent=dMax+'px';const sz=Math.max(dMin,Math.min(dMax,d.size||80));eds.value=sz;document.getElementById('edit-deco-size-val').textContent=sz;const orb=d.orbit_radius||0;document.getElementById('edit-deco-orbit').value=Math.min(1000,orb);document.getElementById('edit-deco-orbit-num').value=orb;document.getElementById('edit-deco-orbit-val').textContent=orb;const spd=d.orbit_speed||5;document.getElementById('edit-deco-orbit-speed').value=spd;document.getElementById('edit-deco-orbit-speed-val').textContent=spd;document.getElementById('edit-deco-anim').value=d.animation||'float';document.getElementById('edit-deco-glow').value=d.glow_color||'#ffffff';document.getElementById('edit-deco-upload-preview').style.display='none';document.getElementById('edit-deco-upload-text').innerHTML='📁 Загрузить новую';document.getElementById('edit-deco-error').textContent='';document.getElementById('edit-deco-orbit-group').style.display=(isAdmin||getBool(r.can_use_orbit))?'':'none';openModal('edit-deco-modal');}
+async function updateDeco(){const id=document.getElementById('edit-deco-id').value,userId=document.getElementById('edit-deco-user-id').value,name=document.getElementById('edit-deco-name').value.trim();const isAdmin=currentProfile?.role==='admin'&&!testRestrictions;const r=getR();const dMin=getUserDecoMinSize(),dMax=getUserDecoMaxSize();const sz=parseInt(document.getElementById('edit-deco-size').value);const size=isNaN(sz)?80:Math.max(dMin,Math.min(dMax,sz));const orb=getOrbitValue('edit-deco-orbit','edit-deco-orbit-num');const spd=parseInt(document.getElementById('edit-deco-orbit-speed').value)||5;const anim=document.getElementById('edit-deco-anim').value,glow=document.getElementById('edit-deco-glow').value;const errEl=document.getElementById('edit-deco-error');errEl.textContent='';const update={name:name||null,size,animation:anim,glow_color:glow};if(isAdmin||getBool(r.can_use_orbit)){update.orbit_radius=orb;update.orbit_speed=spd;}if(fileData.editdeco){showToast('⏳ Загружаем...');try{update.image_url=await uploadToStorage('decorations',fileData.editdeco,userId);}catch(e){errEl.textContent=e.message;return;}}const{error}=await sb.from('decorations').update(update).eq('id',id);if(error){errEl.textContent=error.message;return;}closeModal('edit-deco-modal');showToast('✅ Декорация обновлена!');await new Promise(r=>setTimeout(r,300));await loadPlanets();}
+  async function saveUsername(){const newName=document.getElementById('new-username').value.trim(),errEl=document.getElementById('username-error');errEl.textContent='';if(!newName||newName.length<2){errEl.textContent='Минимум 2 символа';return;}const{data:exists}=await sb.from('profiles').select('id').eq('username',newName).maybeSingle();if(exists&&exists.id!==currentUser.id){errEl.textContent='Ник уже занят';return;}await sb.from('profiles').update({username:newName}).eq('id',currentUser.id);await sb.from('planets').update({username:newName}).eq('user_id',currentUser.id);currentProfile.username=newName;updateUIForRole();closeModal('username-modal');showToast('✅ Никнейм обновлён!');await loadPlanets();}
 </script>
 <script>
 function toggleAdminPanel(){adminPanelOpen=!adminPanelOpen;const panel=document.getElementById('admin-panel');if(adminPanelOpen){panel.classList.add('open');loadAdminTab('tickets');}else panel.classList.remove('open');}
@@ -1287,20 +1468,28 @@ async function openEditUser(userId){const u=usersCache.find(u=>u.id===userId);if
 function mkR(key,label,val){return'<div class="restriction-row"><span class="restriction-label">'+label+'</span><button class="toggle-btn '+(getBool(val)?'on':'off')+'" data-key="'+key+'" onclick="this.classList.toggle(\'on\');this.classList.toggle(\'off\')"> </button></div>';}
 async function saveUserEdits(ban){const userId=document.getElementById('edit-user-id').value,name=document.getElementById('edit-user-name').value.trim(),email=document.getElementById('edit-user-email').value.trim(),pass=document.getElementById('edit-user-pass').value,role=document.getElementById('edit-user-role').value,level=document.getElementById('edit-user-level').value.trim(),banUntil=document.getElementById('edit-user-ban-until').value,banReason=document.getElementById('edit-user-ban-reason').value.trim();const errEl=document.getElementById('edit-user-error');errEl.textContent='';if(!name){errEl.textContent='Никнейм не может быть пустым';return;}if(pass&&pass.length<6){errEl.textContent='Пароль минимум 6 символов';return;}const update={username:name,role,boosty_level:level||null};if(ban){update.is_banned=true;update.ban_until=banUntil?new Date(banUntil).toISOString():null;update.ban_reason=banReason||null;}const{error}=await sb.from('profiles').update(update).eq('id',userId);if(error){errEl.textContent=error.message;return;}await sb.from('planets').update({username:name}).eq('user_id',userId);if(email||pass){try{await sb.rpc('admin_update_user',{p_user_id:userId,p_email:email||null,p_password:pass||null});}catch(e){}}const rData={user_id:userId,updated_at:new Date().toISOString()};document.querySelectorAll('#user-restrictions-panel .toggle-btn').forEach(btn=>{rData[btn.dataset.key]=btn.classList.contains('on');});await sb.from('user_restrictions').upsert(rData,{onConflict:'user_id'});closeModal('edit-user-modal');showToast(ban?'🔒 Заблокирован':'✅ Обновлён');await loadAdminUsers();}
 async function unbanUser(){const userId=document.getElementById('edit-user-id').value;await sb.from('profiles').update({is_banned:false,ban_until:null,ban_reason:null}).eq('id',userId);closeModal('edit-user-modal');showToast('🔓 Разблокирован');await loadAdminUsers();}
-async function adminDeleteUser(userId,username){if(!confirm('Полностью удалить @'+username+'?'))return;try{await sb.rpc('delete_user_completely',{target_user_id:userId});}catch(e){await Promise.all([sb.from('chat_messages').delete().eq('user_id',userId),sb.from('support_tickets').delete().eq('user_id',userId),sb.from('decorations').delete().eq('user_id',userId),sb.from('planets').delete().eq('user_id',userId),sb.from('user_presence').delete().eq('user_id',userId),sb.from('user_restrictions').delete().eq('user_id',userId)]);await sb.from('profiles').delete().eq('id',userId);}showToast('🗑️ @'+username+' удалён');await loadAdminUsers();await loadPlanets();}
+async function adminDeleteUser(userId,username){if(!confirm('Полностью удалить @'+username+'?'))return;try{await sb.rpc('delete_user_completely',{target_user_id:userId});}catch(e){await Promise.all([sb.from('chat_messages').delete().eq('user_id',userId),sb.from('support_tickets').delete().eq('user_id',userId),sb.from('decorations').delete().eq('user_id',userId),sb.from('planets').delete().eq('user_id',userId),sb.from('user_presence').delete().eq('user_id',userId),sb.from('user_restrictions').delete().eq('user_id',userId),sb.from('news_reactions').delete().eq('user_id',userId)]);await sb.from('profiles').delete().eq('id',userId);}showToast('🗑️ @'+username+' удалён');await loadAdminUsers();await loadPlanets();}
 async function loadOnlineUsers(){const fiveMin=new Date(Date.now()-5*60*1000).toISOString();const{data}=await sb.from('user_presence').select('*').gte('last_seen',fiveMin).order('last_seen',{ascending:false});const online=(data||[]).filter(p=>p.is_online);document.getElementById('online-count').innerHTML='В сети: <b style="color:var(--glow-cyan)">'+online.length+'</b>';const el=document.getElementById('online-list');if(!online.length){el.innerHTML='<div style="color:var(--text-dim);font-size:11px">Никого нет</div>';return;}const ids=online.map(p=>p.user_id);const{data:profiles}=await sb.from('profiles').select('id,role,boosty_level').in('id',ids);const pm={};(profiles||[]).forEach(p=>{pm[p.id]=p;});el.innerHTML=online.map(p=>{const pr=pm[p.user_id]||{};return'<div class="online-item"><div class="user-online-dot online"></div><div style="flex:1"><div style="font-size:11px;font-weight:600">@'+escHtml(p.username)+'</div>'+(pr.boosty_level?'<div style="font-size:9px;color:var(--star-gold)">⭐'+escHtml(pr.boosty_level)+'</div>':'')+'</div><span class="role-badge '+(pr.role||'visitor')+'">'+(pr.role||'visitor').toUpperCase()+'</span></div>';}).join('');}
 async function loadAdminPlanets(){const{data}=await sb.from('planets').select('*').order('created_at',{ascending:false}).limit(100);const el=document.getElementById('admin-planets');if(!data?.length){el.innerHTML='<div style="color:var(--text-dim);font-size:11px">Нет планет</div>';return;}el.innerHTML=data.map(p=>'<div class="planet-admin-item"><img src="'+p.image_url+'" onerror="this.style.opacity=0"><span class="pai-name">@'+escHtml(p.username)+'<br><span style="color:var(--text-dim);font-size:9px">'+p.size+'px'+(p.orbit_radius?' · орб.'+p.orbit_radius+'px':'')+'</span></span><div class="pai-actions"><button class="btn small" onclick="openEditPlanet(\''+p.id+'\')">✏️</button><button class="btn small danger" onclick="adminHardDelete(\'planets\',\''+p.id+'\')">🗑️</button></div></div>').join('');}
-async function loadAdminDecos(){const{data}=await sb.from('decorations').select('*').order('created_at',{ascending:false}).limit(100);const el=document.getElementById('admin-decos');if(!data?.length){el.innerHTML='<div style="color:var(--text-dim);font-size:11px">Нет декораций</div>';return;}el.innerHTML=data.map(d=>{const owner=usersCache.find(u=>u.id===d.user_id);return'<div class="deco-admin-item"><img src="'+d.image_url+'" onerror="this.style.opacity=0"><span style="flex:1;font-size:11px">'+(d.name?escHtml(d.name):'Декорация')+'<br><span style="font-size:9px;color:var(--text-dim)">@'+(owner?.username||'?')+' · '+d.size+'px'+(d.orbit_radius?' · орб.'+d.orbit_radius+'px':'')+'</span></span><div style="display:flex;gap:3px"><button class="btn small" onclick="openEditDeco(\''+d.id+'\')">✏️</button><button class="btn small danger" onclick="adminHardDelete(\'decorations\',\''+d.id+'\')">🗑️</button></div></div>';}).join('');}
+  async function loadAdminDecos(){const{data}=await sb.from('decorations').select('*').order('created_at',{ascending:false}).limit(100);const el=document.getElementById('admin-decos');if(!data?.length){el.innerHTML='<div style="color:var(--text-dim);font-size:11px">Нет декораций</div>';return;}el.innerHTML=data.map(d=>{const owner=usersCache.find(u=>u.id===d.user_id);return'<div class="deco-admin-item"><img src="'+d.image_url+'" onerror="this.style.opacity=0"><span style="flex:1;font-size:11px">'+(d.name?escHtml(d.name):'Декорация')+'<br><span style="font-size:9px;color:var(--text-dim)">@'+(owner?.username||'?')+' · '+d.size+'px'+(d.orbit_radius?' · орб.'+d.orbit_radius+'px':'')+'</span></span><div style="display:flex;gap:3px"><button class="btn small" onclick="openEditDeco(\''+d.id+'\')">✏️</button><button class="btn small danger" onclick="adminHardDelete(\'decorations\',\''+d.id+'\')">🗑️</button></div></div>';}).join('');}
 async function loadAdminChat(){const{data}=await sb.from('chat_messages').select('*').order('created_at',{ascending:false}).limit(50);const el=document.getElementById('admin-chat');if(!data?.length){el.innerHTML='<div style="color:var(--text-dim);font-size:11px">Чат пуст</div>';return;}el.innerHTML=data.map(m=>'<div class="chat-admin-item"><div class="ca-info"><div class="ca-name">@'+escHtml(m.username)+' · '+new Date(m.created_at).toLocaleDateString('ru')+'</div><div class="ca-text">'+escHtml(m.message)+'</div></div><div style="display:flex;flex-direction:column;gap:3px"><button class="btn small danger" onclick="adminHardDelete(\'chat_messages\',\''+m.id+'\')">🗑️</button></div></div>').join('');}
 async function adminHardDelete(table,id){if(!confirm('Удалить навсегда?'))return;await sb.from(table).delete().eq('id',id);showToast('🗑️ Удалено');if(table==='planets'){await loadAdminPlanets();await loadPlanets();}else if(table==='decorations'){await loadAdminDecos();await loadPlanets();}else if(table==='chat_messages'){chatMessages=chatMessages.filter(m=>m.id!==id);renderChat();await loadAdminChat();}}
 async function cleanOldChat(){if(!confirm('Удалить чат старше 7 дней?'))return;const weekAgo=new Date(Date.now()-7*24*3600*1000).toISOString();await sb.from('chat_messages').delete().lt('created_at',weekAgo);chatMessages=chatMessages.filter(m=>new Date(m.created_at)>new Date(weekAgo));renderChat();showToast('🗑️ Старые удалены');await loadServerStats();}
 async function cleanClosedTickets(){if(!confirm('Удалить закрытые тикеты?'))return;await sb.from('support_tickets').delete().eq('status','closed');showToast('🗑️ Тикеты удалены');await loadServerStats();}
 async function cleanOrphanDecos(){if(!confirm('Удалить декорации удалённых?'))return;const{data:profiles}=await sb.from('profiles').select('id');const ids=(profiles||[]).map(p=>p.id);if(ids.length){await sb.from('decorations').delete().not('user_id','in','('+ids.map(i=>"'"+i+"'").join(',')+')');}showToast('🗑️ Декорации очищены');await loadServerStats();await loadPlanets();}
 async function cleanAllChat(){if(!confirm('⚠️ Удалить ВЕСЬ чат?'))return;if(!confirm('Подтверди — необратимо!'))return;await sb.from('chat_messages').delete().gte('created_at','2000-01-01');chatMessages=[];renderChat();showToast('🗑️ Чат очищен');await loadServerStats();if(adminPanelOpen)await loadAdminChat();}
-async function loadServerStats(){const[{count:pc},{count:uc},{count:tc},{count:dc},{count:cc}]=await Promise.all([sb.from('planets').select('*',{count:'exact',head:true}),sb.from('profiles').select('*',{count:'exact',head:true}),sb.from('support_tickets').select('*',{count:'exact',head:true}),sb.from('decorations').select('*',{count:'exact',head:true}),sb.from('chat_messages').select('*',{count:'exact',head:true})]);const total=(pc||0)+(uc||0)+(tc||0)+(dc||0)+(cc||0);const pct=Math.min(100,Math.round(total/50000*100));const color=pct>80?'var(--danger)':pct>50?'var(--star-gold)':'var(--success)';document.getElementById('server-stats').innerHTML='<div>👤 Пользователей: <b>'+(uc||0)+'</b></div><div>🪐 Планет: <b>'+(pc||0)+'</b></div><div>🌠 Декораций: <b>'+(dc||0)+'</b></div><div>💬 Сообщений: <b>'+(cc||0)+'</b></div><div>🎫 Тикетов: <b>'+(tc||0)+'</b></div><div style="margin-top:7px">📊 Строк: <b>'+total+' / 50 000</b></div><div style="margin-top:4px;background:var(--glass-bg);border-radius:4px;height:6px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+color+';border-radius:4px"></div></div><div style="font-size:10px;margin-top:3px">'+pct+'%</div>';}
+async function loadServerStats(){const[{count:pc},{count:uc},{count:tc},{count:dc},{count:cc},{count:nc}]=await Promise.all([sb.from('planets').select('*',{count:'exact',head:true}),sb.from('profiles').select('*',{count:'exact',head:true}),sb.from('support_tickets').select('*',{count:'exact',head:true}),sb.from('decorations').select('*',{count:'exact',head:true}),sb.from('chat_messages').select('*',{count:'exact',head:true}),sb.from('news_posts').select('*',{count:'exact',head:true})]);const total=(pc||0)+(uc||0)+(tc||0)+(dc||0)+(cc||0)+(nc||0);const pct=Math.min(100,Math.round(total/50000*100));const color=pct>80?'var(--danger)':pct>50?'var(--star-gold)':'var(--success)';document.getElementById('server-stats').innerHTML='<div>👤 Пользователей: <b>'+(uc||0)+'</b></div><div>🪐 Планет: <b>'+(pc||0)+'</b></div><div>🌠 Декораций: <b>'+(dc||0)+'</b></div><div>💬 Сообщений: <b>'+(cc||0)+'</b></div><div>🎫 Тикетов: <b>'+(tc||0)+'</b></div><div>📡 Новостей: <b>'+(nc||0)+'</b></div><div style="margin-top:7px">📊 Строк: <b>'+total+' / 50 000</b></div><div style="margin-top:4px;background:var(--glass-bg);border-radius:4px;height:6px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+color+';border-radius:4px"></div></div><div style="font-size:10px;margin-top:3px">'+pct+'%</div>';}
 </script>
 <script>
-function initRealtime(){sb.channel('app-rt').on('postgres_changes',{event:'*',schema:'public',table:'planets'},()=>{clearTimeout(reloadTimer);reloadTimer=setTimeout(loadPlanets,600);}).on('postgres_changes',{event:'*',schema:'public',table:'decorations'},()=>{clearTimeout(reloadTimer);reloadTimer=setTimeout(loadPlanets,600);}).on('postgres_changes',{event:'*',schema:'public',table:'site_settings'},()=>{checkMaintenance();loadMapLimits();loadBackground();loadBgMusic();loadFaviconInfo();loadSiteParams();}).on('postgres_changes',{event:'*',schema:'public',table:'user_restrictions'},payload=>{const row=(payload.new&&Object.keys(payload.new).length)?payload.new:payload.old;if(row&&currentUser&&row.user_id===currentUser.id)loadMyRestrictions();}).on('postgres_changes',{event:'*',schema:'public',table:'support_tickets'},()=>{if(commPanelOpen&&currentPanelTab==='support')loadMyTickets();if(adminPanelOpen)loadAdminTickets();}).subscribe();}
+function initRealtime(){
+  sb.channel('app-rt')
+    .on('postgres_changes',{event:'*',schema:'public',table:'planets'},()=>{clearTimeout(reloadTimer);reloadTimer=setTimeout(loadPlanets,600);})
+    .on('postgres_changes',{event:'*',schema:'public',table:'decorations'},()=>{clearTimeout(reloadTimer);reloadTimer=setTimeout(loadPlanets,600);})
+    .on('postgres_changes',{event:'*',schema:'public',table:'site_settings'},()=>{checkMaintenance();loadMapLimits();loadBackground();loadBgMusic();loadFaviconInfo();loadSiteParams();})
+    .on('postgres_changes',{event:'*',schema:'public',table:'user_restrictions'},payload=>{const row=(payload.new&&Object.keys(payload.new).length)?payload.new:payload.old;if(row&&currentUser&&row.user_id===currentUser.id)loadMyRestrictions();})
+    .on('postgres_changes',{event:'*',schema:'public',table:'support_tickets'},()=>{if(commPanelOpen&&currentPanelTab==='support')loadMyTickets();if(adminPanelOpen)loadAdminTickets();})
+    .subscribe();
+}
 function openModal(id){document.getElementById(id).style.display='flex';}
 function closeModal(id){document.getElementById(id).style.display='none';}
 document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)closeModal(o.id);});});
@@ -1308,21 +1497,37 @@ function showToast(msg){const el=document.getElementById('toast');el.textContent
 function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 window.addEventListener('resize',()=>{cancelAnimationFrame(animFrame);initStars();requestAnimationFrame(drawSpace);});
 window.addEventListener('beforeunload',()=>{if(currentUser){try{sb.rpc('update_user_presence',{p_user_id:currentUser.id,p_username:currentProfile?.username||'',p_online:false});}catch(e){}}});
+
 (async()=>{
   initStars();
   requestAnimationFrame(drawSpace);
-  // Инициализируем ползунок громкости из localStorage
   initMusicVolumeSlider();
+
+  if('Notification' in window && Notification.permission==='default'){
+    Notification.requestPermission();
+  }
+
   await Promise.all([loadBackground(),loadBgMusic(),loadFaviconInfo(),loadSiteParams()]);
+
+  // Загружаем новости сразу — видны всем
+  await Promise.all([loadNewsPosts(),loadNewsEmojis()]);
+  initNewsRealtime();
+
   updateChatUI();
+  const gaBtn=document.getElementById('get-account-btn');
+  if(gaBtn)gaBtn.style.display='';
+
   const{data:{session}}=await sb.auth.getSession();
   if(session)await onLogin(session.user);
+
   sb.auth.onAuthStateChange(async(event,session)=>{
     if(event==='SIGNED_IN')await onLogin(session.user);
     if(event==='SIGNED_OUT')onLogout();
   });
+
   await loadPlanets();
   initRealtime();
+  if(!orbitRafId)orbitRafId=requestAnimationFrame(animateOrbits);
 })();
 </script>
 </body>
