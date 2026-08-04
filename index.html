@@ -1326,8 +1326,14 @@ function showNewsNotification(){
   const notify=document.getElementById('news-notify');notify.style.display='flex';
   if(newsNotifyTimer)clearTimeout(newsNotifyTimer);
   newsNotifyTimer=setTimeout(()=>{notify.style.display='none';},8000);
-  if(Notification.permission==='granted'){new Notification('📡 TheAndrameda Universe',{body:'Новое сообщение от администратора'});}
-  else if(Notification.permission==='default'){Notification.requestPermission();}
+  if('Notification' in window && Notification.permission==='granted'){
+    const title='📡 TheAndrameda Universe News Service',body='Новая новость на сайте! Зайди посмотри😉';
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.ready.then(reg=>reg.showNotification(title,{body})).catch(()=>{try{new Notification(title,{body});}catch(e){}});
+    }else{
+      try{new Notification(title,{body});}catch(e){}
+    }
+  }
 }
 </script>
 <script>
@@ -1511,6 +1517,9 @@ window.addEventListener('beforeunload',()=>{if(currentUser){try{sb.rpc('update_u
       Notification.requestPermission();
       document.removeEventListener('click',reqPerm);
     },{once:true});
+  }
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('/sw.js').catch(()=>{});
   }
 
   await Promise.all([loadBackground(),loadBgMusic(),loadFaviconInfo(),loadSiteParams(),loadMapLimits()]);
