@@ -1104,8 +1104,8 @@ async function npmPublish(){
 // ===== ШТОРКА НОВОСТЕЙ =====
 function toggleNewsPanel(){newsPanelOpen=!newsPanelOpen;document.getElementById('news-panel').classList.toggle('open',newsPanelOpen);if(newsPanelOpen){hideBadge();renderNewsPosts(newsPostsCache);}}
 function openNewsPanel(){newsPanelOpen=true;document.getElementById('news-panel').classList.add('open');hideBadge();renderNewsPosts(newsPostsCache);}
-function hideBadge(){const b=document.getElementById('news-badge');b.style.display='none';document.getElementById('news-notify').style.display='none';if(newsNotifyTimer)clearTimeout(newsNotifyTimer);}
-
+function hideBadge(){const b=document.getElementById('news-badge');b.style.display='none';document.getElementById('news-notify').style.display='none';if(newsNotifyTimer)clearTimeout(newsNotifyTimer);if(newsPostsCache.length)localStorage.setItem('na_news_seen',String(newsPostsCache[0].id));}
+  
 async function loadNewsPosts(){
   const[{data:posts},{data:reactions}]=await Promise.all([
     sb.from('news_posts').select('*').order('created_at',{ascending:false}).limit(30),
@@ -1115,6 +1115,9 @@ async function loadNewsPosts(){
   newsReactionsCache={};
   (reactions||[]).forEach(r=>{if(!newsReactionsCache[r.post_id])newsReactionsCache[r.post_id]=[];newsReactionsCache[r.post_id].push(r);});
   if(newsPanelOpen)renderNewsPosts(newsPostsCache);
+  if(newsPostsCache.length&&!newsPanelOpen&&localStorage.getItem('na_news_seen')!==String(newsPostsCache[0].id)){
+    const b=document.getElementById('news-badge');b.style.cssText='display:flex;align-items:center;justify-content:center';b.textContent='!';
+  }
 }
 
 async function loadNewsEmojis(){
@@ -1304,7 +1307,7 @@ async function deleteNewsPost(id){if(!confirm('Удалить пост?'))return
 function initNewsRealtime(){
   if(newsChannel){try{newsChannel.unsubscribe();}catch(e){}}
   newsChannel=sb.channel('news-rt')
-    .on('postgres_changes',{event:'*',schema:'public',table:'news_posts'},()=>{loadNewsPosts();if(!newsPanelOpen)showNewsNotification();})
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'news_posts'},()=>{loadNewsPosts();if(!newsPanelOpen)showNewsNotification();})
     .on('postgres_changes',{event:'*',schema:'public',table:'news_reactions'},()=>{loadNewsPosts();})
     .on('postgres_changes',{event:'*',schema:'public',table:'news_emojis'},()=>{loadNewsEmojis();})
     .subscribe();
@@ -1504,11 +1507,13 @@ window.addEventListener('beforeunload',()=>{if(currentUser){try{sb.rpc('update_u
   initMusicVolumeSlider();
 
   if('Notification' in window && Notification.permission==='default'){
-    Notification.requestPermission();
+    document.addEventListener('click',function reqPerm(){
+      Notification.requestPermission();
+      document.removeEventListener('click',reqPerm);
+    },{once:true});
   }
 
-  await Promise.all([loadBackground(),loadBgMusic(),loadFaviconInfo(),loadSiteParams()]);
-
+  await Promise.all([loadBackground(),loadBgMusic(),loadFaviconInfo(),loadSiteParams(),loadMapLimits()]);
   // Загружаем новости сразу — видны всем
   await Promise.all([loadNewsPosts(),loadNewsEmojis()]);
   initNewsRealtime();
