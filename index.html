@@ -102,9 +102,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#03050f;font-family:
 .level-badge{font-size:12px;font-weight:700;color:var(--glow-cyan);background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.35);padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:4px}
 .level-xp-text{font-size:10px;color:var(--text-dim)}
 .level-bar-outer{width:100%;height:10px;border-radius:20px;background:rgba(255,255,255,0.06);overflow:hidden;border:1px solid var(--glass-border)}
-.level-bar-inner{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--nebula-purple),var(--glow-cyan),var(--star-gold));background-size:200% 100%;animation:levelShine 3s linear infinite;transition:width .6s cubic-bezier(.4,0,.2,1)}
-@keyframes levelShine{0%{background-position:0% 0}100%{background-position:200% 0}}
-
+.level-bar-inner{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--glow-cyan),var(--nebula-purple),var(--star-gold),var(--glow-cyan));background-size:300% 100%;animation:levelShine 4s linear infinite;transition:width .6s cubic-bezier(.4,0,.2,1)}
+@keyframes levelShine{0%{background-position:0% 0}100%{background-position:-300% 0}}
 .user-badge-btn{display:flex;align-items:center;gap:6px}
 .pd-comment{font-size:12px;color:var(--text-dim);line-height:1.6;text-align:center;padding:9px;background:rgba(255,255,255,0.03);border-radius:9px;border:1px solid var(--glass-border);margin-bottom:8px}
 .pd-no-comment{font-size:11px;color:var(--text-dim);text-align:center;font-style:italic;margin-bottom:8px;opacity:0.6}
@@ -115,7 +114,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#03050f;font-family:
 .pd-volume-row label{font-size:10px;color:var(--text-dim);white-space:nowrap}
 .pd-volume-row input[type=range]{flex:1;height:3px}
 #bottom-left{position:fixed;bottom:22px;left:22px;z-index:100;display:flex;gap:8px;align-items:center}
-#bottom-right{position:fixed;bottom:22px;right:22px;z-index:100;display:flex;gap:8px}
+#bottom-right{position:fixed;bottom:22px;right:22px;z-index:100;display:flex;gap:10px;align-items:flex-end}
 .fab{width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;font-size:19px;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;position:relative}
 .fab:hover{transform:scale(1.1)}
 .fab.purple{background:linear-gradient(135deg,var(--nebula-purple),var(--glow-cyan));box-shadow:0 0 18px rgba(107,33,212,0.5)}
@@ -414,6 +413,90 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .user-param-row label{flex:1;color:var(--text-dim)}
 .user-param-row input[type=number]{width:60px;padding:2px 5px;font-size:11px;border-radius:5px;border:1px solid var(--glass-border);background:rgba(255,255,255,0.05);color:var(--text-main);outline:none}
 .user-param-row input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--success)}
+.games-wrap{display:flex;flex-direction:column;align-items:center}
+.fab.games{width:50px;height:62px;border-radius:12px;background:linear-gradient(160deg,#0d1526,#060a14);border:2px solid #1c2b45;box-shadow:0 0 0 1px rgba(34,211,238,0.15),0 4px 18px rgba(0,0,0,0.5),0 0 22px rgba(34,211,238,0.25);position:relative;flex-direction:column;align-items:center;justify-content:flex-start;padding:6px 5px 6px;gap:0;overflow:visible;transition:transform .2s,box-shadow .2s}
+.games-cam{width:4px;height:4px;border-radius:50%;background:#0f1b2e;border:1px solid rgba(34,211,238,0.4);margin-bottom:4px;box-shadow:0 0 4px rgba(34,211,238,0.5)}
+.games-screen{flex:1;width:100%;border-radius:7px;background:linear-gradient(160deg,#04101f,#020810);border:1px solid rgba(34,211,238,0.35);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.fab.games .fg-icon{font-size:22px;position:relative;z-index:1;filter:drop-shadow(0 0 6px rgba(34,211,238,0.7))}
+.games-home{width:18px;height:3px;border-radius:2px;background:rgba(34,211,238,0.35);margin-top:5px}
+@keyframes gamesSheen{0%{background-position:220% 0}100%{background-position:-20% 0}}
+
+#games-tablet-overlay{position:fixed;inset:0;z-index:900;background:radial-gradient(circle at 50% 40%,#0a1428,#02040a 70%);display:none;align-items:center;justify-content:center;opacity:0;transition:opacity .5s}
+#games-tablet-overlay.on{opacity:1}
+.tablet-shell{width:min(92vw,780px);height:min(88vh,540px);background:linear-gradient(160deg,#0a0f1e,#050810);border:1px solid rgba(34,211,238,0.35);border-radius:26px;box-shadow:0 0 0 1px rgba(34,211,238,0.08),0 30px 80px rgba(0,0,0,0.6),0 0 70px rgba(34,211,238,0.15),inset 0 0 50px rgba(34,211,238,0.04);display:flex;flex-direction:column;overflow:hidden;transform:scale(0.92);opacity:0;transition:transform .5s cubic-bezier(.2,.9,.3,1.3),opacity .5s,width .45s cubic-bezier(.2,.9,.3,1),height .45s cubic-bezier(.2,.9,.3,1);position:relative}
+.tablet-shell.app-open{width:min(97vw,1400px);height:min(94vh,900px)}
+.tablet-shell::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(180deg,rgba(255,255,255,0.015) 0px,rgba(255,255,255,0.015) 1px,transparent 1px,transparent 3px);opacity:.5}
+#games-tablet-overlay.on .tablet-shell{transform:scale(1);opacity:1}
+.tablet-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(34,211,238,0.2);background:linear-gradient(180deg,rgba(34,211,238,0.05),transparent);gap:10px}
+.tt-gold{font-size:13px;font-weight:800;color:var(--star-gold);display:flex;align-items:center;gap:4px;white-space:nowrap}
+.tt-profile{display:flex;align-items:center;gap:7px;cursor:pointer;padding:4px 8px;border-radius:10px;transition:.15s}
+.tt-profile:hover{background:rgba(255,255,255,0.05)}
+.tt-profile.no-link{cursor:default}
+.tt-profile.no-link:hover{background:none}
+.tt-nick{font-size:11px;font-weight:700;color:var(--text-main)}
+.tt-profile-text{display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.tt-id{font-size:9px;color:var(--text-dim);letter-spacing:.3px}
+.tablet-level-row{padding:10px 20px 14px;border-bottom:1px solid rgba(34,211,238,0.1)}
+.tablet-level-row{padding:10px 20px 14px;border-bottom:1px solid rgba(34,211,238,0.1)}
+.tablet-close{background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);color:var(--text-dim);border-radius:8px;width:30px;height:30px;cursor:pointer;transition:.15s}
+.tablet-close:hover{color:#fff;border-color:var(--danger);background:rgba(239,68,68,0.12)}
+.tablet-boot{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--glow-cyan);font-size:12px;letter-spacing:2px;text-transform:uppercase}
+.tablet-boot .tb-spinner{width:40px;height:40px;border-radius:50%;border:3px solid rgba(34,211,238,0.15);border-top-color:var(--glow-cyan);border-right-color:var(--nebula-purple);animation:tbspin .9s linear infinite;box-shadow:0 0 18px rgba(34,211,238,0.25)}
+@keyframes tbspin{to{transform:rotate(360deg)}}
+.tablet-body{flex:1;display:none;flex-direction:column;overflow:hidden}
+.tablet-apps{flex:0 0 auto;display:flex;gap:16px;padding:22px 24px 12px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+.tablet-app-icon{position:relative;flex:0 0 100px;width:100px;height:100px;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:.2s;padding:12px 6px;box-shadow:0 8px 20px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.15);scroll-snap-align:start}
+.tablet-app-icon:hover{transform:translateY(-4px);box-shadow:0 14px 28px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.2)}
+.tablet-app-icon.acc-store{background:linear-gradient(150deg,#4ade80,#16a34a)}
+.tablet-app-icon.acc-stars{background:linear-gradient(150deg,#facc15,#ca8a04)}
+  .tablet-app-icon.acc-promo{background:linear-gradient(150deg,#e879f9,#a21caf)}
+.tablet-app-icon .tai-glyph{width:26px;height:26px;position:relative;z-index:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.25))}
+.tablet-app-icon .tai-name{font-size:10px;font-weight:800;color:#fff;position:relative;z-index:1;letter-spacing:.2px;text-shadow:0 1px 3px rgba(0,0,0,0.35);text-align:center;line-height:1.15}
+.tablet-app-icon .tai-tag{position:relative;z-index:1;font-size:6.5px;font-weight:700;letter-spacing:.4px;color:#fff;background:rgba(0,0,0,0.25);padding:1.5px 6px;border-radius:20px}
+  .tablet-home{flex:1;display:none;flex-direction:column;overflow:hidden}
+.tablet-installed-wrap{flex:1;display:flex;flex-direction:column;padding:0 24px 20px;overflow:hidden}
+.tablet-installed-title{font-size:11px;font-weight:700;color:var(--text-dim);letter-spacing:.5px;margin-bottom:10px}
+.tablet-installed-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.tablet-installed-empty{font-size:11px;color:var(--text-dim);text-align:center;padding:30px 0}
+.tig-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,0.03);cursor:pointer;transition:.15s}
+.tig-row:hover{background:rgba(255,255,255,0.06)}
+.tig-icon{width:38px;height:38px;border-radius:10px;object-fit:cover;flex-shrink:0;background:linear-gradient(150deg,#334155,#1e293b);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff}
+.tig-name{flex:1;font-size:12px;font-weight:700;color:var(--text-main);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tig-rating{font-size:10px;color:var(--star-gold);flex-shrink:0}
+.store-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.store-row{display:flex;align-items:center;gap:12px;padding:10px;border-radius:14px;background:rgba(255,255,255,0.03)}
+.store-icon{width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;background:linear-gradient(150deg,#334155,#1e293b);display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff}
+.store-info{flex:1;min-width:0}
+.store-title{font-size:13px;font-weight:800;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.store-desc{font-size:10px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.store-rating{font-size:10px;color:var(--star-gold);margin-top:2px}
+.store-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.store-act-btn{background:rgba(34,211,238,0.12);border:1px solid var(--glow-cyan);color:var(--glow-cyan);border-radius:14px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap}
+.store-act-btn.gold{background:rgba(245,158,11,0.12);border-color:var(--star-gold);color:var(--star-gold)}
+.store-gold-tag{font-size:9px;color:var(--star-gold);margin-left:6px}
+.store-rate-widget{display:none;gap:4px;margin-top:6px}
+.rate-star{font-size:20px;color:var(--text-dim);cursor:pointer}
+.store-empty{font-size:11px;color:var(--text-dim);text-align:center;padding:30px 0}
+.tablet-app-view{flex:1;display:none;flex-direction:column;padding:20px 24px;overflow-y:auto}
+.tablet-app-view.open{display:flex}
+.tablet-back{align-self:flex-start;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);color:var(--text-dim);border-radius:8px;padding:6px 14px;font-size:11px;cursor:pointer;margin-bottom:16px;transition:.15s}
+  .stars-tabs{display:flex;gap:8px;margin-bottom:14px}
+.stars-tab{background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);color:var(--text-dim);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;transition:.15s}
+.stars-tab.active{background:rgba(245,158,11,0.15);border-color:var(--star-gold);color:var(--star-gold)}
+.stars-panel{display:none;flex-direction:column;gap:8px}
+.stars-panel.active{display:flex}
+.stars-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.03)}
+.stars-rank{width:22px;font-size:12px;font-weight:800;color:var(--text-dim);text-align:center;flex-shrink:0}
+.stars-rank.top1{color:#facc15}
+.stars-rank.top2{color:#cbd5e1}
+.stars-rank.top3{color:#fb923c}
+.stars-thumb{width:32px;height:32px;border-radius:8px;object-fit:cover;flex-shrink:0;background:rgba(255,255,255,0.06)}
+.stars-name{flex:1;font-size:12px;font-weight:700;color:var(--text-main);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stars-guest-tag{font-size:8px;color:var(--star-gold);background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);padding:1px 6px;border-radius:10px;margin-left:5px}
+.stars-value{font-size:12px;font-weight:800;flex-shrink:0}
+.stars-empty{font-size:11px;color:var(--text-dim);padding:20px 0;text-align:center}
+.tablet-back:hover{color:var(--glow-cyan);border-color:var(--glow-cyan);background:rgba(34,211,238,0.08)}
+.tablet-guest-tag{font-size:9px;color:var(--star-gold);background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);padding:2px 8px;border-radius:10px;margin-left:6px}
 </style>
 </head>
 
@@ -534,8 +617,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <div class="planet-dialog-inner">
 <button class="pd-close" onclick="closePlanetDialog()">✕</button>
 <img class="pd-avatar" id="pd-avatar" src="" alt="">
-  <div id="pd-owner-avatar" style="text-align:center;margin-bottom:4px"></div>
-<div class="pd-username" id="pd-username"></div>
+<div class="pd-username" id="pd-username" style="display:flex;align-items:center;justify-content:center;gap:6px"><span id="pd-owner-avatar"></span><span id="pd-username-text"></span></div>
 <div class="pd-level-wrap" id="pd-level-wrap" style="display:none"><span class="pd-level" id="pd-level"></span></div>
 <div class="pd-comment" id="pd-comment" style="display:none"></div>
 <div class="pd-no-comment" id="pd-no-comment">Комментарий не добавлен</div>
@@ -564,7 +646,94 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <button id="settings-btn" onclick="toggleSettingsPopup(event)" title="Настройки">⚙️</button>
 </div>
 <div id="bottom-right">
+<div class="games-wrap">
+  <button class="fab games" id="games-btn" onclick="openGamesTablet()">
+    <span class="games-cam"></span>
+    <span class="games-screen">
+      <span class="fg-icon">🎮</span>
+      <span class="fab-badge" id="games-badge"></span>
+    </span>
+    <span class="games-home"></span>
+  </button>
+</div>
 <button class="fab blue" id="comm-btn" onclick="toggleCommPanel()">💬<span class="fab-badge" id="comm-badge"></span></button>
+</div>
+<div id="games-tablet-overlay">
+  <div class="tablet-shell">
+    <div class="tablet-topbar">
+      <div class="tt-gold" id="tt-gold-line">✨ 0</div>
+      <div class="tt-profile" id="tt-profile-line">
+        <span id="tt-avatar"></span>
+        <span class="tt-profile-text">
+          <span class="tt-nick" id="tt-nick"></span>
+          <span class="tt-id" id="tt-id-line"></span>
+        </span>
+      </div>
+      <button class="tablet-close" onclick="closeGamesTablet()">✕</button>
+    </div>
+    <div class="tablet-level-row" id="tablet-level-row" style="display:none">
+      <div class="level-top-row">
+        <span class="level-badge">★ Ур. <span id="tt-level-num">1</span></span>
+        <span class="level-xp-text" id="tt-xp-text">0/100 XP</span>
+      </div>
+      <div class="level-bar-outer"><div class="level-bar-inner" id="tt-bar-inner" style="width:0%"></div></div>
+    </div>
+    <div class="tablet-boot" id="tablet-boot">
+      <div class="tb-spinner"></div>
+      <div id="tablet-boot-text">Вход в систему...</div>
+    </div>
+    <div class="tablet-body" id="tablet-body">
+      <div class="tablet-home" id="tablet-apps-screen">
+        <div class="tablet-apps">
+          <div class="tablet-app-icon acc-promo" onclick="openTabletApp('promo')">
+  <svg class="tai-glyph" viewBox="0 0 24 24" fill="#fff"><path d="M20 7h-2.18c.11-.31.18-.65.18-1a2.5 2.5 0 0 0-2.5-2.5c-1.44 0-2.6 1.19-3.41 2.34L12 6.09l-.09-.25C11.1 4.69 9.94 3.5 8.5 3.5A2.5 2.5 0 0 0 6 6c0 .35.07.69.18 1H4a2 2 0 0 0-2 2v2a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V9a2 2 0 0 0-2-2zM8.5 5.5c.68 0 1.36.81 1.87 1.5H8.5a1 1 0 1 1 0-2zm7 0a1 1 0 1 1 0 2h-1.87c.51-.69 1.19-1.5 1.87-1.5zM3 13v6a2 2 0 0 0 2 2h6v-8H3zm10 8h6a2 2 0 0 0 2-2v-6h-8v8z"/></svg>
+  <span class="tai-name">Промокод</span>
+          </div>
+          <div class="tablet-app-icon acc-store" onclick="openTabletApp('store')">
+            <svg class="tai-glyph" viewBox="0 0 24 24" fill="#fff"><path d="M7 4v16l14-8z"/></svg>
+            <span class="tai-name">Cosmos Play</span>
+          </div>
+          <div class="tablet-app-icon acc-stars" onclick="openTabletApp('stars')">
+            <svg class="tai-glyph" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l2.9 6.9L22 9.6l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.6L2 9.6l7.1-.7z"/></svg>
+            <span class="tai-name">Stars</span>
+          </div>
+        </div>
+        <div class="tablet-installed-wrap">
+          <div class="tablet-installed-title">МОИ ИГРЫ</div>
+          <div class="tablet-installed-list" id="tablet-installed-list"></div>
+        </div>
+      </div>
+      <div class="tablet-app-view" id="tablet-view-store">
+        <button class="tablet-back" onclick="backToTabletHome()">← Назад</button>
+        <div class="stars-tabs">
+          <button class="stars-tab active" id="store-tab-all" onclick="switchStoreTab('all')">🎮 Все игры</button>
+          <button class="stars-tab" id="store-tab-gold" onclick="switchStoreTab('gold')">🎫 Золотой билет</button>
+        </div>
+        <div class="store-list stars-panel active" id="store-panel-all"></div>
+        <div class="store-list stars-panel" id="store-panel-gold"></div>
+      </div>
+      <div class="tablet-app-view" id="tablet-view-stars">
+        <button class="tablet-back" onclick="backToTabletHome()">← Назад</button>
+        <div class="stars-tabs">
+          <button class="stars-tab active" id="stars-tab-games" onclick="switchStarsTab('games')">🎮 Игры</button>
+          <button class="stars-tab" id="stars-tab-level" onclick="switchStarsTab('level')">★ Уровень</button>
+          <button class="stars-tab" id="stars-tab-gold" onclick="switchStarsTab('gold')">✨ Золото</button>
+        </div>
+        <div class="stars-panel active" id="stars-panel-games"></div>
+        <div class="stars-panel" id="stars-panel-level"></div>
+        <div class="stars-panel" id="stars-panel-gold"></div>
+      </div>
+      <div class="tablet-app-view" id="tablet-view-promo">
+  <button class="tablet-back" onclick="backToTabletHome()">← Назад</button>
+  <div style="font-size:11px;font-weight:700;color:var(--glow-cyan);letter-spacing:.4px;margin-bottom:8px">🎁 Ввести промокод</div>
+  <div style="display:flex;gap:8px">
+    <input type="text" id="promo-code-input" placeholder="ПРОМОКОД" style="flex:1;text-transform:uppercase">
+    <button class="btn primary" onclick="redeemPromoCode()">Активировать</button>
+  </div>
+  <div id="promo-code-msg" style="font-size:12px;margin-top:8px"></div>
+      </div>
+    </div>
+  </div>
 </div>
 <div id="status-bar"><span class="status-dot"></span><span id="planet-count">Загрузка...</span></div>
 <div id="toast"></div>
@@ -763,6 +932,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <button class="btn danger" onclick="cleanClosedTickets()">🗑️ Закрытые тикеты</button>
 <button class="btn danger" onclick="cleanOrphanDecos()">🗑️ Декорации удалённых</button>
 <button class="btn danger" onclick="cleanAllChat()">⚠️ Весь чат</button>
+<button class="btn danger" onclick="resetAllGoldStars()">✨ Обнулить ВСЕ золотые звёзды</button>
 </div>
 <div class="admin-section-title" style="margin-top:14px">📊 Статистика</div>
 <div id="server-stats" style="font-size:11px;color:var(--text-dim);line-height:2">Загрузка...</div>
@@ -997,6 +1167,24 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <input type="text" id="search-profile-input" placeholder="Введи ник..." oninput="searchProfiles()">
 </div>
 <div id="search-profile-results" style="display:flex;flex-direction:column;gap:6px;margin-top:10px;max-height:300px;overflow-y:auto"></div>
+</div>
+  </div>
+
+  <div class="modal-overlay" id="guest-profile-modal" style="display:none">
+<div class="modal"><button class="modal-close" onclick="closeModal('guest-profile-modal')">✕</button>
+<h2>👤 Профиль гостя</h2>
+<div class="modal-sub">Гостевой доступ — зарегистрируйся, чтобы сохранить прогресс</div>
+<div class="profile-header">
+  <div class="avatar-circle avatar-lg"><span id="guest-avatar-letter"></span></div>
+  <div class="profile-id">ID: <span id="guest-id-text"></span></div>
+  <div class="profile-nick"><span id="guest-nick-text"></span></div>
+  <div class="level-block">
+    <div class="level-top-row">
+      <span class="level-badge" style="color:var(--star-gold);border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.12)">✨ Золотые звёзды</span>
+      <span class="level-xp-text" id="guest-gold-text">0</span>
+    </div>
+  </div>
+</div>
 </div>
   </div>
 
@@ -1509,7 +1697,7 @@ function renderAll(){orbitItems=[];const layer=document.getElementById('planets-
 function getAnimClass(anim){const m={'float':'anim-float','pulse':'anim-pulse','spin':'anim-spin','wobble':'anim-wobble','bounce':'anim-bounce','sway':'anim-sway','none':'anim-none'};return m[anim]||'anim-float';}
 function createPlanetEl(planet){const isOwner=currentUser?.id===planet.user_id;const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;const glow=planet.glow_color||'#22d3ee';const orbitR=planet.orbit_radius||0;const canManage=isOwner||isRealAdmin;function makeContent(){const img=document.createElement('img');img.className=getAnimClass(planet.animation||'float');img.style.cssText='display:block;object-fit:contain;width:'+planet.size+'px;height:'+planet.size+'px;filter:drop-shadow(0 0 12px '+glow+');margin:0 auto';img.src=planet.image_url;img.alt=planet.username;img.loading='lazy';img.onerror=()=>{img.src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'><circle cx='40' cy='40' r='40' fill='%236b21d4'/><text x='40' y='52' text-anchor='middle' fill='white' font-size='28'>🪐</text></svg>";};const label=document.createElement('div');label.style.cssText='text-align:center;font-size:11px;color:#22d3ee;margin-top:3px;white-space:nowrap;pointer-events:none;text-shadow:0 0 8px #22d3ee';label.textContent=planet.username;return{img,label};}if(orbitR>0){const orbitEl=document.createElement('div');orbitEl.dataset.planetId=planet.id;orbitEl.style.cssText='position:absolute;left:'+(planet.x_pos+cam.x)+'px;top:'+(planet.y_pos+cam.y)+'px;width:0;height:0;pointer-events:none;z-index:2';orbitEl.classList.add('orbit-wrap');const inner=document.createElement('div');inner.className='orbit-inner';inner.setAttribute('data-planet-inner',planet.id);inner.style.position='absolute';inner.style.left='0';inner.style.top='0';inner.style.pointerEvents='all';inner.style.cursor='pointer';const{img,label}=makeContent();inner.appendChild(img);inner.appendChild(label);inner.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showPlanetDialog(planet,inner);if(canManage)showFloatPanel('planet',planet.id);});orbitEl.appendChild(inner);orbitItems.push({el:orbitEl,radius:orbitR,durationMs:orbitSpeedToDurationMs(planet.orbit_speed||5),start:performance.now()});return orbitEl;}const wrap=document.createElement('div');wrap.dataset.planetId=planet.id;wrap.setAttribute('data-planet-inner',planet.id);wrap.style.cssText='position:absolute;pointer-events:all;cursor:pointer;z-index:2;left:'+(planet.x_pos+cam.x)+'px;top:'+(planet.y_pos+cam.y)+'px;transform:translate(-50%,-50%);text-align:center;display:flex;flex-direction:column;align-items:center';const{img,label}=makeContent();wrap.appendChild(img);wrap.appendChild(label);wrap.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showPlanetDialog(planet,wrap);if(canManage)showFloatPanel('planet',planet.id);});return wrap;}
 function createDecoEl(deco){const isOwner=currentUser?.id===deco.user_id;const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;const glow=deco.glow_color||'rgba(255,255,255,0.3)';const orbitR=deco.orbit_radius||0;const canManage=isOwner||isRealAdmin;const owner=usersCache.find(u=>u.id===deco.user_id);function makeContent(){const img=document.createElement('img');img.className=getAnimClass(deco.animation||'float');img.src=deco.image_url;img.loading='lazy';img.style.cssText='display:block;object-fit:contain;width:'+deco.size+'px;height:'+deco.size+'px;filter:drop-shadow(0 0 8px '+glow+');margin:0 auto';const els=[img];if(deco.name){const lbl=document.createElement('div');lbl.style.cssText='text-align:center;font-size:10px;color:rgba(255,255,255,0.85);margin-top:2px;white-space:nowrap;pointer-events:none';lbl.textContent=deco.name;els.push(lbl);}const auth=document.createElement('div');auth.style.cssText='text-align:center;font-size:9px;color:#94a3b8;pointer-events:none';auth.textContent='@'+(owner?.username||'?');els.push(auth);return els;}if(orbitR>0){const orbitEl=document.createElement('div');orbitEl.dataset.decoId=deco.id;orbitEl.style.cssText='position:absolute;left:'+(deco.x_pos+cam.x)+'px;top:'+(deco.y_pos+cam.y)+'px;width:0;height:0;pointer-events:none;z-index:2';orbitEl.classList.add('orbit-wrap');const inner=document.createElement('div');inner.className='orbit-inner';inner.setAttribute('data-deco-inner',deco.id);inner.style.position='absolute';inner.style.left='0';inner.style.top='0';inner.style.pointerEvents=canManage?'all':'none';if(canManage)inner.style.cursor='pointer';makeContent().forEach(el=>inner.appendChild(el));if(canManage)inner.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showFloatPanel('deco',deco.id);});orbitEl.appendChild(inner);orbitItems.push({el:orbitEl,radius:orbitR,durationMs:orbitSpeedToDurationMs(deco.orbit_speed||5),start:performance.now()});return orbitEl;}const wrap=document.createElement('div');wrap.dataset.decoId=deco.id;wrap.setAttribute('data-deco-inner',deco.id);wrap.style.cssText='position:absolute;z-index:2;left:'+(deco.x_pos+cam.x)+'px;top:'+(deco.y_pos+cam.y)+'px;transform:translate(-50%,-50%);text-align:center;display:flex;flex-direction:column;align-items:center;pointer-events:'+(canManage?'all':'none');if(canManage)wrap.style.cursor='pointer';makeContent().forEach(el=>wrap.appendChild(el));if(canManage)wrap.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showFloatPanel('deco',deco.id);});return wrap;}
-  function showPlanetDialog(planet,wrapEl){if(activeAudio){activeAudio.pause();activeAudio=null;}currentPlanetSound=planet.sound_url||null;document.getElementById('pd-avatar').src=planet.image_url;const pdUser=document.getElementById('pd-username');pdUser.textContent='🌌 '+planet.username;pdUser.style.cursor='pointer';pdUser.onclick=()=>openProfileModal(planet.user_id);const profile=usersCache.find(u=>u.id===planet.user_id);const ownerAvEl=document.getElementById('pd-owner-avatar');if(ownerAvEl){ownerAvEl.innerHTML=avatarHtml(profile,'avatar-sm');ownerAvEl.style.cursor='pointer';ownerAvEl.onclick=()=>openProfileModal(planet.user_id);}const level=profile?.boosty_level||null;const lvWrap=document.getElementById('pd-level-wrap');if(level){document.getElementById('pd-level').textContent='⭐ '+level;lvWrap.style.display='';}else lvWrap.style.display='none';const commentEl=document.getElementById('pd-comment'),noEl=document.getElementById('pd-no-comment');if(planet.comment&&planet.comment.trim()){commentEl.textContent=planet.comment;commentEl.style.display='block';noEl.style.display='none';}else{commentEl.style.display='none';noEl.style.display='block';}const soundEl=document.getElementById('pd-sound-badge');const volRow=document.getElementById('pd-volume-row');if(planet.sound_url){soundEl.style.display='inline-flex';soundEl.textContent='🔊 Нажми для звука';const vol=planet.sound_volume!=null?planet.sound_volume:planetSoundVolume;volRow.style.display='flex';document.getElementById('pd-volume-slider').value=vol;document.getElementById('pd-volume-val').textContent=Math.round(vol*100)+'%';planetSoundVolume=vol;if(bgMusicAudio&&!bgMusicAudio.paused)bgMusicAudio.volume=bgMusicVolume*0.15;try{activeAudio=new Audio(planet.sound_url);activeAudio.volume=vol;activeAudio.play().then(()=>{soundEl.textContent='🔊 Играет...';}).catch(()=>{soundEl.textContent='🔊 Нажми для звука';});activeAudio.onended=()=>{soundEl.textContent='🔊 Нажми снова';if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume;};}catch(e){}}else{soundEl.style.display='none';volRow.style.display='none';}const dialog=document.getElementById('planet-dialog');dialog.style.display='block';const rect=wrapEl.getBoundingClientRect();let left=rect.right+12,top=rect.top;if(left+310>window.innerWidth)left=Math.max(8,rect.left-310);top=Math.max(8,Math.min(top,window.innerHeight-380));dialog.style.left=left+'px';dialog.style.top=top+'px';}
+  function showPlanetDialog(planet,wrapEl){if(activeAudio){activeAudio.pause();activeAudio=null;}currentPlanetSound=planet.sound_url||null;document.getElementById('pd-avatar').src=planet.image_url;const pdUser=document.getElementById('pd-username');document.getElementById('pd-username-text').textContent=planet.username;pdUser.style.cursor='pointer';pdUser.onclick=()=>openProfileModal(planet.user_id);const profile=usersCache.find(u=>u.id===planet.user_id);const ownerAvEl=document.getElementById('pd-owner-avatar');if(ownerAvEl){ownerAvEl.innerHTML=avatarHtml(profile,'avatar-sm');}const level=profile?.boosty_level||null;const lvWrap=document.getElementById('pd-level-wrap');if(level){document.getElementById('pd-level').textContent='⭐ '+level;lvWrap.style.display='';}else lvWrap.style.display='none';const commentEl=document.getElementById('pd-comment'),noEl=document.getElementById('pd-no-comment');if(planet.comment&&planet.comment.trim()){commentEl.textContent=planet.comment;commentEl.style.display='block';noEl.style.display='none';}else{commentEl.style.display='none';noEl.style.display='block';}const soundEl=document.getElementById('pd-sound-badge');const volRow=document.getElementById('pd-volume-row');if(planet.sound_url){soundEl.style.display='inline-flex';soundEl.textContent='🔊 Нажми для звука';const vol=planet.sound_volume!=null?planet.sound_volume:planetSoundVolume;volRow.style.display='flex';document.getElementById('pd-volume-slider').value=vol;document.getElementById('pd-volume-val').textContent=Math.round(vol*100)+'%';planetSoundVolume=vol;if(bgMusicAudio&&!bgMusicAudio.paused)bgMusicAudio.volume=bgMusicVolume*0.15;try{activeAudio=new Audio(planet.sound_url);activeAudio.volume=vol;activeAudio.play().then(()=>{soundEl.textContent='🔊 Играет...';}).catch(()=>{soundEl.textContent='🔊 Нажми для звука';});activeAudio.onended=()=>{soundEl.textContent='🔊 Нажми снова';if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume;};}catch(e){}}else{soundEl.style.display='none';volRow.style.display='none';}const dialog=document.getElementById('planet-dialog');dialog.style.display='block';const rect=wrapEl.getBoundingClientRect();let left=rect.right+12,top=rect.top;if(left+310>window.innerWidth)left=Math.max(8,rect.left-310);top=Math.max(8,Math.min(top,window.innerHeight-380));dialog.style.left=left+'px';dialog.style.top=top+'px';}
 function playPlanetSound(){if(!currentPlanetSound)return;if(activeAudio)activeAudio.pause();const badge=document.getElementById('pd-sound-badge');if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume*0.15;try{activeAudio=new Audio(currentPlanetSound);activeAudio.volume=planetSoundVolume;activeAudio.play();badge.textContent='🔊 Играет...';activeAudio.onended=()=>{badge.textContent='🔊 Нажми снова';if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume;};}catch(e){}}
 function closePlanetDialog(){document.getElementById('planet-dialog').style.display='none';if(activeAudio){activeAudio.pause();activeAudio=null;}currentPlanetSound=null;if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume;}
 </script>
@@ -1548,6 +1736,413 @@ function renderProfileLevel(profile){
 }
 
 let profileViewingSelf = true;
+
+ async function getGuestProfile(){
+  const cached=localStorage.getItem('na_guest');
+  if(cached){
+    try{
+      const parsed=JSON.parse(cached);
+      if(!parsed.local){
+        const{data}=await sb.from('guests').select('id,nickname,gold_stars').eq('id',parsed.id).maybeSingle();
+        if(data)return data;
+      }
+    }catch(e){}
+  }
+  const{data,error}=await sb.rpc('create_guest');
+  if(error||!data||!data[0]){
+    console.error('create_guest error:',error);
+    showToast('❌ Не удалось создать гостевой профиль, попробуй обновить страницу');
+    return null;
+  }
+  const g=data[0];
+  localStorage.setItem('na_guest', JSON.stringify({id:g.id}));
+  return {id:g.id,nickname:g.nickname,gold_stars:0};
+}
+
+let currentGuestData=null;
+
+  function refreshTabletHeader(){
+  const goldLine=document.getElementById('tt-gold-line');
+  if(!goldLine)return;
+  if(currentUser){
+    goldLine.textContent='✨ '+(currentProfile?.gold_stars||0);
+    const level=currentProfile?.level||1, xp=currentProfile?.xp||0, need=xpNeededForLevel(level);
+    const pct=Math.max(2,Math.min(100,Math.round(xp/need*100)));
+    const levelNumEl=document.getElementById('tt-level-num');
+    const xpTextEl=document.getElementById('tt-xp-text');
+    const barEl=document.getElementById('tt-bar-inner');
+    if(levelNumEl)levelNumEl.textContent=level;
+    if(xpTextEl)xpTextEl.textContent=xp+'/'+need+' XP';
+    if(barEl)barEl.style.width=pct+'%';
+  }else{
+    goldLine.textContent='✨ '+(currentGuestData?.gold_stars||0);
+  }
+}
+
+async function openGamesTablet(){
+  clearGamesBadge();
+  const overlay=document.getElementById('games-tablet-overlay');
+  const boot=document.getElementById('tablet-boot');
+  const body=document.getElementById('tablet-body');
+  const bootText=document.getElementById('tablet-boot-text');
+  const goldLine=document.getElementById('tt-gold-line');
+  const profLine=document.getElementById('tt-profile-line');
+  const avatarEl=document.getElementById('tt-avatar');
+  const nickEl=document.getElementById('tt-nick');
+  const idEl=document.getElementById('tt-id-line');
+  const levelRow=document.getElementById('tablet-level-row');
+
+  overlay.style.display='flex';
+  requestAnimationFrame(()=>overlay.classList.add('on'));
+  boot.style.display='flex';
+  body.style.display='none';
+  levelRow.style.display='none';
+  backToTabletHome();
+
+  const isGuest=!currentUser;
+  bootText.textContent=isGuest?'Гостевой вход...':'Вход в систему...';
+  goldLine.textContent='✨ ...';
+  nickEl.textContent='...';
+  idEl.textContent='';
+  avatarEl.innerHTML='';
+  profLine.onclick=null;
+  profLine.classList.add('no-link');
+
+  if(isGuest){
+    const guest=await getGuestProfile();
+    currentGuestData=guest;
+    goldLine.textContent='✨ '+(guest?.gold_stars||0);
+    nickEl.textContent=guest?.nickname||'Гость';
+    idEl.textContent='ID: '+(guest?.id?guest.id.slice(0,8).toUpperCase():'—');
+    avatarEl.innerHTML=avatarHtml({username:guest?.nickname},'avatar-xs');
+    profLine.classList.remove('no-link');
+    profLine.onclick=()=>{
+      closeGamesTablet();
+      setTimeout(()=>openGuestProfileModal(guest),450);
+    };
+  }else{
+    goldLine.textContent='✨ '+(currentProfile?.gold_stars||0);
+    nickEl.textContent='@'+(currentProfile?.username||'');
+    idEl.textContent='ID: '+currentUser.id.slice(0,8).toUpperCase();
+    avatarEl.innerHTML=avatarHtml(currentProfile,'avatar-xs');
+    profLine.classList.remove('no-link');
+    profLine.onclick=()=>{
+      closeGamesTablet();
+      setTimeout(()=>openProfileModal(),450);
+    };
+    const level=currentProfile?.level||1, xp=currentProfile?.xp||0, need=xpNeededForLevel(level);
+    const pct=Math.max(2,Math.min(100,Math.round(xp/need*100)));
+    document.getElementById('tt-level-num').textContent=level;
+    document.getElementById('tt-xp-text').textContent=xp+'/'+need+' XP';
+    document.getElementById('tt-bar-inner').style.width=pct+'%';
+    levelRow.style.display='block';
+  }
+loadInstalledGames();
+  setTimeout(()=>{
+    boot.style.display='none';
+    body.style.display='flex';
+  },1100);
+}
+
+function openGuestProfileModal(guest){
+  if(!guest)return;
+  document.getElementById('guest-avatar-letter').textContent=(guest.nickname||'?')[0].toUpperCase();
+  document.getElementById('guest-id-text').textContent=guest.id.slice(0,8).toUpperCase();
+  document.getElementById('guest-nick-text').textContent=guest.nickname;
+  document.getElementById('guest-gold-text').textContent=guest.gold_stars||0;
+  openModal('guest-profile-modal');
+}
+
+function closeGamesTablet(){
+  stopStarsAutoRefresh();
+  const overlay=document.getElementById('games-tablet-overlay');
+  overlay.classList.remove('on');
+  setTimeout(()=>{overlay.style.display='none';},400);
+}
+
+function openTabletApp(name){
+document.getElementById('tablet-apps-screen').style.display='none';
+document.querySelectorAll('.tablet-app-view').forEach(v=>v.classList.remove('open'));
+document.getElementById('tablet-view-'+name).classList.add('open');
+const shell=document.querySelector('.tablet-shell');
+      if(shell)shell.classList.add('app-open');
+if(name==='stars'){switchStarsTab('games');startStarsAutoRefresh();}
+if(name==='store')switchStoreTab('all');
+if(name==='promo'){document.getElementById('promo-code-msg').textContent='';document.getElementById('promo-code-input').value='';}
+}
+  
+function backToTabletHome(){
+stopStarsAutoRefresh();
+document.getElementById('tablet-apps-screen').style.display='flex';
+document.querySelectorAll('.tablet-app-view').forEach(v=>v.classList.remove('open'));
+const shell=document.querySelector('.tablet-shell');
+      if(shell)shell.classList.remove('app-open');
+      }
+
+  async function switchStarsTab(tab){
+  document.querySelectorAll('.stars-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.stars-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('stars-tab-'+tab).classList.add('active');
+  document.getElementById('stars-panel-'+tab).classList.add('active');
+  await refreshActiveStarsTab();
+}
+
+async function refreshActiveStarsTab(){
+  const activeTab=document.querySelector('.stars-tab.active');
+  if(!activeTab)return;
+  const tab=activeTab.id.replace('stars-tab-','');
+  if(tab==='games')await loadStarsGames();
+  if(tab==='level')await loadStarsLevel();
+  if(tab==='gold')await loadStarsGold();
+}
+
+let starsRefreshInterval=null;
+function startStarsAutoRefresh(){
+  stopStarsAutoRefresh();
+  starsRefreshInterval=setInterval(refreshActiveStarsTab, 6000);
+}
+function stopStarsAutoRefresh(){
+  if(starsRefreshInterval){clearInterval(starsRefreshInterval);starsRefreshInterval=null;}
+}
+
+function starsRankClass(i){
+  return i===0?'top1':i===1?'top2':i===2?'top3':'';
+}
+
+async function loadStarsGames(){
+  const panel=document.getElementById('stars-panel-games');
+  const{data,error}=await sb.from('games').select('id,title,thumbnail_url,game_rating_stats(rating_count,avg_stars)').eq('status','approved');
+  if(error||!data||!data.length){panel.innerHTML='<div class="stars-empty">Пока нет оценённых игр</div>';return;}
+  const rows=data.map(g=>({title:g.title,thumb:g.thumbnail_url,count:g.game_rating_stats?.[0]?.rating_count||0,avg:g.game_rating_stats?.[0]?.avg_stars||0}))
+    .filter(r=>r.count>0)
+    .sort((a,b)=>b.avg-a.avg||b.count-a.count);
+  if(!rows.length){panel.innerHTML='<div class="stars-empty">Пока нет оценённых игр</div>';return;}
+  panel.innerHTML=rows.map((r,i)=>'<div class="stars-row"><span class="stars-rank '+starsRankClass(i)+'">'+(i+1)+'</span>'+(r.thumb?'<img class="stars-thumb" src="'+r.thumb+'">':'<span class="stars-thumb"></span>')+'<span class="stars-name">'+escHtml(r.title)+'</span><span class="stars-value" style="color:var(--star-gold)">★ '+r.avg+' ('+r.count+')</span></div>').join('');
+}
+
+async function loadStarsLevel(){
+  const panel=document.getElementById('stars-panel-level');
+  const{data,error}=await sb.from('level_leaderboard').select('*').limit(50);
+  if(error||!data||!data.length){panel.innerHTML='<div class="stars-empty">Пока никто не набрал уровень</div>';return;}
+  panel.innerHTML=data.map((p,i)=>'<div class="stars-row" style="cursor:pointer" onclick="openProfileModal(\''+p.id+'\')"><span class="stars-rank '+starsRankClass(i)+'">'+(i+1)+'</span><span class="stars-name">@'+escHtml(p.username)+' <span style="font-size:9px;color:var(--text-dim)">ID:'+p.id.slice(0,8).toUpperCase()+'</span></span><span class="stars-value" style="color:var(--glow-cyan)">★ Ур.'+p.level+'</span></div>').join('');
+}
+
+async function loadStarsGold(){
+  const panel=document.getElementById('stars-panel-gold');
+  const{data,error}=await sb.from('gold_stars_leaderboard').select('*').gt('gold_stars',0).limit(50);
+  if(error||!data||!data.length){panel.innerHTML='<div class="stars-empty">Пока никто не получил золотые звёзды</div>';return;}
+  panel.innerHTML=data.map((p,i)=>{
+    const idShort=p.id?p.id.slice(0,8).toUpperCase():'—';
+    const clickAttr=p.is_guest
+      ? "openGuestProfileModal({id:'"+p.id+"',nickname:'"+escHtml(p.display_name||'?')+"',gold_stars:"+p.gold_stars+"})"
+      : "openProfileModal('"+p.id+"')";
+    return '<div class="stars-row" style="cursor:pointer" onclick="'+clickAttr+'"><span class="stars-rank '+starsRankClass(i)+'">'+(i+1)+'</span><span class="stars-name">'+escHtml(p.display_name||'?')+(p.is_guest?'<span class="stars-guest-tag">ГОСТЬ</span>':'')+' <span style="font-size:9px;color:var(--text-dim)">ID:'+idShort+'</span></span><span class="stars-value" style="color:var(--star-gold)">✨ '+p.gold_stars+'</span></div>';
+  }).join('');
+}
+
+  function switchStoreTab(tab){
+  document.getElementById('store-tab-all').classList.toggle('active',tab==='all');
+  document.getElementById('store-tab-gold').classList.toggle('active',tab==='gold');
+  document.getElementById('store-panel-all').classList.toggle('active',tab==='all');
+  document.getElementById('store-panel-gold').classList.toggle('active',tab==='gold');
+  loadCosmosStore(tab);
+}
+
+async function loadCosmosStore(tab){
+  tab=tab||'all';
+  const panel=document.getElementById(tab==='gold'?'store-panel-gold':'store-panel-all');
+  let q=sb.from('games').select('id,title,description,thumbnail_url,league,gold_star_reward,game_rating_stats(rating_count,avg_stars)').eq('status','approved');
+  if(tab==='gold')q=q.eq('league','gold');
+  const{data,error}=await q;
+  if(error||!data||!data.length){panel.innerHTML='<div class="store-empty">'+(tab==='gold'?'Пока нет игр с золотым билетом':'Пока нет доступных игр')+'</div>';return;}
+  const installedIds=await getInstalledGameIds();
+  const isAdmin=currentProfile?.role==='admin';
+  panel.innerHTML=data.map(g=>{
+    const rating=g.game_rating_stats?.[0];
+    const ratingText=rating&&rating.rating_count>0?'★ '+rating.avg_stars+' ('+rating.rating_count+')':'Нет оценок';
+    const isInstalled=installedIds.includes(g.id);
+    const icon=g.thumbnail_url?'<img class="store-icon" src="'+g.thumbnail_url+'">':'<div class="store-icon">🎮</div>';
+    const goldTag=g.league==='gold'?'<span class="store-gold-tag">✨ '+g.gold_star_reward+'</span>':'';
+    return '<div class="store-row">'+icon+
+      '<div class="store-info"><div class="store-title">'+escHtml(g.title)+goldTag+'</div>'+
+      '<div class="store-desc">'+escHtml(g.description||'')+'</div>'+
+      '<div class="store-rating">'+ratingText+'</div>'+
+      '<div class="store-actions">'+
+        '<button class="store-act-btn" onclick="openInstalledGame(\''+g.id+'\')">▶️ Играть</button>'+
+        '<button class="store-act-btn" onclick="toggleInstallGame(\''+g.id+'\',this)">'+(isInstalled?'🗑️ Удалить':'📥 Скачать')+'</button>'+
+        '<button class="store-act-btn" onclick="openRateWidget(\''+g.id+'\')">⭐ Оценить</button>'+
+        (isAdmin?'<button class="store-act-btn gold" onclick="grantGoldTicket(\''+g.id+'\')">'+(g.league==='gold'?'🎫 Убрать билет':'🎫 Дать билет')+'</button>':'')+
+      '</div>'+
+      '<div class="store-rate-widget" id="rate-widget-'+g.id+'"></div>'+
+      '</div></div>';
+  }).join('');
+}
+
+async function getInstalledGameIds(){
+  let q=sb.from('game_installs').select('game_id');
+  if(currentUser)q=q.eq('user_id',currentUser.id);
+  else if(currentGuestData?.id)q=q.eq('guest_id',currentGuestData.id);
+  else return[];
+  const{data}=await q;
+  return(data||[]).map(r=>r.game_id);
+}
+
+async function toggleInstallGame(gameId,btn){
+  const isInstalled=btn.textContent.includes('Удалить');
+  if(isInstalled){
+    let q=sb.from('game_installs').delete().eq('game_id',gameId);
+    if(currentUser)q=q.eq('user_id',currentUser.id);else if(currentGuestData?.id)q=q.eq('guest_id',currentGuestData.id);else return;
+    await q;
+    btn.textContent='📥 Скачать';
+  }else{
+    const row={game_id:gameId};
+    if(currentUser)row.user_id=currentUser.id;else if(currentGuestData?.id)row.guest_id=currentGuestData.id;else{showToast('❌ Не удалось определить пользователя');return;}
+    const{error}=await sb.from('game_installs').insert(row);
+    if(error){showToast('❌ '+error.message);return;}
+    btn.textContent='🗑️ Удалить';
+  }
+  await loadInstalledGames();
+}
+
+function openRateWidget(gameId){
+  const widget=document.getElementById('rate-widget-'+gameId);
+  const isOpen=widget.style.display==='flex';
+  widget.style.display=isOpen?'none':'flex';
+  if(!isOpen)widget.innerHTML=[1,2,3,4,5].map(n=>'<span class="rate-star" data-n="'+n+'" onclick="submitRating(\''+gameId+'\','+n+')">★</span>').join('');
+}
+
+function highlightStars(gameId,n){
+  const widget=document.getElementById('rate-widget-'+gameId);
+  widget.querySelectorAll('.rate-star').forEach(s=>{
+    s.style.color=parseInt(s.dataset.n,10)<=n?'var(--star-gold)':'var(--text-dim)';
+  });
+}
+
+async function submitRating(gameId,stars){
+  highlightStars(gameId,stars);
+  const row={game_id:gameId,stars};
+  let onConflict;
+  if(currentUser){row.rater_user_id=currentUser.id;onConflict='game_id,rater_user_id';}
+  else if(currentGuestData?.id){row.rater_guest_id=currentGuestData.id;onConflict='game_id,rater_guest_id';}
+  else{showToast('❌ Не удалось определить пользователя');return;}
+  const{error}=await sb.from('game_ratings').upsert(row,{onConflict});
+  if(error){showToast('❌ '+error.message);return;}
+  showToast('⭐ Спасибо за оценку!');
+  setTimeout(()=>{document.getElementById('rate-widget-'+gameId).style.display='none';},600);
+}
+
+async function grantGoldTicket(gameId){
+  const{data:g}=await sb.from('games').select('league').eq('id',gameId).maybeSingle();
+  const isGold=g?.league==='gold';
+  if(isGold){
+    const{error}=await sb.from('games').update({league:'normal',gold_star_reward:0}).eq('id',gameId);
+    if(error){showToast('❌ '+error.message);return;}
+    showToast('Билет снят');
+  }else{
+    const amount=prompt('Сколько золотых звёзд давать за победу в этой игре?','5');
+    if(amount===null)return;
+    const n=parseInt(amount,10);
+    if(isNaN(n)||n<0){showToast('❌ Некорректное число');return;}
+    const{error}=await sb.from('games').update({league:'gold',gold_star_reward:n}).eq('id',gameId);
+    if(error){showToast('❌ '+error.message);return;}
+    showToast('🎫 Золотой билет выдан');
+  }
+  await loadCosmosStore(document.getElementById('store-tab-gold').classList.contains('active')?'gold':'all');
+}
+
+async function loadInstalledGames(){
+  const list=document.getElementById('tablet-installed-list');
+  if(!list)return;
+  let q=sb.from('game_installs').select('games(id,title,thumbnail_url,game_rating_stats(rating_count,avg_stars))');
+  if(currentUser)q=q.eq('user_id',currentUser.id);
+  else if(currentGuestData?.id)q=q.eq('guest_id',currentGuestData.id);
+  else{list.innerHTML='<div class="tablet-installed-empty">Скачай игры в Cosmos Play</div>';return;}
+  const{data,error}=await q;
+  if(error||!data||!data.length){list.innerHTML='<div class="tablet-installed-empty">Скачай игры в Cosmos Play</div>';return;}
+  list.innerHTML=data.map(r=>{
+    const g=r.games;if(!g)return'';
+    const rating=g.game_rating_stats?.[0];
+    const ratingText=rating&&rating.rating_count>0?'★ '+rating.avg_stars:'';
+    const icon=g.thumbnail_url?'<img class="tig-icon" src="'+g.thumbnail_url+'">':'<div class="tig-icon">🎮</div>';
+    return '<div class="tig-row" onclick="openInstalledGame(\''+g.id+'\')">'+icon+'<span class="tig-name">'+escHtml(g.title)+'</span><span class="tig-rating">'+ratingText+'</span></div>';
+  }).join('');
+}
+
+async function openInstalledGame(gameId){
+  try{
+    const{data:g,error}=await sb.from('games').select('id,title,code,league').eq('id',gameId).maybeSingle();
+    if(error){showToast('❌ Ошибка загрузки: '+error.message);console.error(error);return;}
+    if(!g){showToast('❌ Игра не найдена');return;}
+    let html=g.code?.html||'<div style="color:#fff;padding:20px">Игра пуста</div>';
+    html=applyTextures(html,g.code?.textures||{});
+
+    const overlay=document.createElement('div');
+    overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:#000;display:flex;flex-direction:column';
+    overlay.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#0a0f1e"><span style="color:#fff;font-size:13px;font-weight:700">'+escHtml(g.title)+'</span><button id="pg-close-btn" style="background:none;border:1px solid var(--glass-border);color:#fff;border-radius:8px;width:28px;height:28px;cursor:pointer">✕</button></div><iframe id="pg-frame" sandbox="allow-scripts" style="flex:1;border:none;width:100%;background:#111"></iframe>';
+    document.body.appendChild(overlay);
+    const iframe=overlay.querySelector('#pg-frame');
+    iframe.srcdoc=html;
+    iframe.onload=()=>{iframe.contentWindow.postMessage({type:'andra-slot-init',goldEnabled:g.league==='gold'},'*');};
+
+const onMsg=async(e)=>{
+      if(e.source!==iframe.contentWindow)return;
+      if(e.data?.type==='andra-win'){
+        const mult=Math.min(10,Math.max(1,parseInt(e.data.multiplier,10)||1));
+        const{data:award,error:awardErr}=await sb.rpc('award_game_action',{p_game_id:gameId,p_guest_id:currentUser?null:(currentGuestData?.id||null),p_multiplier:mult});
+        if(awardErr){console.error(awardErr);return;}
+        const blue=award?.blue||0, gold=award?.gold||0;
+        if(blue>0||gold>0)showToast('⭐ Получено: '+(blue>0?blue+' синих ':'')+(gold>0?gold+' золотых':''));
+        iframe.contentWindow.postMessage({type:'andra-award',blue,gold},'*');
+        if(currentUser&&(blue>0||gold>0)){
+          const{data:freshProfile}=await sb.from('profiles').select('*').eq('id',currentUser.id).maybeSingle();
+          if(freshProfile)currentProfile=freshProfile;
+        }else if(currentGuestData?.id&&gold>0){
+          const{data:freshGuest}=await sb.from('guests').select('id,nickname,gold_stars').eq('id',currentGuestData.id).maybeSingle();
+          if(freshGuest)currentGuestData=freshGuest;
+        }
+        refreshTabletHeader();
+      }
+      if(e.data?.type==='andra-slot-spin'){
+        const{data:result,error:spinErr}=await sb.rpc('slot_spin',{p_game_id:gameId,p_guest_id:currentUser?null:(currentGuestData?.id||null),p_use_gold:!!e.data.useGold,p_stake:parseInt(e.data.stake,10)||10});
+        if(spinErr){console.error(spinErr);iframe.contentWindow.postMessage({type:'andra-slot-result',success:false,message:spinErr.message},'*');return;}
+        iframe.contentWindow.postMessage({type:'andra-slot-result',...result},'*');
+        if(currentUser){
+          const{data:freshProfile}=await sb.from('profiles').select('*').eq('id',currentUser.id).maybeSingle();
+          if(freshProfile)currentProfile=freshProfile;
+        }else if(currentGuestData?.id){
+          const{data:freshGuest}=await sb.from('guests').select('id,nickname,gold_stars').eq('id',currentGuestData.id).maybeSingle();
+          if(freshGuest)currentGuestData=freshGuest;
+        }
+        refreshTabletHeader();
+      }
+    };
+    window.addEventListener('message',onMsg);
+    overlay.querySelector('#pg-close-btn').onclick=()=>{
+      window.removeEventListener('message',onMsg);
+      overlay.remove();
+    };
+  }catch(err){
+    console.error('openInstalledGame crash:',err);
+    showToast('❌ Ошибка запуска: '+err.message);
+  }
+}
+  async function checkGamesBadge(){
+  try{
+    const lastSeen=localStorage.getItem('na_games_last_seen')||'2000-01-01';
+    const{count,error}=await sb.from('games').select('*',{count:'exact',head:true}).eq('status','approved').gt('created_at',lastSeen);
+    if(error)return; // таблицы games ещё нет (появится на Этапе 2) — просто молчим
+    const badge=document.getElementById('games-badge');
+    if(!badge)return;
+    if(count>0){badge.textContent=count>9?'9+':count;badge.style.display='flex';}
+    else badge.style.display='none';
+  }catch(e){}
+}
+
+function clearGamesBadge(){
+  localStorage.setItem('na_games_last_seen', new Date().toISOString());
+  const badge=document.getElementById('games-badge');
+  if(badge)badge.style.display='none';
+}
 
 async function openProfileModal(userId){
   const viewingSelf = !userId || userId===currentUser?.id;
@@ -1665,6 +2260,29 @@ async function cleanOldChat(){if(!confirm('Удалить чат старше 7 
 async function cleanClosedTickets(){if(!confirm('Удалить закрытые тикеты?'))return;await sb.from('support_tickets').delete().eq('status','closed');showToast('🗑️ Тикеты удалены');await loadServerStats();}
 async function cleanOrphanDecos(){if(!confirm('Удалить декорации удалённых?'))return;const{data:profiles}=await sb.from('profiles').select('id');const ids=(profiles||[]).map(p=>p.id);if(ids.length){await sb.from('decorations').delete().not('user_id','in','('+ids.map(i=>"'"+i+"'").join(',')+')');}showToast('🗑️ Декорации очищены');await loadServerStats();await loadPlanets();}
 async function cleanAllChat(){if(!confirm('⚠️ Удалить ВЕСЬ чат?'))return;if(!confirm('Подтверди — необратимо!'))return;await sb.from('chat_messages').delete().gte('created_at','2000-01-01');chatMessages=[];renderChat();showToast('🗑️ Чат очищен');await loadServerStats();if(adminPanelOpen)await loadAdminChat();}
+async function resetAllGoldStars(){
+  if(!confirm('Обнулить золотые звёзды у ВСЕХ — и аккаунтов, и гостей? Необратимо.'))return;
+  const{error}=await sb.rpc('reset_all_gold_stars');
+  if(error){showToast('❌ '+error.message);return;}
+  showToast('✨ Все золотые звёзды обнулены');
+                               }
+  async function redeemPromoCode(){
+  const input=document.getElementById('promo-code-input');
+  const msgEl=document.getElementById('promo-code-msg');
+  const code=input.value.trim();
+  if(!code){msgEl.textContent='Введи промокод';msgEl.style.color='var(--danger)';return;}
+  msgEl.textContent='Проверяем...';msgEl.style.color='var(--text-dim)';
+  const guestId=currentUser?null:(currentGuestData?.id||null);
+  const{data,error}=await sb.rpc('redeem_promo_code',{p_code:code,p_guest_id:guestId});
+  if(error){msgEl.textContent='❌ '+error.message;msgEl.style.color='var(--danger)';return;}
+  if(!data?.success){msgEl.textContent='❌ '+(data?.message||'Ошибка');msgEl.style.color='var(--danger)';return;}
+  let parts=[];
+  if(data.blue_stars>0)parts.push('★ '+data.blue_stars+' синих');
+  if(data.gold_stars>0)parts.push('✨ '+data.gold_stars+' золотых');
+  msgEl.textContent='✅ Получено: '+(parts.join(' и ')||'ничего');
+  msgEl.style.color='var(--success)';
+  input.value='';
+  }
 async function loadServerStats(){const[{count:pc},{count:uc},{count:tc},{count:dc},{count:cc},{count:nc}]=await Promise.all([sb.from('planets').select('*',{count:'exact',head:true}),sb.from('profiles').select('*',{count:'exact',head:true}),sb.from('support_tickets').select('*',{count:'exact',head:true}),sb.from('decorations').select('*',{count:'exact',head:true}),sb.from('chat_messages').select('*',{count:'exact',head:true}),sb.from('news_posts').select('*',{count:'exact',head:true})]);const{data:sizeRows,error:sizeErr}=await sb.rpc('get_db_size');if(sizeErr)console.error('get_db_size error:',sizeErr);const totalBytes=sizeErr?-1:(sizeRows||[]).reduce((s,r)=>s+Number(r.size_bytes||0),0);const totalMB=totalBytes/1024/1024;const limitMB=500;const pct=sizeErr?0:Math.min(100,Math.round(totalMB/limitMB*100));const color=pct>80?'var(--danger)':pct>50?'var(--star-gold)':'var(--success)';const sizeText=sizeErr?'ошибка: '+(sizeErr.message||'см.консоль'):(totalMB<1?(totalBytes/1024).toFixed(0)+' KB':totalMB.toFixed(1)+' MB');document.getElementById('server-stats').innerHTML='<div>👤 Пользователей: <b>'+(uc||0)+'</b></div><div>🪐 Планет: <b>'+(pc||0)+'</b></div><div>🌠 Декораций: <b>'+(dc||0)+'</b></div><div>💬 Сообщений: <b>'+(cc||0)+'</b></div><div>🎫 Тикетов: <b>'+(tc||0)+'</b></div><div>📡 Новостей: <b>'+(nc||0)+'</b></div><div style="margin-top:7px">💾 Занято: <b>'+sizeText+' / '+limitMB+' MB</b></div><div style="margin-top:4px;background:var(--glass-bg);border-radius:4px;height:6px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+color+';border-radius:4px"></div></div><div style="font-size:10px;margin-top:3px">'+pct+'%</div>';}
 </script>
 <script>
@@ -1684,6 +2302,24 @@ function showToast(msg){const el=document.getElementById('toast');el.textContent
 function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 window.addEventListener('resize',()=>{cancelAnimationFrame(animFrame);initStars();requestAnimationFrame(drawSpace);});
 window.addEventListener('beforeunload',()=>{if(currentUser){try{sb.rpc('update_user_presence',{p_user_id:currentUser.id,p_username:currentProfile?.username||'',p_online:false});}catch(e){}}});
+
+function closeAssetPicker(){
+  document.getElementById('asset-picker-overlay').style.display='none';
+  assetPickerCallback=null;
+}
+
+function pickAsset(url){
+  if(assetPickerCallback)assetPickerCallback(url);
+  closeAssetPicker();
+}
+
+function applyTextures(html,textures){
+  let out=html||'';
+  Object.keys(textures||{}).forEach(name=>{
+    out=out.split('{{tex:'+name+'}}').join(textures[name]);
+  });
+  return out;
+}
 
 (async()=>{
   initStars();
@@ -1706,6 +2342,7 @@ window.addEventListener('beforeunload',()=>{if(currentUser){try{sb.rpc('update_u
   initNewsRealtime();
 
   updateChatUI();
+  checkGamesBadge();
   const gaBtn=document.getElementById('get-account-btn');
   if(gaBtn)gaBtn.style.display='';
 
