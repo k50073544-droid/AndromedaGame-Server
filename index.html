@@ -2086,6 +2086,7 @@ async function openInstalledGame(gameId){
     document.body.appendChild(overlay);
     const iframe=overlay.querySelector('#pg-frame');
     iframe.srcdoc=html;
+    const iframeLoaded=new Promise(resolve=>{iframe.onload=resolve;});
     if(g.code?.type==='ninja'){
       const{data:boosterProfiles}=await sb.from('profiles').select('id,username').eq('role','booster');
       const boosterIds=(boosterProfiles||[]).map(p=>p.id);
@@ -2094,9 +2095,11 @@ async function openInstalledGame(gameId){
         const{data:planetsRows}=await sb.from('planets').select('image_url,username,user_id').in('user_id',boosterIds);
         ninjaPlanets=(planetsRows||[]).filter(p=>p.image_url);
       }
-      iframe.onload=()=>{iframe.contentWindow.postMessage({type:'andra-ninja-init',planets:ninjaPlanets},'*');};
+      await iframeLoaded;
+      iframe.contentWindow.postMessage({type:'andra-ninja-init',planets:ninjaPlanets},'*');
     }else{
-      iframe.onload=()=>{iframe.contentWindow.postMessage({type:'andra-slot-init',goldEnabled:g.league==='gold'},'*');};
+      await iframeLoaded;
+      iframe.contentWindow.postMessage({type:'andra-slot-init',goldEnabled:g.league==='gold'},'*');
     }
 const onMsg=async(e)=>{
       if(e.source!==iframe.contentWindow)return;
