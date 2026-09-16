@@ -2133,6 +2133,23 @@ const onMsg=async(e)=>{
         refreshTabletHeader();
       }
     };
+    window.addEventListener('message',async(e)=>{
+      if(e.source!==iframe.contentWindow)return;
+      if(e.data?.type!=='andra-record-check')return;
+      const{data:result,error:recErr}=await sb.rpc('check_game_record',{p_game_id:gameId,p_guest_id:currentUser?null:(currentGuestData?.id||null),p_score:e.data.score||0});
+      if(recErr){console.error(recErr);return;}
+      if(result?.newRecord){
+        showToast('🏆 Новый рекорд! '+(result.blue>0?'+'+result.blue+' синих ':'')+(result.gold>0?'+'+result.gold+' золотых':''));
+        if(currentUser){
+          const{data:freshProfile}=await sb.from('profiles').select('*').eq('id',currentUser.id).maybeSingle();
+          if(freshProfile)currentProfile=freshProfile;
+        }else if(currentGuestData?.id){
+          const{data:freshGuest}=await sb.from('guests').select('id,nickname,gold_stars').eq('id',currentGuestData.id).maybeSingle();
+          if(freshGuest)currentGuestData=freshGuest;
+        }
+        refreshTabletHeader();
+      }
+    });
     window.addEventListener('message',onMsg);
     overlay.querySelector('#pg-close-btn').onclick=()=>{
       window.removeEventListener('message',onMsg);
