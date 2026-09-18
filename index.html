@@ -1737,7 +1737,53 @@ function renderProfileLevel(profile){
 
 let profileViewingSelf = true;
 
- async function getGuestProfile(){
+ function showGuestCodeModal(){
+return new Promise(resolve=>{
+const ov=document.createElement('div');
+ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;font-family:sans-serif;';
+ov.innerHTML=`
+<div style="background:#1a1a2e;border-radius:16px;padding:24px;max-width:340px;width:90%;color:#fff;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+<div style="font-size:18px;font-weight:800;margin-bottom:10px;">👋 Добро пожаловать</div>
+<div style="font-size:13px;color:#aab;margin-bottom:16px;line-height:1.5;">Если у вас уже есть код восстановления с другого устройства — введите его, чтобы вернуть прогресс.</div>
+<input id="na-restore-input" placeholder="XXXX-XXXX" style="width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid #444;background:#0d0d1a;color:#fff;text-align:center;font-size:15px;letter-spacing:1px;margin-bottom:10px;text-transform:uppercase;">
+<div id="na-restore-err" style="color:#f66;font-size:12px;min-height:16px;margin-bottom:8px;"></div>
+<button id="na-restore-btn" style="width:100%;padding:11px;border:none;border-radius:8px;background:#ffd35c;color:#3a2410;font-weight:800;font-size:14px;cursor:pointer;margin-bottom:8px;">Восстановить</button>
+<button id="na-skip-btn" style="width:100%;padding:10px;border:none;border-radius:8px;background:transparent;color:#889;font-size:13px;cursor:pointer;text-decoration:underline;">Продолжить как новый гость</button>
+</div>`;
+document.body.appendChild(ov);
+const inp=ov.querySelector('#na-restore-input');
+const err=ov.querySelector('#na-restore-err');
+ov.querySelector('#na-restore-btn').onclick=async()=>{
+const code=inp.value.trim();
+if(!code){err.textContent='Введите код';return;}
+err.textContent='Проверяем...';
+const{data,error}=await sb.rpc('guest_restore_by_code',{p_code:code});
+if(error||!data){err.textContent='Код не найден';return;}
+document.body.removeChild(ov);
+resolve(data);
+};
+ov.querySelector('#na-skip-btn').onclick=()=>{
+document.body.removeChild(ov);
+resolve(null);
+};
+});
+}
+function showRecoveryCodeOnce(code){
+const ov=document.createElement('div');
+ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;font-family:sans-serif;';
+ov.innerHTML=`
+<div style="background:#1a1a2e;border-radius:16px;padding:24px;max-width:340px;width:90%;color:#fff;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+<div style="font-size:18px;font-weight:800;margin-bottom:10px;">🔑 Ваш код восстановления</div>
+<div style="font-size:13px;color:#aab;margin-bottom:14px;line-height:1.5;">Сохраните его — он не показывается снова. С его помощью можно вернуть прогресс на другом устройстве или в другом браузере.</div>
+<div style="font-size:22px;font-weight:900;letter-spacing:2px;background:#0d0d1a;border-radius:10px;padding:14px;margin-bottom:16px;color:#ffd35c;">${code}</div>
+<button id="na-code-ok" style="width:100%;padding:11px;border:none;border-radius:8px;background:#ffd35c;color:#3a2410;font-weight:800;font-size:14px;cursor:pointer;">Я сохранил(а)</button>
+</div>`;
+document.body.appendChild(ov);
+return new Promise(resolve=>{
+ov.querySelector('#na-code-ok').onclick=()=>{document.body.removeChild(ov);resolve();};
+});
+}
+async function getGuestProfile(){
   const cached=localStorage.getItem('na_guest');
   if(cached){
     try{
@@ -1748,6 +1794,14 @@ let profileViewingSelf = true;
       }
     }catch(e){}
   }
+  const restoredId=await showGuestCodeModal();
+  if(restoredId){
+    const{data}=await sb.from('guests').select('id,nickname,gold_stars').eq('id',restoredId).maybeSingle();
+    if(data){
+      localStorage.setItem('na_guest', JSON.stringify({id:data.id}));
+      return data;
+    }
+  }
   const{data,error}=await sb.rpc('create_guest');
   if(error||!data||!data[0]){
     console.error('create_guest error:',error);
@@ -1756,8 +1810,10 @@ let profileViewingSelf = true;
   }
   const g=data[0];
   localStorage.setItem('na_guest', JSON.stringify({id:g.id}));
+  const{data:codeRow}=await sb.from('guests').select('recovery_code').eq('id',g.id).maybeSingle();
+  if(codeRow?.recovery_code)await showRecoveryCodeOnce(codeRow.recovery_code);
   return {id:g.id,nickname:g.nickname,gold_stars:0};
-}
+  }
 
 let currentGuestData=null;
 
