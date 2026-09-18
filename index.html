@@ -1823,6 +1823,23 @@ async function getGuestProfile(){
 
 let currentGuestData=null;
 
+  async function showMyRecoveryCode(){
+if(!currentGuestData?.id){showToast('❌ Профиль гостя не найден');return;}
+const{data}=await sb.from('guests').select('recovery_code').eq('id',currentGuestData.id).maybeSingle();
+if(data?.recovery_code)await showRecoveryCodeOnce(data.recovery_code);
+else showToast('❌ Не удалось получить код');
+}
+async function redeemRecoveryCode(){
+const restoredId=await showGuestCodeModal();
+if(!restoredId)return;
+if(currentGuestData?.id===restoredId){showToast('Это и есть ваш текущий аккаунт');return;}
+const{data}=await sb.from('guests').select('id,nickname,gold_stars').eq('id',restoredId).maybeSingle();
+if(!data){showToast('❌ Аккаунт не найден');return;}
+localStorage.setItem('na_guest', JSON.stringify({id:data.id}));
+showToast('✅ Прогресс восстановлен, обновляем...');
+setTimeout(()=>location.reload(),900);
+}
+
   function refreshTabletHeader(){
   const goldLine=document.getElementById('tt-gold-line');
   if(!goldLine)return;
