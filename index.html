@@ -2183,7 +2183,7 @@ async function openInstalledGame(gameId){
     }else if(g.code?.type==='fishing'){
       const{data:species}=await sb.from('fish_species').select('*');
       await iframeLoaded;
-      iframe.contentWindow.postMessage({type:'andra-fish-init',species:species||[]},'*');
+      iframe.contentWindow.postMessage({type:'andra-fish-init',species:species||[],isAdmin:currentProfile?.role==='admin'},'*');
     }else{
       await iframeLoaded;
       iframe.contentWindow.postMessage({type:'andra-slot-init',goldEnabled:g.league==='gold'},'*');
