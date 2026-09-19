@@ -2220,9 +2220,9 @@ const onMsg=async(e)=>{
         refreshTabletHeader();
       }
   if(e.data?.type==='andra-fish-cast'){
-        const{data:result}=await sb.rpc('fish_cast',{p_guest_id:currentUser?null:(currentGuestData?.id||null)});
+        const{data:result}=await sb.rpc('fish_cast',{p_guest_id:currentUser?null:(currentGuestData?.id||null),p_debug_key:e.data.debugKey||null});
         iframe.contentWindow.postMessage({type:'andra-fish-cast-result',...result},'*');
-      }
+  }
       if(e.data?.type==='andra-fish-claim'){
         const{data:result}=await sb.rpc('fish_claim',{p_pending_id:e.data.pendingId,p_game_id:gameId,p_guest_id:currentUser?null:(currentGuestData?.id||null)});
         iframe.contentWindow.postMessage({type:'andra-fish-claim-result',...result},'*');
