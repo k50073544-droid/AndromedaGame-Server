@@ -190,6 +190,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .st-vctl{padding:10px 14px 14px;background:#0a0f1e}
 .st-mic{width:100%;padding:13px;border:none;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;background:rgba(255,255,255,.1);color:#fff}
 .st-mic.on{background:#16a34a}
+    .st-priv{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-dim);margin:0 0 12px;line-height:1.4}
+.st-priv input{width:18px;height:18px;flex-shrink:0}
+button.st-chip{border:none;font-family:inherit;cursor:pointer}
+.st-chip.muted{text-decoration:line-through;opacity:.55}
+.st-note{font-size:10px;color:#64748b;padding:0 12px 6px;background:#0a0f1e}
+.st-note0{font-size:10px;color:#64748b;padding:6px 0 0}
+#st-panel{position:fixed;top:calc(env(safe-area-inset-top,0px) + 56px);right:8px;z-index:100003;width:min(300px,92vw);max-height:60vh;overflow-y:auto;background:#0a0f1e;border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:10px 12px;color:#fff;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+.st-ph{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:6px}
+.st-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px}
+.st-rn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st-b{border:none;border-radius:8px;padding:6px 10px;font-weight:800;font-size:11px;cursor:pointer;background:rgba(255,255,255,.12);color:#fff}
+.st-b.ok{background:#16a34a}
+.st-b.no{background:#dc2626}
+.st-b.on{background:#f59e0b;color:#3a2410}
   </style>
 <style>
 /* ===== ШТОРКА НОВОСТЕЙ ===== */
@@ -771,6 +785,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <button class="tablet-back" onclick="backToTabletHome()">← Назад</button>
         <div class="st-title">📺 Стримы</div>
         <button class="btn primary st-go" onclick="STREAMS.togglePicker()">🔴 Начать стрим</button>
+        <label class="st-priv"><input type="checkbox" id="st-private"> 🔒 Приватный стрим: зайти смогут только те, кого ты впустишь</label>
         <div id="st-picker" class="st-picker" style="display:none"></div>
         <div class="st-sub">СЕЙЧАС В ЭФИРЕ</div>
         <div id="st-live" class="st-live-list"><div class="tablet-installed-empty">Загрузка…</div></div>
@@ -2617,7 +2632,7 @@ function applyTextures(html,textures){
   if(!orbitRafId)orbitRafId=requestAnimationFrame(animateOrbits);
 })();
 </script>
-  <script>
+<script>
 /* ===== СТРИМЫ: трансляция игры + голосовой чат (WebRTC, сигналинг через Supabase Realtime) ===== */
 (function(){
 'use strict';
@@ -2719,6 +2734,7 @@ var S={pid:null,role:null,sid:null,ch:null,chReady:false,meta:null,pcs:{},early:
   micStream:null,micTrack:null,micOn:false,
   iframe:null,cap:null,capCtx:null,vStream:null,vTrack:null,capReady:false,capWanted:false,
   viewerEl:null,videoEl:null,tabletOpen:false,listOpen:false,lobbyUpd:null,lastViewers:-1,
+  uid:null,priv:false,adm:{},ok:{},denied:{},pending:[],muted:{},nextPrivate:false,knockAt:0,panel:null,
   lobby:{ch:null,ready:false,list:[],mine:null}};
 function $(id){return document.getElementById(id);}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -2733,7 +2749,7 @@ function toast(m){
     tt.textContent=m;tt.style.display='block';clearTimeout(tto);
     tto=setTimeout(function(){tt.style.display='none';},3000);
   }catch(e){}
-    }
+  }
   function myName(){
   try{
     if(typeof currentProfile!=='undefined'&&currentProfile&&currentProfile.username)return '@'+currentProfile.username;
@@ -2744,6 +2760,7 @@ function toast(m){
 function pidInit(){
   if(S.pid)return;
   var u='';try{if(typeof onlineUid==='function')u=String(onlineUid()||'');}catch(e){}
+  S.uid=u||('g'+Math.random().toString(36).slice(2,10));
   S.pid=(u.replace(/[^a-zA-Z0-9]/g,'').slice(0,10)||'x')+'-'+Math.random().toString(36).slice(2,8);
 }
 function canHost(){return !!(window.RTCPeerConnection&&window.HTMLCanvasElement&&HTMLCanvasElement.prototype.captureStream);}
@@ -2781,9 +2798,8 @@ function lobbyTrack(meta){
 function lobbyUntrack(){
   S.lobby.mine=null;
   if(S.lobby.ch&&S.lobby.ready){try{S.lobby.ch.untrack();}catch(e){}}
-}
-
-/* ---------- Экран «Стримы» в планшете ---------- */
+  }
+  /* ---------- Экран «Стримы» в планшете ---------- */
 function renderLive(){
   var list=S.lobby.list||[];
   var tag=$('st-icon-tag');
@@ -2794,12 +2810,12 @@ function renderLive(){
   box.innerHTML=list.map(function(m){
     var mine=m.pid===S.pid,full=(m.viewers||0)>=MAXP-1;
     return '<div class="tig-row" onclick="STREAMS.watch(\''+esc(m.sid)+'\')"><div class="tig-icon">📺</div>'
-      +'<div class="st-cinfo"><div class="tig-name">'+esc(m.game||'Игра')+'</div>'
-      +'<div class="st-csub">'+esc(m.host||'?')+(mine?' (ты)':'')+' · 👥 '+(m.viewers||0)+(full?' · мест нет':'')+'</div></div>'
+      +'<div class="st-cinfo"><div class="tig-name">'+(m.priv?'🔒 ':'')+esc(m.game||'Игра')+'</div>'
+      +'<div class="st-csub">'+esc(m.host||'?')+(mine?' (ты)':'')+' · 👥 '+(m.viewers||0)+(full?' · мест нет':(m.priv?' · по запросу':''))+'</div></div>'
       +'<span class="st-badge">LIVE</span></div>';
   }).join('');
-    }
-  async function loadPicker(){
+}
+async function loadPicker(){
   var box=$('st-picker');if(!box)return;
   box.innerHTML='<div class="tablet-installed-empty">Загрузка игр…</div>';
   var res=await sb.from('games').select('id,title,thumbnail_url,code->>restrictRole,code->>restrictUsername').eq('status','approved');
@@ -2821,12 +2837,13 @@ function togglePicker(){
 function startGame(id){
   if(S.role){toast('Ты уже в стриме');return;}
   if(!canHost()){toast('❌ Этот браузер не умеет транслировать');return;}
+  var cb=$('st-private');S.nextPrivate=!!(cb&&cb.checked);
   if(typeof openInstalledGame==='function')openInstalledGame(id,{stream:true});
 }
 function peek(){S.tabletOpen=true;lobbyEnsure();}
 function openView(){S.listOpen=true;lobbyEnsure();renderLive();}
 function backHome(){S.listOpen=false;var p=$('st-picker');if(p)p.style.display='none';lobbyRelease();}
-function leaveView(){S.tabletOpen=false;S.listOpen=false;lobbyRelease();}
+  function leaveView(){S.tabletOpen=false;S.listOpen=false;lobbyRelease();}
 
 /* ---------- Канал стрима и сигналинг ---------- */
 function openChannel(sid,meta){
@@ -2838,8 +2855,8 @@ function openChannel(sid,meta){
     else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT'){toast('⚠️ Связь со стримом нестабильна');}
   });
   S.ch=ch;S.meta=meta;
-    }
-  function send(to,kind,data){
+}
+function send(to,kind,data){
   if(!S.ch)return;
   try{S.ch.send({type:'broadcast',event:'sig',payload:{from:S.pid,to:to,kind:kind,data:data}});}catch(e){}
 }
@@ -2856,24 +2873,83 @@ function shouldInit(m){
   if(m.pid===S.hostPid)return false;
   return S.pid>m.pid;
 }
+function myUid(){return S.uid||S.pid;}
+function isAdm(pid){
+  if(!S.priv)return true;
+  if(pid===S.hostPid)return true;
+  if(S.role==='host')return !!S.adm[pid];
+  var h=memberOf(S.hostPid);
+  return !!(h&&h.adm&&h.adm.indexOf(pid)>=0);
+}
+function canConn(m){
+  if(!S.priv)return true;
+  if(S.role==='host')return !!S.adm[m.pid];
+  return isAdm(S.pid)&&isAdm(m.pid);
+}
+function accept(from){
+  if(!S.priv)return true;
+  if(from===S.hostPid)return true;
+  if(S.role==='host')return !!S.adm[from];
+  return isAdm(S.pid)&&isAdm(from);
+}
+function shown(){
+  return (S.members||[]).filter(function(m){return m.pid===S.pid||m.pid===S.hostPid||isAdm(m.pid);});
+}
+function uidOf(rec){var m=memberOf(rec.id);return (m&&m.uid)||rec.id;}
+function applyMute(){
+  Object.keys(S.pcs).forEach(function(id){var r=S.pcs[id];if(r.audio)r.audio.muted=!!S.muted[uidOf(r)];});
+}
+function toggleMute(uid){
+  if(!uid||uid===myUid())return;
+  S.muted[uid]=!S.muted[uid];
+  applyMute();renderRoster();
+}
+function pushMeta(){
+  if(!S.meta||!S.ch)return;
+  if(S.role==='host')S.meta.adm=Object.keys(S.adm);
+  try{S.ch.track(S.meta);}catch(e){}
+}
+function admit(pid,uid){
+  S.adm[pid]=true;if(uid)S.ok[uid]=true;
+  S.pending=S.pending.filter(function(x){return x.pid!==pid;});
+  pushMeta();send(pid,'allow',1);
+  onRoster();renderPanel();
+}
+function deny(pid,uid){
+  S.pending=S.pending.filter(function(x){return x.pid!==pid;});
+  if(uid)S.denied[uid]=true;
+  send(pid,'deny',1);renderPanel();
+  }
+  function sendKnock(){
+  if(S.role!=='viewer'||!S.priv||isAdm(S.pid))return;
+  var now=Date.now();if(now-S.knockAt<3000)return;
+  if(!memberOf(S.hostPid))return;
+  S.knockAt=now;send(S.hostPid,'knock',{name:myName()});
+}
 function onRoster(){
   if(!S.ch)return;
   var prev=S.members||[],list=roster();
   S.members=list;
   var ids={};list.forEach(function(m){ids[m.pid]=1;});
   Object.keys(S.pcs).forEach(function(id){if(!ids[id])closePeer(id);});
+  if(S.role==='host'){
+    Object.keys(S.adm).forEach(function(id){if(!ids[id])delete S.adm[id];});
+    S.pending=S.pending.filter(function(x){return ids[x.pid];});
+  }
   list.forEach(function(m){
     if(m.pid===S.pid)return;
     var rec=S.pcs[m.pid];
     if(rec){rec.name=m.name;return;}
+    if(!canConn(m))return;
     if(S.role==='host'&&Object.keys(S.pcs).length>=MAXP-1)return;
     if(shouldInit(m))startOffer(m);
   });
   if(S.role==='host'){
     var pids={};prev.forEach(function(m){pids[m.pid]=1;});
-    list.forEach(function(m){if(m.pid!==S.pid&&!pids[m.pid])toast('👋 '+(m.name||'Зритель')+' зашёл в стрим');});
+    list.forEach(function(m){if(m.pid!==S.pid&&!pids[m.pid]&&!S.priv)toast('👋 '+(m.name||'Зритель')+' зашёл в стрим');});
     hostSync(list);
   }else viewerCheckHost(list);
+  applyMute();
   renderRoster();
 }
 function newPeer(m){
@@ -2898,16 +2974,16 @@ function flushIce(rec){
 function addIce(rec,c){
   if(rec.pc.remoteDescription&&rec.pc.remoteDescription.type){rec.pc.addIceCandidate(c).catch(function(){});}
   else rec.queue.push(c);
-    }
-  function drain(rec){var q=rec.queue;rec.queue=[];q.forEach(function(c){rec.pc.addIceCandidate(c).catch(function(){});});}
+}
+function drain(rec){var q=rec.queue;rec.queue=[];q.forEach(function(c){rec.pc.addIceCandidate(c).catch(function(){});});}
 function closePeer(id){
   var rec=S.pcs[id];if(!rec)return;
   delete S.pcs[id];
   clearTimeout(rec.iceT);
   try{rec.pc.onicecandidate=null;rec.pc.ontrack=null;rec.pc.onconnectionstatechange=null;rec.pc.close();}catch(e){}
   if(rec.audio){try{rec.audio.srcObject=null;rec.audio.remove();}catch(e){}}
-}
-async function startOffer(m){
+  }
+  async function startOffer(m){
   var rec=newPeer(m),pc=rec.pc;
   try{
     var aTr=pc.addTransceiver(S.micTrack||'audio',{direction:'sendrecv'});
@@ -2922,9 +2998,26 @@ async function startOffer(m){
   }catch(err){console.warn('stream offer',err);closePeer(m.pid);}
 }
 async function onSig(p){
+  if(p)S.sigAll=(S.sigAll||0)+1;
   if(!p||p.to!==S.pid||!S.ch)return;
+  S.sigIn=(S.sigIn||0)+1;S.sigLast=p.kind;
   var from=p.from;
   try{
+    if(p.kind==='knock'){
+      if(S.role!=='host'||!S.priv)return;
+      var km=memberOf(from),kuid=(km&&km.uid)||from,kname=(km&&km.name)||(p.data&&p.data.name)||'Зритель';
+      if(S.denied[kuid]){send(from,'deny',1);return;}
+      if(S.ok[kuid]||S.adm[from]){admit(from,kuid);return;}
+      if(!S.pending.some(function(x){return x.pid===from;})){
+        S.pending.push({pid:from,uid:kuid,name:kname});
+        toast('🔔 '+kname+' просится в стрим');
+        S.panelOpen=true;
+      }
+      renderPanel();return;
+    }
+    if(p.kind==='allow'){if(from===S.hostPid){S.knockAt=0;onRoster();}return;}
+    if(p.kind==='deny'){if(from===S.hostPid)endView('Стример не впустил тебя в приватный стрим');return;}
+    if(!accept(from))return;
     if(p.kind==='hello'){
       var mm=memberOf(from);
       if(mm&&shouldInit(mm)){closePeer(from);startOffer(mm);}
@@ -2957,7 +3050,7 @@ async function onSig(p){
       arr.forEach(function(c){addIce(r,c);});
     }
   }catch(err){console.warn('stream sig',err);}
-    }
+  }
   function onTrack(rec,e){
   var tr=e.track;
   if(tr.kind==='video'){
@@ -2969,6 +3062,7 @@ async function onSig(p){
       (S.viewerEl||document.body).appendChild(a);rec.audio=a;
     }
     rec.audio.srcObject=(e.streams&&e.streams[0])||new MediaStream([tr]);
+    rec.audio.muted=!!S.muted[uidOf(rec)];
     var pp=rec.audio.play&&rec.audio.play();
     if(pp&&pp.catch)pp.catch(function(){showUnlock();});
   }
@@ -2984,10 +3078,12 @@ function unlockAudio(){
 function checkPeers(){
   if(!S.ch)return;
   var now=Date.now();
+  sendKnock();
   S.members.forEach(function(m){
     if(m.pid===S.pid)return;
     var rec=S.pcs[m.pid],init=shouldInit(m);
     if(!rec){
+      if(!canConn(m))return;
       if(S.role==='host'&&Object.keys(S.pcs).length>=MAXP-1)return;
       if(init)startOffer(m);else send(m.pid,'hello',1);
       return;
@@ -3016,18 +3112,56 @@ async function toggleMic(){
 function refreshMicBtns(){
   var b=$('st-mic');if(b){b.textContent=S.micOn?'🎤 Микрофон включён':'🔇 Включить микрофон';b.classList.toggle('on',S.micOn);}
   var h=$('st-hmic');if(h){h.textContent=S.micOn?'🎤':'🔇';h.classList.toggle('on',S.micOn);}
-    }
+  }
   function renderRoster(){
-  var list=S.members||[],n=list.filter(function(m){return m.pid!==S.hostPid;}).length;
-  var c=$('st-hcount');if(c)c.textContent='👥 '+n;
+  var list=shown(),n=list.filter(function(m){return m.pid!==S.hostPid;}).length;
+  var c=$('st-hcount');if(c)c.textContent='👥 '+n+(S.pending.length?' 🔔':'');
   var v=$('st-vcount');if(v)v.textContent='👥 '+n;
   var pe=$('st-people');
   if(pe){
     pe.innerHTML=list.map(function(m){
-      var rec=S.pcs[m.pid],ok=m.pid===S.pid||(rec&&rec.pc.connectionState==='connected');
-      return '<span class="st-chip'+(m.mic?' mic':'')+(ok?'':' wait')+'">'+(m.pid===S.hostPid?'🎙️ ':'')+esc(m.name||'?')+(m.pid===S.pid?' (ты)':'')+(m.mic?' 🎤':'')+'</span>';
+      var rec=S.pcs[m.pid],me=m.pid===S.pid,ok=me||(rec&&rec.pc.connectionState==='connected');
+      var u=m.uid||m.pid,mu=!!S.muted[u];
+      var cls='st-chip'+(m.mic?' mic':'')+(ok?'':' wait')+(mu?' muted':'');
+      var txt=(m.pid===S.hostPid?'🎙️ ':'')+esc(m.name||'?')+(me?' (ты)':'')+(m.mic?' 🎤':'')+(mu?' 🔇':'');
+      return me?'<span class="'+cls+'">'+txt+'</span>':'<button class="'+cls+'" data-uid="'+esc(u)+'">'+txt+'</button>';
     }).join('');
   }
+  renderPanel();
+}
+function renderPanel(){
+  var p=S.panel;if(!p)return;
+  p.style.display=S.panelOpen?'block':'none';
+  if(!S.panelOpen)return;
+  var h='<div class="st-ph"><b>Участники</b><button class="st-b" data-act="close">✕</button></div>';
+  if(S.pending.length){
+    h+='<div class="st-sub">ПРОСЯТСЯ В СТРИМ</div>'+S.pending.map(function(x){
+      return '<div class="st-row"><span class="st-rn">'+esc(x.name)+'</span><button class="st-b ok" data-act="ok" data-pid="'+esc(x.pid)+'">Впустить</button><button class="st-b no" data-act="no" data-pid="'+esc(x.pid)+'">Отказать</button></div>';
+    }).join('');
+  }
+  var others=shown().filter(function(m){return m.pid!==S.pid;});
+  h+='<div class="st-sub">В СТРИМЕ</div>';
+  if(!others.length)h+='<div class="st-note0">Пока никого</div>';
+  h+=others.map(function(m){
+    var u=m.uid||m.pid,mu=!!S.muted[u];
+    return '<div class="st-row"><span class="st-rn">'+esc(m.name||'?')+(m.mic?' 🎤':'')+'</span><button class="st-b'+(mu?' on':'')+'" data-act="mute" data-uid="'+esc(u)+'">'+(mu?'🔊 Включить':'🔇 Заглушить')+'</button></div>';
+  }).join('');
+  h+='<div class="st-note0">Заглушка действует только у тебя.</div>';
+  p.innerHTML=h;
+}
+function buildPanel(){
+  var p=document.createElement('div');p.id='st-panel';p.style.display='none';
+  p.onclick=function(e){
+    var b=e.target.closest?e.target.closest('button[data-act]'):null;if(!b)return;
+    var a=b.getAttribute('data-act'),pid=b.getAttribute('data-pid'),uid=b.getAttribute('data-uid');
+    if(a==='close'){S.panelOpen=false;renderPanel();}
+    else if(a==='mute')toggleMute(uid);
+    else if(a==='ok'||a==='no'){
+      var x=null;S.pending.forEach(function(r){if(r.pid===pid)x=r;});
+      if(a==='ok')admit(pid,x&&x.uid);else deny(pid,x&&x.uid);
+    }
+  };
+  document.body.appendChild(p);S.panel=p;
 }
 
 /* ---------- Стример ---------- */
@@ -3037,8 +3171,8 @@ function injectCapture(html){
 function syncCap(){
   if(S.role!=='host'||!S.iframe||!S.capReady)return;
   try{S.iframe.contentWindow.postMessage({type:'andra-stream-ctl',on:!!S.capWanted},'*');}catch(e){}
-}
-function onHostMsg(e){
+  }
+  function onHostMsg(e){
   if(!S.iframe||e.source!==S.iframe.contentWindow)return;
   var d=e.data;if(!d||!d.type)return;
   if(d.type==='andra-stream-ready'){S.capReady=true;syncCap();}
@@ -3052,7 +3186,7 @@ function onHostMsg(e){
   }
 }
 function hostSync(list){
-  var n=list.filter(function(m){return m.pid!==S.hostPid;}).length;
+  var n=list.filter(function(m){return m.pid!==S.hostPid&&(!S.priv||S.adm[m.pid]);}).length;
   var want=n>0;
   if(want!==S.capWanted){S.capWanted=want;syncCap();}
   if(n!==S.lastViewers){
@@ -3068,6 +3202,7 @@ function hostStart(gameId,title,iframe){
   if(!canHost()){toast('❌ Этот браузер не умеет транслировать');return false;}
   pidInit();
   S.role='host';S.sid=(Math.random().toString(36).slice(2,8)+Date.now().toString(36));
+  S.priv=!!S.nextPrivate;S.nextPrivate=false;S.adm={};S.ok={};S.denied={};S.pending=[];S.muted={};S.panelOpen=false;
   S.title=title;S.iframe=iframe;S.hostPid=S.pid;S.hostName=myName();S.hostSeen=true;S.capReady=false;S.capWanted=false;S.lastViewers=-1;
   var cap=document.createElement('canvas');cap.width=360;cap.height=640;
   cap.style.cssText='position:fixed;left:0;top:0;width:2px;height:2px;opacity:0.01;pointer-events:none;z-index:-1';
@@ -3075,22 +3210,23 @@ function hostStart(gameId,title,iframe){
   var cx=cap.getContext('2d');cx.fillStyle='#000';cx.fillRect(0,0,cap.width,cap.height);
   S.cap=cap;S.capCtx=cx;S.vStream=cap.captureStream(15);S.vTrack=S.vStream.getVideoTracks()[0];
   window.addEventListener('message',onHostMsg);
+  buildPanel();
   var hud=$('pg-stream-hud');
   if(hud){
-    hud.innerHTML='<span class="st-livedot">🔴 LIVE</span><span id="st-hcount" class="st-hc">👥 0</span><button id="st-hmic" class="st-hmic">🔇</button>'
+    hud.innerHTML='<span class="st-livedot">'+(S.priv?'🔒 ':'🔴 ')+'LIVE</span><button id="st-hcount" class="st-hmic">👥 0</button><button id="st-hmic" class="st-hmic">🔇</button>'
       +'<button id="st-unlock" class="st-unlock" style="display:none">🔊 Включить звук</button>';
     $('st-hmic').onclick=toggleMic;$('st-unlock').onclick=unlockAudio;
+    $('st-hcount').onclick=function(){S.panelOpen=!S.panelOpen;renderPanel();};
   }
   S.viewerEl=iframe.parentNode;
-  openChannel(S.sid,{pid:S.pid,name:S.hostName,mic:false,t:Date.now()});
-  lobbyTrack({sid:S.sid,pid:S.pid,host:S.hostName,game_id:gameId,game:title,viewers:0,t:Date.now()});
+  openChannel(S.sid,{pid:S.pid,uid:myUid(),name:S.hostName,mic:false,t:Date.now(),adm:[]});
+  lobbyTrack({sid:S.sid,pid:S.pid,host:S.hostName,game_id:gameId,game:title,viewers:0,t:Date.now(),priv:S.priv});
   S.timer=setInterval(checkPeers,5000);
-  toast('🔴 Ты в эфире! Жди зрителей');
+  toast(S.priv?'🔒 Приватный стрим. Кого впустить — решаешь ты':'🔴 Ты в эфире! Жди зрителей');
   return true;
-    }
-  function hostStop(){if(S.role==='host')teardown();}
-
-/* ---------- Зритель ---------- */
+}
+function hostStop(){if(S.role==='host')teardown();}
+  /* ---------- Зритель ---------- */
 function watch(sid){
   if(S.role){toast('Ты уже в стриме');return;}
   if(!canWatch()){toast('❌ Этот браузер не поддерживает стримы');return;}
@@ -3100,8 +3236,9 @@ function watch(sid){
   if(e.pid===S.pid){toast('Это твой собственный стрим');return;}
   if((e.viewers||0)>=MAXP-1){toast('В этом стриме нет мест');return;}
   S.role='viewer';S.sid=sid;S.title=e.game||'Стрим';S.hostPid=e.pid;S.hostName=e.host||'';S.hostSeen=false;
+  S.priv=!!e.priv;S.muted={};S.knockAt=0;
   buildViewer();
-  openChannel(sid,{pid:S.pid,name:myName(),mic:false,t:Date.now()});
+  openChannel(sid,{pid:S.pid,uid:myUid(),name:myName(),mic:false,t:Date.now()});
   S.timer=setInterval(checkPeers,5000);
   S.hostWait=setTimeout(function(){if(S.role==='viewer'&&!S.hostSeen)endView('Стример недоступен');},15000);
 }
@@ -3112,18 +3249,19 @@ function buildViewer(){
     +'<span class="st-livedot">🔴 LIVE</span><span id="st-vcount" class="st-hc">👥 0</span><button id="st-vleave" class="st-x">✕</button></div>'
     +'<div class="st-vwrap"><video id="st-video" autoplay playsinline muted></video><div id="st-vstatus" class="st-vstatus">Подключаемся к стриму…</div>'
     +'<button id="st-unlock" class="st-unlock" style="display:none">🔊 Нажми, чтобы включить звук</button></div>'
-    +'<div id="st-people" class="st-people"></div>'
+    +'<div id="st-people" class="st-people"></div><div class="st-note">Нажми на имя участника, чтобы заглушить его только для себя</div>'
     +'<div class="st-vctl"><button id="st-mic" class="st-mic">🔇 Включить микрофон</button></div>';
   document.body.appendChild(el);
   S.viewerEl=el;S.videoEl=$('st-video');
   S.videoEl.addEventListener('playing',function(){var s=$('st-vstatus');if(s)s.style.display='none';});
   $('st-vleave').onclick=function(){endView(null);};
+  $('st-people').onclick=function(e){var b=e.target.closest?e.target.closest('button[data-uid]'):null;if(b)toggleMute(b.getAttribute('data-uid'));};
   $('st-mic').onclick=toggleMic;
   $('st-unlock').onclick=unlockAudio;
 }
 function viewerCheckHost(list){
   var has=list.some(function(m){return m.pid===S.hostPid;});
-  if(has){S.hostSeen=true;return;}
+  if(has){S.hostSeen=true;sendKnock();return;}
   if(S.hostSeen&&S.role==='viewer'){
     var s=$('st-vstatus');if(s){s.style.display='flex';s.textContent='Стример завершил трансляцию';}
     var t=S.sid;
@@ -3134,7 +3272,7 @@ function endView(msg){
   if(S.role!=='viewer')return;
   teardown();
   if(msg)toast(msg);
-    }
+  }
   /* ---------- Завершение ---------- */
 function teardown(){
   clearInterval(S.timer);clearTimeout(S.hostWait);clearTimeout(S.lobbyUpd);
@@ -3147,15 +3285,36 @@ function teardown(){
     if(S.cap){try{S.cap.remove();}catch(e){}}
     var hud=$('pg-stream-hud');if(hud)hud.innerHTML='';
   }
+  if(S.panel){try{S.panel.remove();}catch(e){}S.panel=null;}
   if(S.micStream){try{S.micStream.getTracks().forEach(function(t){t.stop();});}catch(e){}}
   if(S.role==='viewer'&&S.viewerEl){try{S.viewerEl.remove();}catch(e){}}
   S.ch=null;S.chReady=false;S.meta=null;S.role=null;S.sid=null;S.members=[];S.early={};S.hostPid=null;S.hostSeen=false;
   S.micStream=null;S.micTrack=null;S.micOn=false;S.iframe=null;S.cap=null;S.capCtx=null;S.vStream=null;S.vTrack=null;
   S.capReady=false;S.capWanted=false;S.viewerEl=null;S.videoEl=null;S.lastViewers=-1;
+  S.priv=false;S.adm={};S.ok={};S.denied={};S.pending=[];S.muted={};S.panelOpen=false;S.knockAt=0;
   lobbyRelease();
   renderLive();
 }
 window.addEventListener('pagehide',function(){try{if(S.role)teardown();}catch(e){}});
+function dbg(){
+  var s=$('st-vstatus');
+  if(!s||S.role!=='viewer'||s.style.display==='none')return;
+  var has=S.members.some(function(m){return m.pid===S.hostPid;});
+  if(S.hostSeen&&!has)return;
+  var t;
+  if(S.priv&&!isAdm(S.pid)){
+    t='🔒 Приватный стрим\nЖдём, пока стример тебя впустит…';
+  }else{
+    var r=S.pcs[S.hostPid];
+    t='Подключаемся к стриму…\n';
+    if(!r)t+='Ждём предложение (offer) от стримера…';
+    else t+='связь: '+r.pc.connectionState+' · ICE: '+r.pc.iceConnectionState;
+    t+='\nсигналы: всего '+(S.sigAll||0)+', мне '+(S.sigIn||0)+(S.sigLast?' (последний: '+S.sigLast+')':'');
+    if(r&&(r.pc.iceConnectionState==='failed'||r.pc.connectionState==='failed'))t+='\nПрямое соединение не удалось — сеть блокирует P2P (нужен TURN-сервер)';
+  }
+  s.style.whiteSpace='pre-line';s.textContent=t;
+}
+setInterval(dbg,1000);
 
 window.STREAMS={
   injectCapture:injectCapture,hostStart:hostStart,hostStop:hostStop,watch:watch,startGame:startGame,
