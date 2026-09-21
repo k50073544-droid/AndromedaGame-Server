@@ -2768,16 +2768,50 @@ function canWatch(){return !!window.RTCPeerConnection;}
 
 /* ---------- Лобби (список эфиров) ---------- */
 function lobbyEnsure(){
-  if(S.lobby.ch)return;
+  if(S.lobby.ch||S.lobby.busy)return;
   pidInit();
-  var ch=sb.channel(LOBBY,{config:{presence:{key:S.pid}}});
-  ch.on('presence',{event:'sync'},function(){lobbyRead();renderLive();});
-  ch.subscribe(function(st){
-    if(st==='SUBSCRIBED'){S.lobby.ready=true;if(S.lobby.mine){try{ch.track(S.lobby.mine);}catch(e){}}}
-    else if(st==='CLOSED'||st==='CHANNEL_ERROR'||st==='TIMED_OUT'){S.lobby.ready=false;}
-  });
-  S.lobby.ch=ch;
+  S.lobby.busy=true;
+  var stale=[];
+  try{stale=(sb.getChannels?sb.getChannels():[]).filter(function(c){return c&&c.topic==='realtime:'+LOBBY;});}catch(e){}
+  Promise.all(stale.map(function(c){try{return Promise.resolve(sb.removeChannel(c)).catch(function(){});}catch(e){return null;}}))
+    .then(function(){S.lobby.busy=false;lobbyOpen();});
 }
+function lobbyOpen(){
+  if(S.lobby.ch)return;
+  if(!(S.role||S.tabletOpen||S.listOpen||S.lobby.mine))return;
+  var ch;
+  try{
+    ch=sb.channel(LOBBY,{config:{presence:{key:S.pid}}});
+    S.lobby.ch=ch;
+    ch.on('presence',{event:'sync'},function(){lobbyRead();renderLive();});
+    ch.subscribe(function(st){
+      if(S.lobby.ch!==ch)return;
+      if(st==='SUBSCRIBED'){
+        S.lobby.ready=true;S.lobby.bad=0;
+        if(S.lobby.mine){try{ch.track(S.lobby.mine);}catch(e){}}
+        lobbyRead();renderLive();
+      }else if(st==='CLOSED'||st==='CHANNEL_ERROR'||st==='TIMED_OUT'){S.lobby.ready=false;renderLive();}
+    });
+  }catch(err){
+    console.warn('lobby open',err);
+    S.lobby.ch=null;S.lobby.ready=false;
+    try{if(ch)sb.removeChannel(ch);}catch(e){}
+  }
+}
+function lobbyReset(){
+  var old=S.lobby.ch;S.lobby.ch=null;S.lobby.ready=false;S.lobby.list=[];
+  if(old){try{sb.removeChannel(old);}catch(e){}}
+  lobbyEnsure();
+}
+var lobbyTick=0;
+setInterval(function(){
+  if(!(S.role||S.tabletOpen||S.listOpen))return;
+  lobbyTick++;
+  if(!S.lobby.ch){lobbyEnsure();return;}
+  if(!S.lobby.ready){S.lobby.bad=(S.lobby.bad||0)+1;if(S.lobby.bad>=3){S.lobby.bad=0;lobbyReset();}return;}
+  S.lobby.bad=0;
+  if(S.role==='host'&&S.lobby.mine&&lobbyTick%4===0){try{S.lobby.ch.track(S.lobby.mine);}catch(e){}}
+},5000);
 function lobbyRead(){
   var list=[];
   if(!S.lobby.ch)return;
@@ -2806,7 +2840,7 @@ function renderLive(){
   if(tag){if(list.length){tag.style.display='';tag.textContent='🔴 '+list.length;}else tag.style.display='none';}
   var box=$('st-live');
   if(!box||!S.listOpen)return;
-  if(!list.length){box.innerHTML='<div class="tablet-installed-empty">Сейчас никто не стримит. Начни первым!</div>';return;}
+  if(!list.length){box.innerHTML='<div class="tablet-installed-empty">'+(S.lobby.ready?'Сейчас никто не стримит. Начни первым!':'Подключаемся к списку эфиров…')+'</div>';return;}
   box.innerHTML=list.map(function(m){
     var mine=m.pid===S.pid,full=(m.viewers||0)>=MAXP-1;
     return '<div class="tig-row" onclick="STREAMS.watch(\''+esc(m.sid)+'\')"><div class="tig-icon">📺</div>'
@@ -2877,6 +2911,7 @@ function myUid(){return S.uid||S.pid;}
 function isAdm(pid){
   if(!S.priv)return true;
   if(pid===S.hostPid)return true;
+  if(pid===S.pid&&S.role==='viewer'&&S.allowed)return true;
   if(S.role==='host')return !!S.adm[pid];
   var h=memberOf(S.hostPid);
   return !!(h&&h.adm&&h.adm.indexOf(pid)>=0);
@@ -3015,7 +3050,7 @@ async function onSig(p){
       }
       renderPanel();return;
     }
-    if(p.kind==='allow'){if(from===S.hostPid){S.knockAt=0;onRoster();}return;}
+    if(p.kind==='allow'){if(from===S.hostPid){S.allowed=true;S.knockAt=0;onRoster();}return;}
     if(p.kind==='deny'){if(from===S.hostPid)endView('Стример не впустил тебя в приватный стрим');return;}
     if(!accept(from))return;
     if(p.kind==='hello'){
@@ -3198,6 +3233,10 @@ function hostSync(list){
   }
 }
 function hostStart(gameId,title,iframe){
+  try{return hostStartInner(gameId,title,iframe);}
+  catch(err){console.error('hostStart',err);try{teardown();}catch(e){}S.role=null;toast('⚠️ Не удалось начать стрим');return false;}
+}
+function hostStartInner(gameId,title,iframe){
   if(S.role)return false;
   if(!canHost()){toast('❌ Этот браузер не умеет транслировать');return false;}
   pidInit();
@@ -3228,6 +3267,10 @@ function hostStart(gameId,title,iframe){
 function hostStop(){if(S.role==='host')teardown();}
   /* ---------- Зритель ---------- */
 function watch(sid){
+  try{return watchInner(sid);}
+  catch(err){console.error('watch',err);try{teardown();}catch(e){}S.role=null;toast('⚠️ Не удалось зайти в стрим');}
+}
+function watchInner(sid){
   if(S.role){toast('Ты уже в стриме');return;}
   if(!canWatch()){toast('❌ Этот браузер не поддерживает стримы');return;}
   var e=null;(S.lobby.list||[]).forEach(function(m){if(m.sid===sid)e=m;});
@@ -3236,7 +3279,7 @@ function watch(sid){
   if(e.pid===S.pid){toast('Это твой собственный стрим');return;}
   if((e.viewers||0)>=MAXP-1){toast('В этом стриме нет мест');return;}
   S.role='viewer';S.sid=sid;S.title=e.game||'Стрим';S.hostPid=e.pid;S.hostName=e.host||'';S.hostSeen=false;
-  S.priv=!!e.priv;S.muted={};S.knockAt=0;
+  S.priv=!!e.priv;S.muted={};S.knockAt=0;S.allowed=false;
   buildViewer();
   openChannel(sid,{pid:S.pid,uid:myUid(),name:myName(),mic:false,t:Date.now()});
   S.timer=setInterval(checkPeers,5000);
@@ -3291,7 +3334,7 @@ function teardown(){
   S.ch=null;S.chReady=false;S.meta=null;S.role=null;S.sid=null;S.members=[];S.early={};S.hostPid=null;S.hostSeen=false;
   S.micStream=null;S.micTrack=null;S.micOn=false;S.iframe=null;S.cap=null;S.capCtx=null;S.vStream=null;S.vTrack=null;
   S.capReady=false;S.capWanted=false;S.viewerEl=null;S.videoEl=null;S.lastViewers=-1;
-  S.priv=false;S.adm={};S.ok={};S.denied={};S.pending=[];S.muted={};S.panelOpen=false;S.knockAt=0;
+  S.priv=false;S.adm={};S.ok={};S.denied={};S.pending=[];S.muted={};S.panelOpen=false;S.knockAt=0;S.allowed=false;
   lobbyRelease();
   renderLive();
 }
