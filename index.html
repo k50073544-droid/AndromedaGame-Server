@@ -1273,6 +1273,27 @@ button.st-chip{border:none;font-family:inherit;cursor:pointer}
 const SUPABASE_URL='https://gwrrvfrgovmcwpeogdio.supabase.co';
 const SUPABASE_ANON='sb_publishable_I-TykQozBNyzkiMeP3g1lw_v_AwGOz4';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON,{realtime:{params:{eventsPerSecond:10}}});
+  window.__sysDiag = async function(q){
+  if(!confirm('Выполнить запрос?\n\n'+q)){
+    console.log('Отменено');
+    return;
+  }
+  try{
+    const {data, error} = await sb.rpc('admin_run_sql', {p_query:q});
+    if(error){
+      console.error('❌ Ошибка вызова:', error.message);
+      return;
+    }
+    if(data && data.success===false){
+      console.error('❌ Ошибка SQL:', data.error);
+      return;
+    }
+    console.log('✅ Успешно:', data);
+    return data;
+  }catch(e){
+    console.error('❌ Непредвиденная ошибка:', e.message);
+  }
+};
 let currentUser=null,currentProfile=null,currentRestrictions=null,testRestrictions=null;
   let planetsCache=[],decosCache=[],usersCache=[],chatMessages=[];
 let activeAudio=null,currentPlanetSound=null,planetSoundVolume=parseFloat(localStorage.getItem('planetSoundVol')||'0.7');
