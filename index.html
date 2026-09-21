@@ -2293,6 +2293,10 @@ const onMsg=async(e)=>{
         const{data:result}=await sb.rpc('get_fish_dex',{p_guest_id:currentUser?null:(currentGuestData?.id||null)});
         iframe.contentWindow.postMessage({type:'andra-fish-dex-result',dex:result},'*');
   }
+  if(e.data?.type==='andra-fish-lore'){
+  const{data:result}=await sb.rpc('set_fish_lore',{p_key:e.data.key,p_text:e.data.text});
+  iframe.contentWindow.postMessage({type:'andra-fish-lore-result',key:e.data.key,text:e.data.text,...(result||{ok:false})},'*');
+  }
     };
     window.addEventListener('message',async(e)=>{
       if(e.source!==iframe.contentWindow)return;
