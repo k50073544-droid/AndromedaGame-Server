@@ -154,6 +154,43 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .ult-badge{display:inline-block;padding:1px 6px;border-radius:8px;font-size:9px;background:rgba(34,211,238,0.1);color:var(--glow-cyan);border:1px solid rgba(34,211,238,0.2)}
 .ult-inf{color:var(--success);font-size:13px}
 </style>
+  <style>
+/* ===== Стримы ===== */
+.tablet-app-icon.acc-streams{background:linear-gradient(150deg,#fb7185,#be123c)}
+.st-title{font-size:13px;font-weight:800;color:var(--text-main);margin:4px 0 10px}
+.st-go{width:100%;justify-content:center;padding:12px 14px;font-weight:800;font-size:13px;margin-bottom:10px}
+.st-picker{flex-direction:column;gap:8px;margin-bottom:12px}
+.st-sub{font-size:11px;font-weight:700;color:var(--text-dim);letter-spacing:.5px;margin:8px 0 6px}
+.st-live-list{display:flex;flex-direction:column;gap:8px}
+.st-cinfo{flex:1;min-width:0}
+.st-csub{font-size:10px;color:var(--text-dim);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st-badge{font-size:10px;font-weight:800;color:#fff;background:#e11d48;border-radius:20px;padding:3px 9px;flex-shrink:0}
+.st-badge.go{background:linear-gradient(135deg,var(--nebula-purple),var(--nebula-blue))}
+.st-hint{font-size:10px;color:var(--text-dim);line-height:1.5;margin-top:14px}
+.tablet-app-icon .tai-tag#st-icon-tag{background:#e11d48}
+.st-livedot{font-size:11px;font-weight:800;color:#fff;background:#e11d48;border-radius:20px;padding:3px 9px;white-space:nowrap}
+.st-hc{font-size:12px;font-weight:700;color:#fff;white-space:nowrap}
+.st-hmic{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;border-radius:8px;padding:3px 9px;font-size:13px;cursor:pointer}
+.st-hmic.on{background:#16a34a;border-color:#16a34a}
+.st-unlock{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:5;border:none;border-radius:20px;padding:9px 16px;font-weight:800;font-size:12px;background:#facc15;color:#3a2410;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+#pg-stream-hud .st-unlock{position:fixed;bottom:16px;z-index:100001}
+#st-view{position:fixed;inset:0;z-index:100000;background:#05070f;display:flex;flex-direction:column;color:#fff;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+.st-vbar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#0a0f1e;border-bottom:1px solid rgba(255,255,255,.08)}
+.st-vt{flex:1;min-width:0;display:flex;flex-direction:column}
+.st-vt b{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st-vt small{font-size:10px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st-x{background:none;border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:14px}
+.st-vwrap{position:relative;flex:1;min-height:0;background:#000;display:flex;align-items:center;justify-content:center}
+#st-video{width:100%;height:100%;object-fit:contain;background:#000}
+.st-vstatus{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;color:#cbd5e1;font-size:13px;font-weight:700;background:rgba(0,0,0,.6)}
+.st-people{display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px;background:#0a0f1e;max-height:84px;overflow-y:auto}
+.st-chip{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(255,255,255,.08);color:#e2e8f0}
+.st-chip.mic{background:rgba(22,163,74,.28);color:#bbf7d0}
+.st-chip.wait{opacity:.5}
+.st-vctl{padding:10px 14px 14px;background:#0a0f1e}
+.st-mic{width:100%;padding:13px;border:none;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;background:rgba(255,255,255,.1);color:#fff}
+.st-mic.on{background:#16a34a}
+  </style>
 <style>
 /* ===== ШТОРКА НОВОСТЕЙ ===== */
 #news-tab-btn{
@@ -699,6 +736,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
             <svg class="tai-glyph" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l2.9 6.9L22 9.6l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.6L2 9.6l7.1-.7z"/></svg>
             <span class="tai-name">Stars</span>
           </div>
+          <div class="tablet-app-icon acc-streams" onclick="openTabletApp('streams')">
+            <svg class="tai-glyph" viewBox="0 0 24 24" fill="#fff"><path d="M21 6h-6.6l2.6-2.6-.7-.7L12 6.3 8.7 2.7l-.7.7L10.6 6H3a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1zm-1 12H4V8h16v10z"/><circle cx="12" cy="13" r="2.6"/></svg>
+            <span class="tai-name">Стримы</span>
+            <span class="tai-tag" id="st-icon-tag" style="display:none"></span>
+          </div>
         </div>
         <div class="tablet-installed-wrap">
           <div class="tablet-installed-title">МОИ ИГРЫ</div>
@@ -724,6 +766,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <div class="stars-panel active" id="stars-panel-games"></div>
         <div class="stars-panel" id="stars-panel-level"></div>
         <div class="stars-panel" id="stars-panel-gold"></div>
+      </div>
+      <div class="tablet-app-view" id="tablet-view-streams">
+        <button class="tablet-back" onclick="backToTabletHome()">← Назад</button>
+        <div class="st-title">📺 Стримы</div>
+        <button class="btn primary st-go" onclick="STREAMS.togglePicker()">🔴 Начать стрим</button>
+        <div id="st-picker" class="st-picker" style="display:none"></div>
+        <div class="st-sub">СЕЙЧАС В ЭФИРЕ</div>
+        <div id="st-live" class="st-live-list"><div class="tablet-installed-empty">Загрузка…</div></div>
+        <div class="st-hint">Выбери любую игру и играй — другие игроки смогут подключиться, смотреть твою игру и болтать с тобой голосом. Звук самой игры зрители не слышат, только голосовой чат. Микрофон включается кнопкой 🎤.</div>
       </div>
       <div class="tablet-app-view" id="tablet-view-promo">
   <button class="tablet-back" onclick="backToTabletHome()">← Назад</button>
@@ -1861,6 +1912,7 @@ setTimeout(()=>location.reload(),900);
 }
 
 async function openGamesTablet(){
+  if(window.STREAMS)STREAMS.peek();
   clearGamesBadge();
   const overlay=document.getElementById('games-tablet-overlay');
   const boot=document.getElementById('tablet-boot');
@@ -1935,6 +1987,7 @@ function openGuestProfileModal(guest){
 }
 
 function closeGamesTablet(){
+  if(window.STREAMS)STREAMS.leaveView();
   stopStarsAutoRefresh();
   const overlay=document.getElementById('games-tablet-overlay');
   overlay.classList.remove('on');
@@ -1949,10 +2002,12 @@ const shell=document.querySelector('.tablet-shell');
       if(shell)shell.classList.add('app-open');
 if(name==='stars'){switchStarsTab('games');startStarsAutoRefresh();}
 if(name==='store')switchStoreTab('all');
+  if(name==='streams'&&window.STREAMS)STREAMS.openView();
 if(name==='promo'){document.getElementById('promo-code-msg').textContent='';document.getElementById('promo-code-input').value='';}
 }
   
 function backToTabletHome(){
+  if(window.STREAMS)STREAMS.backHome();
 stopStarsAutoRefresh();
 document.getElementById('tablet-apps-screen').style.display='flex';
 document.querySelectorAll('.tablet-app-view').forEach(v=>v.classList.remove('open'));
@@ -2198,7 +2253,7 @@ function applyOnlineBadges(){
   });
 }
   
-async function openInstalledGame(gameId){
+async function openInstalledGame(gameId,streamOpts){
   try{
     const{data:g,error}=await sb.from('games').select('id,title,code,league').eq('id',gameId).maybeSingle();
     if(error){showToast('❌ Ошибка загрузки: '+error.message);console.error(error);return;}
@@ -2213,14 +2268,15 @@ async function openInstalledGame(gameId){
     }
     let html=g.code?.html||'<div style="color:#fff;padding:20px">Игра пуста</div>';
     html=applyTextures(html,g.code?.textures||{});
-
+if(streamOpts&&streamOpts.stream&&window.STREAMS)html=STREAMS.injectCapture(html);
     const overlay=document.createElement('div');
     overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:#000;display:flex;flex-direction:column';
-    overlay.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#0a0f1e"><span style="color:#fff;font-size:13px;font-weight:700">'+escHtml(g.title)+'</span><button id="pg-close-btn" style="background:none;border:1px solid var(--glass-border);color:#fff;border-radius:8px;width:28px;height:28px;cursor:pointer">✕</button></div><iframe id="pg-frame" sandbox="allow-scripts" style="flex:1;border:none;width:100%;background:#111"></iframe>';
+    overlay.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#0a0f1e"><span style="color:#fff;font-size:13px;font-weight:700">'+escHtml(g.title)+'</span><span id="pg-stream-hud" style="flex:1;display:flex;justify-content:center;align-items:center;gap:8px;min-width:0"></span><button id="pg-close-btn" style="background:none;border:1px solid var(--glass-border);color:#fff;border-radius:8px;width:28px;height:28px;cursor:pointer">✕</button></div><iframe id="pg-frame" sandbox="allow-scripts" style="flex:1;border:none;width:100%;background:#111"></iframe>';
     document.body.appendChild(overlay);
     trackGameOnline(gameId);
     const iframe=overlay.querySelector('#pg-frame');
     iframe.srcdoc=html;
+    if(streamOpts&&streamOpts.stream&&window.STREAMS)STREAMS.hostStart(gameId,g.title,iframe,overlay);
     const iframeLoaded=new Promise(resolve=>{iframe.onload=resolve;});
     if(g.code?.type==='ninja'){
       const{data:boosterProfiles}=await sb.from('profiles').select('id,username').eq('role','booster');
@@ -2319,6 +2375,7 @@ const onMsg=async(e)=>{
     overlay.querySelector('#pg-close-btn').onclick=()=>{
       window.removeEventListener('message',onMsg);
       overlay.remove();
+      if(streamOpts&&streamOpts.stream&&window.STREAMS)STREAMS.hostStop();
       trackGameOnline(null);
     };
   }catch(err){
@@ -2558,6 +2615,553 @@ function applyTextures(html,textures){
   initRealtime();
   initGamesOnline();
   if(!orbitRafId)orbitRafId=requestAnimationFrame(animateOrbits);
+})();
+</script>
+  <script>
+/* ===== СТРИМЫ: трансляция игры + голосовой чат (WebRTC, сигналинг через Supabase Realtime) ===== */
+(function(){
+'use strict';
+/* Если у тебя будет свой TURN-сервер — впиши его сюда (нужен игрокам за строгими мобильными NAT). */
+var ICE_SERVERS=[
+  {urls:'stun:stun.l.google.com:19302'},
+  {urls:'stun:stun1.l.google.com:19302'},
+  {urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}
+];
+var MAXP=8;                 // максимум участников в одном стриме (стример + 7 зрителей)
+var LOBBY='streams-lobby';
+
+/* ---------- Скрипт, который вставляется ВНУТРЬ игры стримера и шлёт кадры наружу ---------- */
+function CAPTURE_FN(){
+  if(window.__andraCap)return;window.__andraCap=1;
+  var OUTW=360,FPS=15,on=false,tmr=null,base=null,baseBusy=false,baseAt=0,baseFail=0,bmpBusy=false;
+  var out=document.createElement('canvas'),octx=out.getContext('2d');
+  function vw(){return Math.max(1,window.innerWidth||document.documentElement.clientWidth||320);}
+  function vh(){return Math.max(1,window.innerHeight||document.documentElement.clientHeight||480);}
+  function canvases(){
+    var res=[],list=document.querySelectorAll('canvas'),W=vw(),H=vh();
+    for(var i=0;i<list.length;i++){
+      var c=list[i];if(c===out||!c.width||!c.height)continue;
+      var r=c.getBoundingClientRect();
+      if(r.width<16||r.height<16)continue;
+      var st=getComputedStyle(c);
+      if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')continue;
+      if(r.bottom<0||r.right<0||r.top>H||r.left>W)continue;
+      res.push({c:c,x:r.left,y:r.top,w:r.width,h:r.height});
+    }
+    return res;
+  }
+  function bgColor(){
+    var els=[document.body,document.documentElement];
+    for(var i=0;i<els.length;i++){
+      var c=els[i]?getComputedStyle(els[i]).backgroundColor:'';
+      if(c&&c!=='rgba(0, 0, 0, 0)'&&c!=='transparent')return c;
+    }
+    return '#000';
+  }
+  function snap(){
+    if(baseBusy)return;baseBusy=true;
+    try{
+      var W=vw(),H=vh();
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,iframe,video,audio,object,embed');
+      for(var k=0;k<rm.length;k++){if(rm[k].parentNode)rm[k].parentNode.removeChild(rm[k]);}
+      /* canvas внутри SVG-снимка не рисуется и схлопывается в 0 — заменяем на блок того же размера */
+      var lc=document.querySelectorAll('canvas'),cc=clone.querySelectorAll('canvas');
+      for(var j=0;j<cc.length&&j<lc.length;j++){
+        var l=lc[j],r=l.getBoundingClientRect(),cs0=getComputedStyle(l),ph=document.createElement('div');
+        if(l.id)ph.id=l.id;
+        if(l.getAttribute('class'))ph.setAttribute('class',l.getAttribute('class'));
+        ph.setAttribute('style',(l.getAttribute('style')||'')+';width:'+r.width+'px;height:'+r.height+'px;display:'+(cs0.display==='inline'?'inline-block':cs0.display)+';box-sizing:border-box');
+        if(cc[j].parentNode)cc[j].parentNode.replaceChild(ph,cc[j]);
+      }
+      var bd=clone.querySelector('body');
+      clone.style.minHeight=H+'px';
+      if(bd){bd.style.minHeight=H+'px';bd.style.boxSizing='border-box';}
+      var xml=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'"><foreignObject x="0" y="0" width="'+W+'" height="'+H+'">'+xml+'</foreignObject></svg>';
+      var img=new Image();
+      img.onload=function(){base=img;baseAt=Date.now();baseBusy=false;};
+      img.onerror=function(){baseBusy=false;baseFail++;baseAt=Date.now();};
+      img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+    }catch(e){baseBusy=false;baseFail++;baseAt=Date.now();}
+  }
+  function frame(){
+    if(!on||bmpBusy)return;
+    var W=vw(),H=vh(),sc=Math.min(1,OUTW/W),ow=Math.max(2,Math.round(W*sc)),oh=Math.max(2,Math.round(H*sc));
+    if(out.width!==ow||out.height!==oh){out.width=ow;out.height=oh;}
+    var cs=canvases(),maxA=0,i;
+    for(i=0;i<cs.length;i++){var a=cs[i].w*cs[i].h;if(a>maxA)maxA=a;}
+    var dominant=maxA/(W*H)>=0.55;
+    octx.setTransform(1,0,0,1,0,0);
+    octx.fillStyle=dominant?'#000':bgColor();octx.fillRect(0,0,ow,oh);
+    if(!dominant&&baseFail<5){
+      if(!baseBusy&&Date.now()-baseAt>350)snap();
+      if(base){try{octx.drawImage(base,0,0,ow,oh);}catch(e){}}
+    }
+    for(i=0;i<cs.length;i++){var o=cs[i];try{octx.drawImage(o.c,o.x*sc,o.y*sc,o.w*sc,o.h*sc);}catch(e){}}
+    bmpBusy=true;
+    createImageBitmap(out).then(function(b){
+      bmpBusy=false;
+      try{parent.postMessage({type:'andra-stream-frame',bmp:b},'*',[b]);}catch(e){try{b.close();}catch(_){}}
+    }).catch(function(){bmpBusy=false;});
+  }
+  window.addEventListener('message',function(e){
+    var d=e.data;if(!d||d.type!=='andra-stream-ctl')return;
+    on=!!d.on;clearInterval(tmr);tmr=null;
+    if(on)tmr=setInterval(frame,Math.round(1000/FPS));
+  });
+  try{parent.postMessage({type:'andra-stream-ready'},'*');}catch(e){}
+}
+
+/* ---------- Состояние ---------- */
+var S={pid:null,role:null,sid:null,ch:null,chReady:false,meta:null,pcs:{},early:{},members:[],
+  hostPid:null,hostSeen:false,title:'',hostName:'',timer:null,hostWait:null,
+  micStream:null,micTrack:null,micOn:false,
+  iframe:null,cap:null,capCtx:null,vStream:null,vTrack:null,capReady:false,capWanted:false,
+  viewerEl:null,videoEl:null,tabletOpen:false,listOpen:false,lobbyUpd:null,lastViewers:-1,
+  lobby:{ch:null,ready:false,list:[],mine:null}};
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+var tt=null,tto=null;
+function toast(m){
+  try{
+    if(!tt){
+      tt=document.createElement('div');
+      tt.style.cssText='position:fixed;top:calc(env(safe-area-inset-top,0px) + 56px);left:50%;transform:translateX(-50%);z-index:100002;background:#0a0f1e;border:1px solid #22d3ee;border-radius:10px;padding:8px 16px;font-size:12px;color:#22d3ee;max-width:88vw;text-align:center;pointer-events:none;box-shadow:0 0 18px rgba(34,211,238,.35);display:none';
+      document.body.appendChild(tt);
+    }
+    tt.textContent=m;tt.style.display='block';clearTimeout(tto);
+    tto=setTimeout(function(){tt.style.display='none';},3000);
+  }catch(e){}
+    }
+  function myName(){
+  try{
+    if(typeof currentProfile!=='undefined'&&currentProfile&&currentProfile.username)return '@'+currentProfile.username;
+    if(typeof currentGuestData!=='undefined'&&currentGuestData&&currentGuestData.nickname)return currentGuestData.nickname;
+  }catch(e){}
+  return 'Гость';
+}
+function pidInit(){
+  if(S.pid)return;
+  var u='';try{if(typeof onlineUid==='function')u=String(onlineUid()||'');}catch(e){}
+  S.pid=(u.replace(/[^a-zA-Z0-9]/g,'').slice(0,10)||'x')+'-'+Math.random().toString(36).slice(2,8);
+}
+function canHost(){return !!(window.RTCPeerConnection&&window.HTMLCanvasElement&&HTMLCanvasElement.prototype.captureStream);}
+function canWatch(){return !!window.RTCPeerConnection;}
+
+/* ---------- Лобби (список эфиров) ---------- */
+function lobbyEnsure(){
+  if(S.lobby.ch)return;
+  pidInit();
+  var ch=sb.channel(LOBBY,{config:{presence:{key:S.pid}}});
+  ch.on('presence',{event:'sync'},function(){lobbyRead();renderLive();});
+  ch.subscribe(function(st){
+    if(st==='SUBSCRIBED'){S.lobby.ready=true;if(S.lobby.mine){try{ch.track(S.lobby.mine);}catch(e){}}}
+    else if(st==='CLOSED'||st==='CHANNEL_ERROR'||st==='TIMED_OUT'){S.lobby.ready=false;}
+  });
+  S.lobby.ch=ch;
+}
+function lobbyRead(){
+  var list=[];
+  if(!S.lobby.ch)return;
+  var st=S.lobby.ch.presenceState();
+  Object.keys(st).forEach(function(k){(st[k]||[]).forEach(function(m){if(m&&m.sid)list.push(m);});});
+  list.sort(function(a,b){return (a.t||0)-(b.t||0);});
+  S.lobby.list=list;
+}
+function lobbyRelease(){
+  if(!S.lobby.ch||S.role||S.tabletOpen||S.listOpen)return;
+  try{sb.removeChannel(S.lobby.ch);}catch(e){}
+  S.lobby.ch=null;S.lobby.ready=false;S.lobby.list=[];
+}
+function lobbyTrack(meta){
+  S.lobby.mine=meta;lobbyEnsure();
+  if(S.lobby.ready){try{S.lobby.ch.track(meta);}catch(e){}}
+}
+function lobbyUntrack(){
+  S.lobby.mine=null;
+  if(S.lobby.ch&&S.lobby.ready){try{S.lobby.ch.untrack();}catch(e){}}
+}
+
+/* ---------- Экран «Стримы» в планшете ---------- */
+function renderLive(){
+  var list=S.lobby.list||[];
+  var tag=$('st-icon-tag');
+  if(tag){if(list.length){tag.style.display='';tag.textContent='🔴 '+list.length;}else tag.style.display='none';}
+  var box=$('st-live');
+  if(!box||!S.listOpen)return;
+  if(!list.length){box.innerHTML='<div class="tablet-installed-empty">Сейчас никто не стримит. Начни первым!</div>';return;}
+  box.innerHTML=list.map(function(m){
+    var mine=m.pid===S.pid,full=(m.viewers||0)>=MAXP-1;
+    return '<div class="tig-row" onclick="STREAMS.watch(\''+esc(m.sid)+'\')"><div class="tig-icon">📺</div>'
+      +'<div class="st-cinfo"><div class="tig-name">'+esc(m.game||'Игра')+'</div>'
+      +'<div class="st-csub">'+esc(m.host||'?')+(mine?' (ты)':'')+' · 👥 '+(m.viewers||0)+(full?' · мест нет':'')+'</div></div>'
+      +'<span class="st-badge">LIVE</span></div>';
+  }).join('');
+    }
+  async function loadPicker(){
+  var box=$('st-picker');if(!box)return;
+  box.innerHTML='<div class="tablet-installed-empty">Загрузка игр…</div>';
+  var res=await sb.from('games').select('id,title,thumbnail_url,code->>restrictRole,code->>restrictUsername').eq('status','approved');
+  if(res.error||!res.data){box.innerHTML='<div class="tablet-installed-empty">Не удалось загрузить игры</div>';return;}
+  var role=(typeof currentProfile!=='undefined'&&currentProfile)?currentProfile.role:null;
+  var uname=(typeof currentProfile!=='undefined'&&currentProfile)?currentProfile.username:null;
+  var rows=res.data.filter(function(g){return (!g.restrictRole||g.restrictRole===role)&&(!g.restrictUsername||g.restrictUsername===uname);});
+  if(!rows.length){box.innerHTML='<div class="tablet-installed-empty">Нет доступных игр</div>';return;}
+  box.innerHTML='<div class="st-sub">ВЫБЕРИ ИГРУ ДЛЯ СТРИМА</div>'+rows.map(function(g){
+    var icon=g.thumbnail_url?'<img class="tig-icon" src="'+esc(g.thumbnail_url)+'">':'<div class="tig-icon">🎮</div>';
+    return '<div class="tig-row" onclick="STREAMS.startGame(\''+esc(g.id)+'\')">'+icon+'<span class="tig-name">'+esc(g.title)+'</span><span class="st-badge go">▶ Стрим</span></div>';
+  }).join('');
+}
+function togglePicker(){
+  var box=$('st-picker');if(!box)return;
+  if(box.style.display==='none'||!box.style.display){box.style.display='flex';loadPicker();}
+  else box.style.display='none';
+}
+function startGame(id){
+  if(S.role){toast('Ты уже в стриме');return;}
+  if(!canHost()){toast('❌ Этот браузер не умеет транслировать');return;}
+  if(typeof openInstalledGame==='function')openInstalledGame(id,{stream:true});
+}
+function peek(){S.tabletOpen=true;lobbyEnsure();}
+function openView(){S.listOpen=true;lobbyEnsure();renderLive();}
+function backHome(){S.listOpen=false;var p=$('st-picker');if(p)p.style.display='none';lobbyRelease();}
+function leaveView(){S.tabletOpen=false;S.listOpen=false;lobbyRelease();}
+
+/* ---------- Канал стрима и сигналинг ---------- */
+function openChannel(sid,meta){
+  var ch=sb.channel('stream-'+sid,{config:{broadcast:{self:false},presence:{key:S.pid}}});
+  ch.on('broadcast',{event:'sig'},function(msg){onSig(msg&&msg.payload);});
+  ch.on('presence',{event:'sync'},onRoster);
+  ch.subscribe(function(st){
+    if(st==='SUBSCRIBED'){S.chReady=true;S.meta=meta;try{ch.track(meta);}catch(e){}}
+    else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT'){toast('⚠️ Связь со стримом нестабильна');}
+  });
+  S.ch=ch;S.meta=meta;
+    }
+  function send(to,kind,data){
+  if(!S.ch)return;
+  try{S.ch.send({type:'broadcast',event:'sig',payload:{from:S.pid,to:to,kind:kind,data:data}});}catch(e){}
+}
+function roster(){
+  var out=[];if(!S.ch)return out;
+  var st=S.ch.presenceState();
+  Object.keys(st).forEach(function(k){var a=st[k]||[],m=a[a.length-1];if(m&&m.pid)out.push(m);});
+  out.sort(function(a,b){return (a.t||0)-(b.t||0);});
+  return out;
+}
+function memberOf(pid){for(var i=0;i<S.members.length;i++)if(S.members[i].pid===pid)return S.members[i];return null;}
+function shouldInit(m){
+  if(S.role==='host')return true;
+  if(m.pid===S.hostPid)return false;
+  return S.pid>m.pid;
+}
+function onRoster(){
+  if(!S.ch)return;
+  var prev=S.members||[],list=roster();
+  S.members=list;
+  var ids={};list.forEach(function(m){ids[m.pid]=1;});
+  Object.keys(S.pcs).forEach(function(id){if(!ids[id])closePeer(id);});
+  list.forEach(function(m){
+    if(m.pid===S.pid)return;
+    var rec=S.pcs[m.pid];
+    if(rec){rec.name=m.name;return;}
+    if(S.role==='host'&&Object.keys(S.pcs).length>=MAXP-1)return;
+    if(shouldInit(m))startOffer(m);
+  });
+  if(S.role==='host'){
+    var pids={};prev.forEach(function(m){pids[m.pid]=1;});
+    list.forEach(function(m){if(m.pid!==S.pid&&!pids[m.pid])toast('👋 '+(m.name||'Зритель')+' зашёл в стрим');});
+    hostSync(list);
+  }else viewerCheckHost(list);
+  renderRoster();
+}
+function newPeer(m){
+  closePeer(m.pid);
+  var pc=new RTCPeerConnection({iceServers:ICE_SERVERS});
+  var rec={id:m.pid,name:m.name||'?',pc:pc,queue:[],iceBuf:[],iceT:null,t:Date.now(),audio:null,aSender:null};
+  S.pcs[m.pid]=rec;
+  pc.onicecandidate=function(e){
+    if(e.candidate){rec.iceBuf.push(e.candidate.toJSON());clearTimeout(rec.iceT);rec.iceT=setTimeout(function(){flushIce(rec);},200);}
+    else flushIce(rec);
+  };
+  pc.ontrack=function(e){onTrack(rec,e);};
+  pc.onconnectionstatechange=function(){renderRoster();};
+  var early=S.early[m.pid];if(early){delete S.early[m.pid];rec.queue=rec.queue.concat(early);}
+  return rec;
+}
+function flushIce(rec){
+  clearTimeout(rec.iceT);
+  if(!rec.iceBuf.length)return;
+  send(rec.id,'ice',rec.iceBuf.splice(0));
+}
+function addIce(rec,c){
+  if(rec.pc.remoteDescription&&rec.pc.remoteDescription.type){rec.pc.addIceCandidate(c).catch(function(){});}
+  else rec.queue.push(c);
+    }
+  function drain(rec){var q=rec.queue;rec.queue=[];q.forEach(function(c){rec.pc.addIceCandidate(c).catch(function(){});});}
+function closePeer(id){
+  var rec=S.pcs[id];if(!rec)return;
+  delete S.pcs[id];
+  clearTimeout(rec.iceT);
+  try{rec.pc.onicecandidate=null;rec.pc.ontrack=null;rec.pc.onconnectionstatechange=null;rec.pc.close();}catch(e){}
+  if(rec.audio){try{rec.audio.srcObject=null;rec.audio.remove();}catch(e){}}
+}
+async function startOffer(m){
+  var rec=newPeer(m),pc=rec.pc;
+  try{
+    var aTr=pc.addTransceiver(S.micTrack||'audio',{direction:'sendrecv'});
+    rec.aSender=aTr.sender;
+    if(S.role==='host'&&S.vTrack){
+      var vTr=pc.addTransceiver(S.vTrack,{direction:'sendonly',streams:[S.vStream]});
+      try{var p=vTr.sender.getParameters();if(!p.encodings||!p.encodings.length)p.encodings=[{}];p.encodings[0].maxBitrate=700000;vTr.sender.setParameters(p).catch(function(){});}catch(e){}
+    }
+    var off=await pc.createOffer();
+    await pc.setLocalDescription(off);
+    send(m.pid,'offer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp});
+  }catch(err){console.warn('stream offer',err);closePeer(m.pid);}
+}
+async function onSig(p){
+  if(!p||p.to!==S.pid||!S.ch)return;
+  var from=p.from;
+  try{
+    if(p.kind==='hello'){
+      var mm=memberOf(from);
+      if(mm&&shouldInit(mm)){closePeer(from);startOffer(mm);}
+      return;
+    }
+    if(p.kind==='offer'){
+      var m=memberOf(from)||{pid:from,name:'?'};
+      var rec=newPeer(m),pc=rec.pc;
+      await pc.setRemoteDescription(p.data);
+      pc.getTransceivers().forEach(function(t){
+        if(t.receiver&&t.receiver.track&&t.receiver.track.kind==='audio'){
+          t.direction='sendrecv';rec.aSender=t.sender;
+          if(S.micTrack)t.sender.replaceTrack(S.micTrack).catch(function(){});
+        }
+      });
+      drain(rec);
+      var ans=await pc.createAnswer();
+      await pc.setLocalDescription(ans);
+      send(from,'answer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp});
+      return;
+    }
+    var r=S.pcs[from];
+    if(p.kind==='answer'){
+      if(r&&r.pc.signalingState==='have-local-offer'){await r.pc.setRemoteDescription(p.data);drain(r);}
+      return;
+    }
+    if(p.kind==='ice'){
+      var arr=Array.isArray(p.data)?p.data:[];
+      if(!r){S.early[from]=(S.early[from]||[]).concat(arr);return;}
+      arr.forEach(function(c){addIce(r,c);});
+    }
+  }catch(err){console.warn('stream sig',err);}
+    }
+  function onTrack(rec,e){
+  var tr=e.track;
+  if(tr.kind==='video'){
+    var v=S.videoEl;
+    if(v){v.srcObject=(e.streams&&e.streams[0])||new MediaStream([tr]);var pr=v.play&&v.play();if(pr&&pr.catch)pr.catch(function(){});}
+  }else if(tr.kind==='audio'){
+    if(!rec.audio){
+      var a=document.createElement('audio');a.autoplay=true;a.playsInline=true;a.style.display='none';
+      (S.viewerEl||document.body).appendChild(a);rec.audio=a;
+    }
+    rec.audio.srcObject=(e.streams&&e.streams[0])||new MediaStream([tr]);
+    var pp=rec.audio.play&&rec.audio.play();
+    if(pp&&pp.catch)pp.catch(function(){showUnlock();});
+  }
+}
+function showUnlock(){
+  var b=$('st-unlock');if(b)b.style.display='block';
+}
+function unlockAudio(){
+  Object.keys(S.pcs).forEach(function(id){var a=S.pcs[id].audio;if(a){var p=a.play();if(p&&p.catch)p.catch(function(){});}});
+  if(S.videoEl){var q=S.videoEl.play();if(q&&q.catch)q.catch(function(){});}
+  var b=$('st-unlock');if(b)b.style.display='none';
+}
+function checkPeers(){
+  if(!S.ch)return;
+  var now=Date.now();
+  S.members.forEach(function(m){
+    if(m.pid===S.pid)return;
+    var rec=S.pcs[m.pid],init=shouldInit(m);
+    if(!rec){
+      if(S.role==='host'&&Object.keys(S.pcs).length>=MAXP-1)return;
+      if(init)startOffer(m);else send(m.pid,'hello',1);
+      return;
+    }
+    var st=rec.pc.connectionState,age=now-rec.t;
+    var bad=st==='failed'||st==='closed'||(st==='disconnected'&&age>10000)||((st==='new'||st==='connecting')&&age>25000);
+    if(bad){closePeer(m.pid);if(init)startOffer(m);else send(m.pid,'hello',1);}
+  });
+}
+
+/* ---------- Микрофон ---------- */
+async function toggleMic(){
+  if(!S.role)return;
+  if(!S.micTrack){
+    try{
+      S.micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
+    }catch(e){toast('🎤 Нет доступа к микрофону — разреши его в настройках браузера');return;}
+    S.micTrack=S.micStream.getAudioTracks()[0];S.micTrack.enabled=true;S.micOn=true;
+    Object.keys(S.pcs).forEach(function(id){var r=S.pcs[id];if(r.aSender)r.aSender.replaceTrack(S.micTrack).catch(function(){});});
+  }else{
+    S.micOn=!S.micOn;S.micTrack.enabled=S.micOn;
+  }
+  if(S.meta){S.meta.mic=S.micOn;if(S.ch){try{S.ch.track(S.meta);}catch(e){}}}
+  refreshMicBtns();
+}
+function refreshMicBtns(){
+  var b=$('st-mic');if(b){b.textContent=S.micOn?'🎤 Микрофон включён':'🔇 Включить микрофон';b.classList.toggle('on',S.micOn);}
+  var h=$('st-hmic');if(h){h.textContent=S.micOn?'🎤':'🔇';h.classList.toggle('on',S.micOn);}
+    }
+  function renderRoster(){
+  var list=S.members||[],n=list.filter(function(m){return m.pid!==S.hostPid;}).length;
+  var c=$('st-hcount');if(c)c.textContent='👥 '+n;
+  var v=$('st-vcount');if(v)v.textContent='👥 '+n;
+  var pe=$('st-people');
+  if(pe){
+    pe.innerHTML=list.map(function(m){
+      var rec=S.pcs[m.pid],ok=m.pid===S.pid||(rec&&rec.pc.connectionState==='connected');
+      return '<span class="st-chip'+(m.mic?' mic':'')+(ok?'':' wait')+'">'+(m.pid===S.hostPid?'🎙️ ':'')+esc(m.name||'?')+(m.pid===S.pid?' (ты)':'')+(m.mic?' 🎤':'')+'</span>';
+    }).join('');
+  }
+}
+
+/* ---------- Стример ---------- */
+function injectCapture(html){
+  return String(html)+'<script>('+CAPTURE_FN.toString()+')();<\/script>';
+}
+function syncCap(){
+  if(S.role!=='host'||!S.iframe||!S.capReady)return;
+  try{S.iframe.contentWindow.postMessage({type:'andra-stream-ctl',on:!!S.capWanted},'*');}catch(e){}
+}
+function onHostMsg(e){
+  if(!S.iframe||e.source!==S.iframe.contentWindow)return;
+  var d=e.data;if(!d||!d.type)return;
+  if(d.type==='andra-stream-ready'){S.capReady=true;syncCap();}
+  else if(d.type==='andra-stream-frame'&&d.bmp){
+    var b=d.bmp;
+    try{
+      if(S.cap.width!==b.width||S.cap.height!==b.height){S.cap.width=b.width;S.cap.height=b.height;}
+      S.capCtx.drawImage(b,0,0);
+    }catch(err){}
+    try{b.close();}catch(err){}
+  }
+}
+function hostSync(list){
+  var n=list.filter(function(m){return m.pid!==S.hostPid;}).length;
+  var want=n>0;
+  if(want!==S.capWanted){S.capWanted=want;syncCap();}
+  if(n!==S.lastViewers){
+    S.lastViewers=n;
+    clearTimeout(S.lobbyUpd);
+    S.lobbyUpd=setTimeout(function(){
+      if(S.role==='host'&&S.lobby.mine){S.lobby.mine.viewers=n;lobbyTrack(S.lobby.mine);}
+    },1200);
+  }
+}
+function hostStart(gameId,title,iframe){
+  if(S.role)return false;
+  if(!canHost()){toast('❌ Этот браузер не умеет транслировать');return false;}
+  pidInit();
+  S.role='host';S.sid=(Math.random().toString(36).slice(2,8)+Date.now().toString(36));
+  S.title=title;S.iframe=iframe;S.hostPid=S.pid;S.hostName=myName();S.hostSeen=true;S.capReady=false;S.capWanted=false;S.lastViewers=-1;
+  var cap=document.createElement('canvas');cap.width=360;cap.height=640;
+  cap.style.cssText='position:fixed;left:0;top:0;width:2px;height:2px;opacity:0.01;pointer-events:none;z-index:-1';
+  document.body.appendChild(cap);
+  var cx=cap.getContext('2d');cx.fillStyle='#000';cx.fillRect(0,0,cap.width,cap.height);
+  S.cap=cap;S.capCtx=cx;S.vStream=cap.captureStream(15);S.vTrack=S.vStream.getVideoTracks()[0];
+  window.addEventListener('message',onHostMsg);
+  var hud=$('pg-stream-hud');
+  if(hud){
+    hud.innerHTML='<span class="st-livedot">🔴 LIVE</span><span id="st-hcount" class="st-hc">👥 0</span><button id="st-hmic" class="st-hmic">🔇</button>'
+      +'<button id="st-unlock" class="st-unlock" style="display:none">🔊 Включить звук</button>';
+    $('st-hmic').onclick=toggleMic;$('st-unlock').onclick=unlockAudio;
+  }
+  S.viewerEl=iframe.parentNode;
+  openChannel(S.sid,{pid:S.pid,name:S.hostName,mic:false,t:Date.now()});
+  lobbyTrack({sid:S.sid,pid:S.pid,host:S.hostName,game_id:gameId,game:title,viewers:0,t:Date.now()});
+  S.timer=setInterval(checkPeers,5000);
+  toast('🔴 Ты в эфире! Жди зрителей');
+  return true;
+    }
+  function hostStop(){if(S.role==='host')teardown();}
+
+/* ---------- Зритель ---------- */
+function watch(sid){
+  if(S.role){toast('Ты уже в стриме');return;}
+  if(!canWatch()){toast('❌ Этот браузер не поддерживает стримы');return;}
+  var e=null;(S.lobby.list||[]).forEach(function(m){if(m.sid===sid)e=m;});
+  if(!e){toast('Этот стрим уже закончился');return;}
+  pidInit();
+  if(e.pid===S.pid){toast('Это твой собственный стрим');return;}
+  if((e.viewers||0)>=MAXP-1){toast('В этом стриме нет мест');return;}
+  S.role='viewer';S.sid=sid;S.title=e.game||'Стрим';S.hostPid=e.pid;S.hostName=e.host||'';S.hostSeen=false;
+  buildViewer();
+  openChannel(sid,{pid:S.pid,name:myName(),mic:false,t:Date.now()});
+  S.timer=setInterval(checkPeers,5000);
+  S.hostWait=setTimeout(function(){if(S.role==='viewer'&&!S.hostSeen)endView('Стример недоступен');},15000);
+}
+function buildViewer(){
+  var el=document.createElement('div');
+  el.id='st-view';
+  el.innerHTML='<div class="st-vbar"><div class="st-vt"><b>'+esc(S.title)+'</b><small>🎙️ '+esc(S.hostName)+'</small></div>'
+    +'<span class="st-livedot">🔴 LIVE</span><span id="st-vcount" class="st-hc">👥 0</span><button id="st-vleave" class="st-x">✕</button></div>'
+    +'<div class="st-vwrap"><video id="st-video" autoplay playsinline muted></video><div id="st-vstatus" class="st-vstatus">Подключаемся к стриму…</div>'
+    +'<button id="st-unlock" class="st-unlock" style="display:none">🔊 Нажми, чтобы включить звук</button></div>'
+    +'<div id="st-people" class="st-people"></div>'
+    +'<div class="st-vctl"><button id="st-mic" class="st-mic">🔇 Включить микрофон</button></div>';
+  document.body.appendChild(el);
+  S.viewerEl=el;S.videoEl=$('st-video');
+  S.videoEl.addEventListener('playing',function(){var s=$('st-vstatus');if(s)s.style.display='none';});
+  $('st-vleave').onclick=function(){endView(null);};
+  $('st-mic').onclick=toggleMic;
+  $('st-unlock').onclick=unlockAudio;
+}
+function viewerCheckHost(list){
+  var has=list.some(function(m){return m.pid===S.hostPid;});
+  if(has){S.hostSeen=true;return;}
+  if(S.hostSeen&&S.role==='viewer'){
+    var s=$('st-vstatus');if(s){s.style.display='flex';s.textContent='Стример завершил трансляцию';}
+    var t=S.sid;
+    setTimeout(function(){if(S.role==='viewer'&&S.sid===t)endView(null);},2500);
+  }
+}
+function endView(msg){
+  if(S.role!=='viewer')return;
+  teardown();
+  if(msg)toast(msg);
+    }
+  /* ---------- Завершение ---------- */
+function teardown(){
+  clearInterval(S.timer);clearTimeout(S.hostWait);clearTimeout(S.lobbyUpd);
+  Object.keys(S.pcs).forEach(closePeer);
+  if(S.ch){try{S.ch.untrack();}catch(e){}try{sb.removeChannel(S.ch);}catch(e){}}
+  if(S.role==='host'){
+    lobbyUntrack();
+    window.removeEventListener('message',onHostMsg);
+    try{if(S.vTrack)S.vTrack.stop();}catch(e){}
+    if(S.cap){try{S.cap.remove();}catch(e){}}
+    var hud=$('pg-stream-hud');if(hud)hud.innerHTML='';
+  }
+  if(S.micStream){try{S.micStream.getTracks().forEach(function(t){t.stop();});}catch(e){}}
+  if(S.role==='viewer'&&S.viewerEl){try{S.viewerEl.remove();}catch(e){}}
+  S.ch=null;S.chReady=false;S.meta=null;S.role=null;S.sid=null;S.members=[];S.early={};S.hostPid=null;S.hostSeen=false;
+  S.micStream=null;S.micTrack=null;S.micOn=false;S.iframe=null;S.cap=null;S.capCtx=null;S.vStream=null;S.vTrack=null;
+  S.capReady=false;S.capWanted=false;S.viewerEl=null;S.videoEl=null;S.lastViewers=-1;
+  lobbyRelease();
+  renderLive();
+}
+window.addEventListener('pagehide',function(){try{if(S.role)teardown();}catch(e){}});
+
+window.STREAMS={
+  injectCapture:injectCapture,hostStart:hostStart,hostStop:hostStop,watch:watch,startGame:startGame,
+  togglePicker:togglePicker,peek:peek,openView:openView,backHome:backHome,leaveView:leaveView,
+  canHost:canHost,isActive:function(){return !!S.role;},_S:S
+};
 })();
 </script>
 </body>
