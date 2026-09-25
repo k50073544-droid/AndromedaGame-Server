@@ -3036,14 +3036,14 @@ function onRoster(){
 function newPeer(m){
   closePeer(m.pid);
   var pc=new RTCPeerConnection({iceServers:ICE_SERVERS});
-  var rec={id:m.pid,name:m.name||'?',pc:pc,queue:[],iceBuf:[],iceT:null,t:Date.now(),audio:null,aSender:null};
+  var rec={id:m.pid,name:m.name||'?',pc:pc,queue:[],iceBuf:[],iceT:null,t:Date.now(),audio:null,aSender:null,oid:null,ot:0,types:{},rtypes:{},wasConn:false};
   S.pcs[m.pid]=rec;
   pc.onicecandidate=function(e){
-    if(e.candidate){rec.iceBuf.push(e.candidate.toJSON());clearTimeout(rec.iceT);rec.iceT=setTimeout(function(){flushIce(rec);},200);}
+    if(e.candidate){var ty=/ typ (\w+)/.exec(e.candidate.candidate||'');if(ty)rec.types[ty[1]]=1;rec.iceBuf.push(e.candidate.toJSON());clearTimeout(rec.iceT);rec.iceT=setTimeout(function(){flushIce(rec);},200);}
     else flushIce(rec);
   };
   pc.ontrack=function(e){onTrack(rec,e);};
-  pc.onconnectionstatechange=function(){renderRoster();};
+  pc.onconnectionstatechange=function(){if(pc.connectionState==='connected')rec.wasConn=true;renderRoster();};
   var early=S.early[m.pid];if(early){delete S.early[m.pid];rec.queue=rec.queue.concat(early);}
   return rec;
 }
@@ -3052,11 +3052,11 @@ function flushIce(rec){
   if(!rec.iceBuf.length)return;
   send(rec.id,'ice',rec.iceBuf.splice(0));
 }
-function addIce(rec,c){
+function addIce(rec,c){var ty=/ typ (\w+)/.exec((c&&c.candidate)||'');if(ty)rec.rtypes[ty[1]]=1;
   if(rec.pc.remoteDescription&&rec.pc.remoteDescription.type){rec.pc.addIceCandidate(c).catch(function(){});}
   else rec.queue.push(c);
 }
-function drain(rec){var q=rec.queue;rec.queue=[];q.forEach(function(c){rec.pc.addIceCandidate(c).catch(function(){});});}
+function drain(rec){var q=rec.queue;rec.queue=[];q.forEach(function(c){var ty=/ typ (\w+)/.exec((c&&c.candidate)||'');if(ty)rec.rtypes[ty[1]]=1;rec.pc.addIceCandidate(c).catch(function(){});});}
 function closePeer(id){
   var rec=S.pcs[id];if(!rec)return;
   delete S.pcs[id];
@@ -3075,7 +3075,7 @@ function closePeer(id){
     }
     var off=await pc.createOffer();
     await pc.setLocalDescription(off);
-    send(m.pid,'offer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp});
+    if(S.pcs[m.pid]!==rec)return;rec.oid=Math.random().toString(36).slice(2,10);rec.ot=Date.now();send(m.pid,'offer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp,oid:rec.oid,ot:rec.ot});
   }catch(err){console.warn('stream offer',err);closePeer(m.pid);}
 }
 async function onSig(p){
@@ -3101,13 +3101,13 @@ async function onSig(p){
     if(!accept(from))return;
     if(p.kind==='hello'){
       var mm=memberOf(from);
-      if(mm&&shouldInit(mm)){closePeer(from);startOffer(mm);}
+      if(mm&&shouldInit(mm)){var ex=S.pcs[from];if(ex&&Date.now()-ex.t<12000&&ex.pc.connectionState!=='failed'&&ex.pc.connectionState!=='closed')return;closePeer(from);startOffer(mm);}
       return;
     }
     if(p.kind==='offer'){
       var m=memberOf(from)||{pid:from,name:'?'};
-      var rec=newPeer(m),pc=rec.pc;
-      await pc.setRemoteDescription(p.data);
+      var cur=S.pcs[from];if(cur&&cur.ot&&p.data&&p.data.ot&&p.data.ot<cur.ot)return;var rec=newPeer(m),pc=rec.pc;rec.oid=(p.data&&p.data.oid)||null;rec.ot=(p.data&&p.data.ot)||0;
+      await pc.setRemoteDescription({type:p.data.type,sdp:p.data.sdp});
       pc.getTransceivers().forEach(function(t){
         if(t.receiver&&t.receiver.track&&t.receiver.track.kind==='audio'){
           t.direction='sendrecv';rec.aSender=t.sender;
@@ -3117,12 +3117,12 @@ async function onSig(p){
       drain(rec);
       var ans=await pc.createAnswer();
       await pc.setLocalDescription(ans);
-      send(from,'answer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp});
+      if(S.pcs[from]!==rec)return;send(from,'answer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp,oid:rec.oid});
       return;
     }
     var r=S.pcs[from];
     if(p.kind==='answer'){
-      if(r&&r.pc.signalingState==='have-local-offer'){await r.pc.setRemoteDescription(p.data);drain(r);}
+      if(r&&r.pc.signalingState==='have-local-offer'&&(!p.data.oid||p.data.oid===r.oid)){await r.pc.setRemoteDescription({type:p.data.type,sdp:p.data.sdp});drain(r);}
       return;
     }
     if(p.kind==='ice'){
@@ -3397,9 +3397,9 @@ function dbg(){
     var r=S.pcs[S.hostPid];
     t='Подключаемся к стриму…\n';
     if(!r)t+='Ждём предложение (offer) от стримера…';
-    else t+='связь: '+r.pc.connectionState+' · ICE: '+r.pc.iceConnectionState;
+    else t+='связь: '+r.pc.connectionState+' · ICE: '+r.pc.iceConnectionState+'\nкандидаты: у меня '+(Object.keys(r.types||{}).join(',')||'—')+' · у стримера '+(Object.keys(r.rtypes||{}).join(',')||'—');
     t+='\nсигналы: всего '+(S.sigAll||0)+', мне '+(S.sigIn||0)+(S.sigLast?' (последний: '+S.sigLast+')':'');
-    if(r&&(r.pc.iceConnectionState==='failed'||r.pc.connectionState==='failed'))t+='\nПрямое соединение не удалось — сеть блокирует P2P (нужен TURN-сервер)';
+    if(r&&(r.pc.iceConnectionState==='failed'||r.pc.connectionState==='failed'))t+=r.wasConn?'\nСвязь была, но оборвалась — переподключаемся…':((r.types&&r.types.relay)?'\nСоединение не удалось — переподключаемся…':'\nНет relay-кандидатов — TURN-сервер не ответил');
   }
   s.style.whiteSpace='pre-line';s.textContent=t;
 }
