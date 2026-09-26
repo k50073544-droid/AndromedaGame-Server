@@ -2665,7 +2665,7 @@ function applyTextures(html,textures){
   if(session)await onLogin(session.user);
 
   sb.auth.onAuthStateChange(async(event,session)=>{
-    if(event==='SIGNED_IN')await onLogin(session.user);
+    if(event==='SIGNED_IN'&&currentUser?.id!==session?.user?.id)await onLogin(session.user);
     if(event==='SIGNED_OUT')onLogout();
   });
 
@@ -2765,7 +2765,7 @@ function CAPTURE_FN(){
   }
   window.addEventListener('message',function(e){
     var d=e.data;if(!d||d.type!=='andra-stream-ctl')return;
-    if(event==='SIGNED_IN'&&currentUser?.id!==session?.user?.id)await onLogin(session.user);
+    on=!!d.on;clearInterval(tmr);tmr=null;
     if(on)tmr=setInterval(frame,Math.round(1000/FPS));
   });
   try{parent.postMessage({type:'andra-stream-ready'},'*');}catch(e){}
@@ -2899,7 +2899,7 @@ function renderLive(){
 async function loadPicker(){
   var box=$('st-picker');if(!box)return;
   box.innerHTML='<div class="tablet-installed-empty">Загрузка игр…</div>';
-  if(res.error||!res.data){box.innerHTML='<div class="tablet-installed-empty" style="cursor:pointer" onclick="STREAMS.reloadPicker()">⚠️ Не удалось загрузить игры — нажми, чтобы повторить</div>';return;}
+  var res=await Promise.race([sb.from('games').select('id,title,thumbnail_url,code->>restrictRole,code->>restrictUsername').eq('status','approved'),new Promise(function(r){setTimeout(function(){r({error:{message:'timeout'}});},12000);})]);
   if(res.error||!res.data){box.innerHTML='<div class="tablet-installed-empty" style="cursor:pointer" onclick="STREAMS.reloadPicker()">⚠️ Не удалось загрузить игры — нажми, чтобы повторить</div>';return;}
   var role=(typeof currentProfile!=='undefined'&&currentProfile)?currentProfile.role:null;
   var uname=(typeof currentProfile!=='undefined'&&currentProfile)?currentProfile.username:null;
