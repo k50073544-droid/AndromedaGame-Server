@@ -784,7 +784,7 @@ button.st-chip{border:none;font-family:inherit;cursor:pointer}
       <div class="tablet-app-view" id="tablet-view-streams">
         <button class="tablet-back" onclick="backToTabletHome()">← Назад</button>
         <div class="st-title">📺 Стримы</div>
-        <button class="btn primary st-go" onclick="STREAMS.togglePicker()">🔴 Начать стрим</button>
+        <button class="btn primary st-go" onclick="window.STREAMS?STREAMS.togglePicker():streamsBroken()">🔴 Начать стрим</button>
         <label class="st-priv"><input type="checkbox" id="st-private"> 🔒 Приватный стрим: зайти смогут только те, кого ты впустишь</label>
         <div id="st-picker" class="st-picker" style="display:none"></div>
         <div class="st-sub">СЕЙЧАС В ЭФИРЕ</div>
@@ -2055,7 +2055,7 @@ function closeGamesTablet(){
   setTimeout(()=>{overlay.style.display='none';},400);
 }
 
-function openTabletApp(name){
+window.__jsErrs=window.__jsErrs||[];window.addEventListener('error',function(e){try{__jsErrs.push(String(e.message||'ошибка')+' (строка '+(e.lineno||'?')+')');if(__jsErrs.length>5)__jsErrs.shift();}catch(_){}});function streamsBroken(){const m=(window.__jsErrs||[]).slice(-1)[0]||'неизвестная ошибка';const b=document.getElementById('st-live');if(b)b.innerHTML='<div class="tablet-installed-empty">⚠️ Модуль стримов не загрузился — обнови страницу.<br><span style="font-size:10px;opacity:.7">'+escHtml(m)+'</span></div>';showToast('⚠️ Стримы не загрузились — обнови страницу');}function openTabletApp(name){
 document.getElementById('tablet-apps-screen').style.display='none';
 document.querySelectorAll('.tablet-app-view').forEach(v=>v.classList.remove('open'));
 document.getElementById('tablet-view-'+name).classList.add('open');
@@ -2063,7 +2063,7 @@ const shell=document.querySelector('.tablet-shell');
       if(shell)shell.classList.add('app-open');
 if(name==='stars'){switchStarsTab('games');startStarsAutoRefresh();}
 if(name==='store')switchStoreTab('all');
-  if(name==='streams'&&window.STREAMS)STREAMS.openView();
+  if(name==='streams'){if(window.STREAMS)STREAMS.openView();else streamsBroken();}
 if(name==='promo'){document.getElementById('promo-code-msg').textContent='';document.getElementById('promo-code-input').value='';}
 }
   
@@ -2300,10 +2300,7 @@ function trackGameOnline(gameId){
   ONLINE.cur=gameId||null;
   if(!ONLINE.ch)initGamesOnline();
   if(!ONLINE.ch||!ONLINE.ready)return;
-  try{
-    if(gameId)ONLINE.ch.track({game_id:gameId,uid:onlineUid()});
-    else ONLINE.ch.untrack();
-  }catch(e){console.error(e);}
+  clearTimeout(ONLINE.t);const wait=Math.max(0,(ONLINE.last||0)+6500-Date.now());ONLINE.t=setTimeout(()=>{if(!ONLINE.ch||!ONLINE.ready)return;ONLINE.last=Date.now();try{if(ONLINE.cur)ONLINE.ch.track({game_id:ONLINE.cur,uid:onlineUid()});else ONLINE.ch.untrack();}catch(e){console.error(e);}},wait);
 }
 function applyOnlineBadges(){
   const c=ONLINE.counts;let top=null,max=0;
@@ -2813,6 +2810,10 @@ function canHost(){return !!(window.RTCPeerConnection&&window.HTMLCanvasElement&
 function canWatch(){return !!window.RTCPeerConnection;}
 
 /* ---------- Лобби (список эфиров) ---------- */
+  /* Supabase закрывает канал, если клиент шлёт больше 5 presence-обновлений за 30 с — поэтому track() не чаще раза в 6.5 с */
+function ptrack(ch,get){if(!ch)return;var st=ch.__pt||(ch.__pt={last:0,t:null});if(st.t)return;var w=Math.max(0,st.last+6500-Date.now());st.t=setTimeout(function(){st.t=null;var m=get();if(!m)return;st.last=Date.now();try{ch.track(m);}catch(e){}},w);}
+function lobbyGet(ch){return function(){return (S.lobby.ch===ch&&S.lobby.ready)?S.lobby.mine:null;};}
+function chGet(ch){return function(){return S.ch===ch?S.meta:null;};}
 function lobbyEnsure(){
   if(S.lobby.ch||S.lobby.busy)return;
   pidInit();
@@ -2833,8 +2834,8 @@ function lobbyOpen(){
     ch.subscribe(function(st){
       if(S.lobby.ch!==ch)return;
       if(st==='SUBSCRIBED'){
-        S.lobby.ready=true;S.lobby.bad=0;
-        if(S.lobby.mine){try{ch.track(S.lobby.mine);}catch(e){}}
+        S.lobby.ready=true;S.lobby.bad=0;S.lobby.since=0;
+        if(S.lobby.mine)ptrack(ch,lobbyGet(ch));
         lobbyRead();renderLive();
       }else if(st==='CLOSED'||st==='CHANNEL_ERROR'||st==='TIMED_OUT'){S.lobby.ready=false;renderLive();}
     });
@@ -2854,9 +2855,9 @@ setInterval(function(){
   if(!(S.role||S.tabletOpen||S.listOpen))return;
   lobbyTick++;
   if(!S.lobby.ch){lobbyEnsure();return;}
-  if(!S.lobby.ready){S.lobby.bad=(S.lobby.bad||0)+1;if(S.lobby.bad>=3){S.lobby.bad=0;lobbyReset();}return;}
+  if(!S.lobby.ready){S.lobby.bad=(S.lobby.bad||0)+1;renderLive();if(S.lobby.bad>=3){S.lobby.bad=0;lobbyReset();}return;}
   S.lobby.bad=0;
-  if(S.role==='host'&&S.lobby.mine&&lobbyTick%4===0){try{S.lobby.ch.track(S.lobby.mine);}catch(e){}}
+  if(S.role==='host'&&S.lobby.mine&&lobbyTick%12===0)ptrack(S.lobby.ch,lobbyGet(S.lobby.ch));
 },5000);
 function lobbyRead(){
   var list=[];
@@ -2873,7 +2874,7 @@ function lobbyRelease(){
 }
 function lobbyTrack(meta){
   S.lobby.mine=meta;lobbyEnsure();
-  if(S.lobby.ready){try{S.lobby.ch.track(meta);}catch(e){}}
+  if(S.lobby.ready)ptrack(S.lobby.ch,lobbyGet(S.lobby.ch));
 }
 function lobbyUntrack(){
   S.lobby.mine=null;
@@ -2886,7 +2887,7 @@ function renderLive(){
   if(tag){if(list.length){tag.style.display='';tag.textContent='🔴 '+list.length;}else tag.style.display='none';}
   var box=$('st-live');
   if(!box||!S.listOpen)return;
-  if(!list.length){box.innerHTML='<div class="tablet-installed-empty">'+(S.lobby.ready?'Сейчас никто не стримит. Начни первым!':'Подключаемся к списку эфиров…')+'</div>';return;}
+  if(!list.length){var slow=!S.lobby.ready&&S.lobby.since&&Date.now()-S.lobby.since>9000;box.innerHTML='<div class="tablet-installed-empty">'+(S.lobby.ready?'Сейчас никто не стримит. Начни первым!':(slow?'⚠️ Список эфиров пока не отвечает — переподключаюсь… Свой стрим начать можно уже сейчас.':'Подключаемся к списку эфиров…'))+'</div>';return;}
   box.innerHTML=list.map(function(m){
     var mine=m.pid===S.pid,full=(m.viewers||0)>=MAXP-1;
     return '<div class="tig-row" onclick="STREAMS.watch(\''+esc(m.sid)+'\')"><div class="tig-icon">📺</div>'
@@ -2898,8 +2899,8 @@ function renderLive(){
 async function loadPicker(){
   var box=$('st-picker');if(!box)return;
   box.innerHTML='<div class="tablet-installed-empty">Загрузка игр…</div>';
-  var res=await sb.from('games').select('id,title,thumbnail_url,code->>restrictRole,code->>restrictUsername').eq('status','approved');
-  if(res.error||!res.data){box.innerHTML='<div class="tablet-installed-empty">Не удалось загрузить игры</div>';return;}
+  if(res.error||!res.data){box.innerHTML='<div class="tablet-installed-empty" style="cursor:pointer" onclick="STREAMS.reloadPicker()">⚠️ Не удалось загрузить игры — нажми, чтобы повторить</div>';return;}
+  if(res.error||!res.data){box.innerHTML='<div class="tablet-installed-empty" style="cursor:pointer" onclick="STREAMS.reloadPicker()">⚠️ Не удалось загрузить игры — нажми, чтобы повторить</div>';return;}
   var role=(typeof currentProfile!=='undefined'&&currentProfile)?currentProfile.role:null;
   var uname=(typeof currentProfile!=='undefined'&&currentProfile)?currentProfile.username:null;
   var rows=res.data.filter(function(g){return (!g.restrictRole||g.restrictRole===role)&&(!g.restrictUsername||g.restrictUsername===uname);});
@@ -2921,7 +2922,7 @@ function startGame(id){
   if(typeof openInstalledGame==='function')openInstalledGame(id,{stream:true});
 }
 function peek(){S.tabletOpen=true;lobbyEnsure();}
-function openView(){S.listOpen=true;lobbyEnsure();renderLive();}
+function openView(){S.listOpen=true;if(!S.lobby.ready&&!S.lobby.since)S.lobby.since=Date.now();lobbyEnsure();renderLive();}
 function backHome(){S.listOpen=false;var p=$('st-picker');if(p)p.style.display='none';lobbyRelease();}
   function leaveView(){S.tabletOpen=false;S.listOpen=false;lobbyRelease();}
 
@@ -2931,7 +2932,7 @@ function openChannel(sid,meta){
   ch.on('broadcast',{event:'sig'},function(msg){onSig(msg&&msg.payload);});
   ch.on('presence',{event:'sync'},onRoster);
   ch.subscribe(function(st){
-    if(st==='SUBSCRIBED'){S.chReady=true;S.meta=meta;try{ch.track(meta);}catch(e){}}
+    if(st==='SUBSCRIBED'){S.chReady=true;if(S.ch===ch)ptrack(ch,chGet(ch));}
     else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT'){toast('⚠️ Связь со стримом нестабильна');}
   });
   S.ch=ch;S.meta=meta;
@@ -2988,7 +2989,7 @@ function toggleMute(uid){
 function pushMeta(){
   if(!S.meta||!S.ch)return;
   if(S.role==='host')S.meta.adm=Object.keys(S.adm);
-  try{S.ch.track(S.meta);}catch(e){}
+  ptrack(S.ch,chGet(S.ch));
 }
 function admit(pid,uid){
   S.adm[pid]=true;if(uid)S.ok[uid]=true;
@@ -3187,7 +3188,7 @@ async function toggleMic(){
   }else{
     S.micOn=!S.micOn;S.micTrack.enabled=S.micOn;
   }
-  if(S.meta){S.meta.mic=S.micOn;if(S.ch){try{S.ch.track(S.meta);}catch(e){}}}
+if(S.meta){S.meta.mic=S.micOn;if(S.ch)ptrack(S.ch,chGet(S.ch));}
   refreshMicBtns();
 }
 function refreshMicBtns(){
@@ -3407,7 +3408,7 @@ setInterval(dbg,1000);
 
 window.STREAMS={
   injectCapture:injectCapture,hostStart:hostStart,hostStop:hostStop,watch:watch,startGame:startGame,
-  togglePicker:togglePicker,peek:peek,openView:openView,backHome:backHome,leaveView:leaveView,
+  togglePicker:togglePicker,reloadPicker:loadPicker,peek:peek,openView:openView,backHome:backHome,leaveView:leaveView,
   canHost:canHost,isActive:function(){return !!S.role;},_S:S
 };
 })();
