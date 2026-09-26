@@ -2352,7 +2352,7 @@ if(streamOpts&&streamOpts.stream&&window.STREAMS)html=STREAMS.injectCapture(html
       iframe.contentWindow.postMessage({type:'andra-fish-init',species:species||[],isAdmin:currentProfile?.role==='admin'},'*');
     }else{
       await iframeLoaded;
-      iframe.contentWindow.postMessage({type:'andra-slot-init',goldEnabled:g.league==='gold'},'*');
+      if(g.code?.type==='kosti'){const{data:{session}}=await sb.auth.getSession();iframe.contentWindow.postMessage({type:'andra-kosti-init',goldEnabled:g.league==='gold',token:session?.access_token||null,guestId:currentUser?null:(currentGuestData?.id||null),name:currentProfile?.username||currentGuestData?.nickname||'Игрок'},'*');}else iframe.contentWindow.postMessage({type:'andra-slot-init',goldEnabled:g.league==='gold'},'*');
     }
 const onMsg=async(e)=>{
       if(e.source!==iframe.contentWindow)return;
@@ -2372,6 +2372,7 @@ const onMsg=async(e)=>{
         }
         refreshTabletHeader();
       }
+      if(e.data?.type==='andra-kosti-token-req'){const{data:{session}}=await sb.auth.getSession();iframe.contentWindow.postMessage({type:'andra-kosti-token',token:session?.access_token||null},'*');}
       if(e.data?.type==='andra-slot-spin'){
         const{data:result,error:spinErr}=await sb.rpc('slot_spin',{p_game_id:gameId,p_guest_id:currentUser?null:(currentGuestData?.id||null),p_use_gold:!!e.data.useGold,p_stake:parseInt(e.data.stake,10)||10});
         if(spinErr){console.error(spinErr);iframe.contentWindow.postMessage({type:'andra-slot-result',success:false,message:spinErr.message},'*');return;}
