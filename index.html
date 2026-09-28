@@ -2237,11 +2237,7 @@ async function grantGoldTicket(gameId){
     if(error){showToast('❌ '+error.message);return;}
     showToast('Билет снят');
   }else{
-    const amount=prompt('Сколько золотых звёзд давать за победу в этой игре?','5');
-    if(amount===null)return;
-    const n=parseInt(amount,10);
-    if(isNaN(n)||n<0){showToast('❌ Некорректное число');return;}
-    const{error}=await sb.from('games').update({league:'gold',gold_star_reward:n}).eq('id',gameId);
+    const{error}=await sb.from('games').update({league:'gold'}).eq('id',gameId);
     if(error){showToast('❌ '+error.message);return;}
     showToast('🎫 Золотой билет выдан');
   }
