@@ -1079,6 +1079,7 @@ button.st-chip{border:none;font-family:inherit;cursor:pointer}
 <input type="range" id="planet-sound-volume" min="0" max="1" step="0.05" value="0.7" oninput="document.getElementById('planet-sound-volume-val').textContent=Math.round(this.value*100)+'%'">
 <span class="volume-val" id="planet-sound-volume-val">70%</span></div></div>
 <div class="form-group"><label>Комментарий</label><textarea id="planet-comment" placeholder="Привет всем! 🚀" maxlength="300"></textarea></div>
+  <div class="form-group" id="planet-hide-nick-group" style="display:none"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px"><input type="checkbox" id="planet-hide-nick" style="width:auto;margin:0"> 🕶️ Скрыть ник и окошко (только админы)</label></div>
 <div class="form-error" id="planet-error"></div>
 <button class="btn primary" style="width:100%" onclick="startPlacing('planet')">📍 Выбрать место на карте</button>
 </div>
@@ -1108,6 +1109,7 @@ button.st-chip{border:none;font-family:inherit;cursor:pointer}
 <div class="range-labels"><span>🐢 Медленно</span><span>⚡ Быстро</span></div></div>
 <div class="form-group"><label>Цвет свечения</label>
 <div class="color-row"><input type="color" id="deco-glow-color" value="#ffffff"><span style="font-size:11px;color:var(--text-dim)">Цвет ореола</span></div></div>
+  <div class="form-group" id="deco-hide-nick-group" style="display:none"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px"><input type="checkbox" id="deco-hide-nick" style="width:auto;margin:0"> 🕶️ Скрыть ник (только админы)</label></div>
 <div class="form-error" id="deco-error"></div>
 <button class="btn primary" id="deco-place-btn" style="width:100%" onclick="startPlacing('deco')">📍 Выбрать место на карте</button>
 </div></div></div>
@@ -1149,6 +1151,7 @@ button.st-chip{border:none;font-family:inherit;cursor:pointer}
 <input type="range" id="edit-planet-volume" min="0" max="1" step="0.05" value="0.7" oninput="document.getElementById('edit-volume-val').textContent=Math.round(this.value*100)+'%'">
 <span class="volume-val" id="edit-volume-val">70%</span><label>🔊</label></div></div>
 <div id="edit-planet-comment-group" class="form-group"><label>Комментарий</label><textarea id="edit-comment" maxlength="300"></textarea></div>
+  <div class="form-group" id="edit-planet-hide-nick-group" style="display:none"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px"><input type="checkbox" id="edit-planet-hide-nick" style="width:auto;margin:0"> 🕶️ Скрыть ник и окошко (только админы)</label></div>
 <input type="hidden" id="edit-planet-id"><input type="hidden" id="edit-planet-user-id">
 <div class="form-error" id="edit-planet-error"></div>
 <button class="btn primary" style="width:100%" onclick="updatePlanet()">💾 Сохранить</button>
@@ -1181,6 +1184,7 @@ button.st-chip{border:none;font-family:inherit;cursor:pointer}
 <div class="range-labels"><span>🐢 Медленно</span><span>⚡ Быстро</span></div></div>
 <div class="form-group"><label>Цвет свечения</label>
 <div class="color-row"><input type="color" id="edit-deco-glow" value="#ffffff"></div></div>
+  <div class="form-group" id="edit-deco-hide-nick-group" style="display:none"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px"><input type="checkbox" id="edit-deco-hide-nick" style="width:auto;margin:0"> 🕶️ Скрыть ник (только админы)</label></div>
 <input type="hidden" id="edit-deco-id"><input type="hidden" id="edit-deco-user-id">
 <div class="form-error" id="edit-deco-error"></div>
 <button class="btn primary" style="width:100%" onclick="updateDeco()">💾 Сохранить</button>
@@ -1789,7 +1793,7 @@ async function uploadSoundFile(type,userId){const key=type==='planet'?'planet':'
 <script>
 function startPlacing(type){if(type==='planet'&&!fileData.planet){document.getElementById('planet-error').textContent='Сначала выбери картинку';return;}if(type==='deco'&&!fileData.deco){document.getElementById('deco-error').textContent='Сначала выбери картинку';return;}const isAdmin=currentProfile?.role==='admin'&&!testRestrictions;const pMin=getUserPlanetMinSize(),pMax=getUserPlanetMaxSize(),dMin=getUserDecoMinSize(),dMax=getUserDecoMaxSize();if(type==='planet'){const sz=parseInt(document.getElementById('planet-size').value);const orb=getOrbitValue('planet-orbit','planet-orbit-num');const spd=parseInt(document.getElementById('planet-orbit-speed').value)||5;placingData={size:isNaN(sz)?80:Math.max(pMin,Math.min(pMax,sz)),orbit_radius:orb,orbit_speed:spd,comment:document.getElementById('planet-comment').value.trim(),animation:document.getElementById('planet-anim').value,glow_color:document.getElementById('planet-glow-color').value,sound_volume:parseFloat(document.getElementById('planet-sound-volume').value)||0.7,forUserId:isAdmin?(document.getElementById('planet-for-user').value||null):null};}else{const sz=parseInt(document.getElementById('deco-size').value);const orb=getOrbitValue('deco-orbit','deco-orbit-num');const spd=parseInt(document.getElementById('deco-orbit-speed').value)||5;placingData={size:isNaN(sz)?80:Math.max(dMin,Math.min(dMax,sz)),orbit_radius:orb,orbit_speed:spd,name:document.getElementById('deco-name').value.trim(),animation:document.getElementById('deco-anim').value,glow_color:document.getElementById('deco-glow-color').value,forUserId:isAdmin?(document.getElementById('deco-for-user').value||null):null};}placingMode=type;closeModal('add-content-modal');document.getElementById('placing-hint').style.display='block';canvas.style.cursor='crosshair';}
 function cancelPlacing(){placingMode=null;document.getElementById('placing-hint').style.display='none';canvas.style.cursor='grab';}
-async function handlePlaceClick(clientX,clientY){if(!placingMode)return;const type=placingMode,data={...placingData},x=clientX-cam.x,y=clientY-cam.y;cancelPlacing();const isSuperAdmin=currentProfile?.role==='admin'&&!testRestrictions;const r=getR();if(type==='planet'&&!isSuperAdmin&&!getBool(r.can_upload_planet)){showToast('❌ Загрузка планет ограничена');return;}if(type==='deco'&&!isSuperAdmin&&!getBool(r.can_upload_deco)){showToast('❌ Загрузка декораций ограничена');return;}showToast('⏳ Загружаем...');try{let ownerId=currentUser.id,ownerUsername=currentProfile.username;const placingForOther=isSuperAdmin&&data.forUserId&&data.forUserId!=='';if(placingForOther){const found=usersCache.find(u=>u.id===data.forUserId);if(found){ownerId=found.id;ownerUsername=found.username;}}if(type==='planet'){if(!placingForOther){const ownerRestr=await getRestrictionsForUser(ownerId);const{count:pc,error:ce}=await sb.from('planets').select('*',{count:'exact',head:true}).eq('user_id',ownerId);if(ce){showToast('❌ Ошибка проверки лимита');return;}if(isPlanetLimitReachedFor(pc||0,ownerId,ownerRestr)){const isOA=ownerId===currentUser.id?(currentProfile?.role==='admin'):(usersCache.find(u=>u.id===ownerId)?.role==='admin');const lim=ownerRestr.planet_limit!=null?ownerRestr.planet_limit:(isOA?siteParams.planetLimitAdmin:siteParams.planetLimitBooster);showToast('❌ Лимит планет ('+lim+')');return;}}const imageUrl=await uploadToStorage('planets',fileData.planet,ownerId);let soundUrl=null;if(soundFileData.planet){try{soundUrl=await uploadSoundFile('planet',ownerId);}catch(e){}}const{error:dbError}=await sb.from('planets').insert({user_id:ownerId,username:ownerUsername,image_url:imageUrl,size:data.size,orbit_radius:data.orbit_radius||0,orbit_speed:data.orbit_speed||5,x_pos:x,y_pos:y,sound_url:soundUrl,sound_volume:data.sound_volume||0.7,comment:data.comment||null,animation:data.animation||'float',glow_color:data.glow_color||'#22d3ee'});if(dbError){showToast('❌ '+dbError.message);return;}fileData.planet=null;soundFileData.planet=null;document.getElementById('planet-upload-preview').style.display='none';document.getElementById('planet-upload-text').innerHTML='📁 Нажми или перетащи<br><span style="font-size:10px">PNG, JPG, GIF до 5MB</span>';document.getElementById('planet-sound-upload-text').innerHTML='🎵 Нажми чтобы выбрать звук<br><span style="font-size:10px">MP3, OGG, WAV до 5MB</span>';document.getElementById('planet-orbit').value=0;document.getElementById('planet-orbit-num').value=0;document.getElementById('orbit-val').textContent='0';document.getElementById('planet-orbit-speed').value=5;document.getElementById('orbit-speed-val').textContent='5';showToast('🚀 Планета размещена!');}else{if(!placingForOther){const ownerRestr=await getRestrictionsForUser(ownerId);const{count:dc,error:ce}=await sb.from('decorations').select('*',{count:'exact',head:true}).eq('user_id',ownerId);if(ce){showToast('❌ Ошибка проверки лимита');return;}if(isDecoLimitReachedFor(dc||0,ownerId,ownerRestr)){const isOA=ownerId===currentUser.id?(currentProfile?.role==='admin'):(usersCache.find(u=>u.id===ownerId)?.role==='admin');const lim=ownerRestr.deco_limit!=null?ownerRestr.deco_limit:(isOA?siteParams.decoLimitAdmin:siteParams.decoLimitBooster);showToast('❌ Лимит декораций ('+lim+')');return;}}const imageUrl=await uploadToStorage('decorations',fileData.deco,ownerId);const{error}=await sb.from('decorations').insert({user_id:ownerId,image_url:imageUrl,name:data.name||null,orbit_radius:data.orbit_radius||0,orbit_speed:data.orbit_speed||5,x_pos:x,y_pos:y,size:data.size,animation:data.animation||'float',glow_color:data.glow_color||'#ffffff'});if(error){showToast('❌ '+error.message);return;}fileData.deco=null;document.getElementById('deco-upload-preview').style.display='none';document.getElementById('deco-upload-text').innerHTML='📁 Нажми или перетащи<br><span style="font-size:10px">Сожмётся автоматически</span>';document.getElementById('deco-orbit').value=0;document.getElementById('deco-orbit-num').value=0;document.getElementById('deco-orbit-val').textContent='0';document.getElementById('deco-orbit-speed').value=5;document.getElementById('deco-orbit-speed-val').textContent='5';showToast('🌠 Декорация размещена!');}await new Promise(r=>setTimeout(r,500));await loadPlanets();checkAddContentLimit();}catch(err){showToast('❌ '+err.message);console.error(err);}}
+async function handlePlaceClick(clientX,clientY){if(!placingMode)return;const type=placingMode,data={...placingData},x=clientX-cam.x,y=clientY-cam.y;cancelPlacing();const isSuperAdmin=currentProfile?.role==='admin'&&!testRestrictions;const r=getR();if(type==='planet'&&!isSuperAdmin&&!getBool(r.can_upload_planet)){showToast('❌ Загрузка планет ограничена');return;}if(type==='deco'&&!isSuperAdmin&&!getBool(r.can_upload_deco)){showToast('❌ Загрузка декораций ограничена');return;}showToast('⏳ Загружаем...');try{let ownerId=currentUser.id,ownerUsername=currentProfile.username;const placingForOther=isSuperAdmin&&data.forUserId&&data.forUserId!=='';if(placingForOther){const found=usersCache.find(u=>u.id===data.forUserId);if(found){ownerId=found.id;ownerUsername=found.username;}}if(type==='planet'){if(!placingForOther){const ownerRestr=await getRestrictionsForUser(ownerId);const{count:pc,error:ce}=await sb.from('planets').select('*',{count:'exact',head:true}).eq('user_id',ownerId);if(ce){showToast('❌ Ошибка проверки лимита');return;}if(isPlanetLimitReachedFor(pc||0,ownerId,ownerRestr)){const isOA=ownerId===currentUser.id?(currentProfile?.role==='admin'):(usersCache.find(u=>u.id===ownerId)?.role==='admin');const lim=ownerRestr.planet_limit!=null?ownerRestr.planet_limit:(isOA?siteParams.planetLimitAdmin:siteParams.planetLimitBooster);showToast('❌ Лимит планет ('+lim+')');return;}}const imageUrl=await uploadToStorage('planets',fileData.planet,ownerId);let soundUrl=null;if(soundFileData.planet){try{soundUrl=await uploadSoundFile('planet',ownerId);}catch(e){}}const{error:dbError}=await sb.from('planets').insert({user_id:ownerId,username:ownerUsername,image_url:imageUrl,size:data.size,orbit_radius:data.orbit_radius||0,orbit_speed:data.orbit_speed||5,x_pos:x,y_pos:y,sound_url:soundUrl,sound_volume:data.sound_volume||0.7,comment:data.comment||null,animation:data.animation||'float',glow_color:data.glow_color||'#22d3ee',hide_nick:!!data.hide_nick});if(dbError){showToast('❌ '+dbError.message);return;}fileData.planet=null;soundFileData.planet=null;document.getElementById('planet-upload-preview').style.display='none';document.getElementById('planet-upload-text').innerHTML='📁 Нажми или перетащи<br><span style=\"font-size:10px\">PNG, JPG, GIF до 5MB</span>';document.getElementById('planet-sound-upload-text').innerHTML='🎵 Нажми чтобы выбрать звук<br><span style=\"font-size:10px\">MP3, OGG, WAV до 5MB</span>';document.getElementById('planet-orbit').value=0;document.getElementById('planet-orbit-num').value=0;document.getElementById('orbit-val').textContent='0';document.getElementById('planet-orbit-speed').value=5;document.getElementById('orbit-speed-val').textContent='5';showToast('🚀 Планета размещена!');}else{if(!placingForOther){const ownerRestr=await getRestrictionsForUser(ownerId);const{count:dc,error:ce}=await sb.from('decorations').select('*',{count:'exact',head:true}).eq('user_id',ownerId);if(ce){showToast('❌ Ошибка проверки лимита');return;}if(isDecoLimitReachedFor(dc||0,ownerId,ownerRestr)){const isOA=ownerId===currentUser.id?(currentProfile?.role==='admin'):(usersCache.find(u=>u.id===ownerId)?.role==='admin');const lim=ownerRestr.deco_limit!=null?ownerRestr.deco_limit:(isOA?siteParams.decoLimitAdmin:siteParams.decoLimitBooster);showToast('❌ Лимит декораций ('+lim+')');return;}}const imageUrl=await uploadToStorage('decorations',fileData.deco,ownerId);const{error}=await sb.from('decorations').insert({user_id:ownerId,image_url:imageUrl,name:data.name||null,orbit_radius:data.orbit_radius||0,orbit_speed:data.orbit_speed||5,x_pos:x,y_pos:y,size:data.size,animation:data.animation||'float',glow_color:data.glow_color||'#ffffff',hide_nick:!!data.hide_nick});if(error){showToast('❌ '+error.message);return;}fileData.deco=null;document.getElementById('deco-upload-preview').style.display='none';document.getElementById('deco-upload-text').innerHTML='📁 Нажми или перетащи<br><span style=\"font-size:10px\">Сожмётся автоматически</span>';document.getElementById('deco-orbit').value=0;document.getElementById('deco-orbit-num').value=0;document.getElementById('deco-orbit-val').textContent='0';document.getElementById('deco-orbit-speed').value=5;document.getElementById('deco-orbit-speed-val').textContent='5';showToast('🌠 Декорация размещена!');}await new Promise(r=>setTimeout(r,500));await loadPlanets();checkAddContentLimit();}catch(err){showToast('❌ '+err.message);console.error(err);}}
 const DEFAULT_RESTRICTIONS={can_upload_planet:true,can_upload_deco:true,can_chat:true,can_move_planet:true,can_delete_planet:true,can_edit_planet:true,can_move_deco:true,can_delete_deco:true,can_change_planet_image:true,can_change_planet_size:true,can_change_planet_anim:true,can_change_planet_glow:true,can_change_planet_sound:true,can_change_planet_comment:true,can_use_orbit:true,planet_limit:null,deco_limit:null,planet_max_size:null,deco_max_size:null,infinite_planets:false,infinite_decos:false};
 async function loadMyRestrictions(){if(!currentUser)return;try{const{data:restr}=await sb.from('user_restrictions').select('*').eq('user_id',currentUser.id).maybeSingle();if(restr){currentRestrictions={can_upload_planet:getBool(restr.can_upload_planet),can_upload_deco:getBool(restr.can_upload_deco),can_chat:getBool(restr.can_chat),can_move_planet:getBool(restr.can_move_planet),can_delete_planet:getBool(restr.can_delete_planet),can_edit_planet:getBool(restr.can_edit_planet),can_move_deco:getBool(restr.can_move_deco),can_delete_deco:getBool(restr.can_delete_deco),can_change_planet_image:getBool(restr.can_change_planet_image),can_change_planet_size:getBool(restr.can_change_planet_size),can_change_planet_anim:getBool(restr.can_change_planet_anim),can_change_planet_glow:getBool(restr.can_change_planet_glow),can_change_planet_sound:getBool(restr.can_change_planet_sound),can_change_planet_comment:getBool(restr.can_change_planet_comment),can_use_orbit:getBool(restr.can_use_orbit),planet_limit:restr.planet_limit!=null?restr.planet_limit:null,deco_limit:restr.deco_limit!=null?restr.deco_limit:null,planet_max_size:restr.planet_max_size!=null?restr.planet_max_size:null,deco_max_size:restr.deco_max_size!=null?restr.deco_max_size:null,infinite_planets:restr.infinite_planets===true,infinite_decos:restr.infinite_decos===true};}else{currentRestrictions={...DEFAULT_RESTRICTIONS};}}catch(e){currentRestrictions={...DEFAULT_RESTRICTIONS};}checkAddContentLimit();renderAll();}
 async function onLogin(user){currentUser=user;let profile=null;for(let i=0;i<5;i++){const{data}=await sb.from('profiles').select('*').eq('id',user.id).single();if(data){profile=data;break;}await new Promise(r=>setTimeout(r,700));}currentProfile=profile;if(currentProfile?.is_banned){const banUntil=currentProfile.ban_until;if(!banUntil||new Date(banUntil)>new Date()){const reason=currentProfile.ban_reason||'Нарушение правил';const until=banUntil?'до '+new Date(banUntil).toLocaleString('ru'):'навсегда';document.getElementById('login-ban-msg').innerHTML='❄️ Заморожен <b>'+until+'</b><br>Причина: '+escHtml(reason);document.getElementById('login-ban-msg').style.display='block';await sb.auth.signOut();return;}else{await sb.from('profiles').update({is_banned:false,ban_until:null,ban_reason:null}).eq('id',user.id);currentProfile.is_banned=false;}}await loadMyRestrictions();if(currentProfile?.role==='admin'){document.getElementById('news-create-btn-wrap').style.display='block';document.getElementById('news-emoji-admin-panel').style.display='block';}await loadNewsEmojis();renderNewsPosts(newsPostsCache);updateUIForRole();updateChatUI();closeModal('auth-modal');await checkMaintenance();await loadMapLimits();await loadBackground();await loadBgMusic();await loadFaviconInfo();await loadSiteParams();await initChat();updatePresence();if(presenceTimer)clearInterval(presenceTimer);presenceTimer=setInterval(updatePresence,90000);}
@@ -2545,6 +2549,96 @@ async function handleAvatarSelect(e){
   }catch(err){showToast('❌ '+err.message);}
 }
 </script>
+  <script>
+(function(){
+const $=id=>document.getElementById(id);
+const isRealAdmin=()=>currentProfile?.role==='admin'&&!testRestrictions;
+
+// Планета: убираем подпись с ником под ней
+const _createPlanetEl=createPlanetEl;
+createPlanetEl=function(planet){
+  const el=_createPlanetEl(planet);
+  if(planet.hide_nick){
+    el.querySelectorAll('div').forEach(d=>{if(!d.children.length&&d.textContent===planet.username)d.remove();});
+    el.querySelectorAll('img').forEach(i=>{i.alt='';});
+  }
+  return el;
+};
+
+// Декорация: убираем подпись @ник
+const _createDecoEl=createDecoEl;
+createDecoEl=function(deco){
+  const el=_createDecoEl(deco);
+  if(deco.hide_nick){
+    const owner=usersCache.find(u=>u.id===deco.user_id);
+    const t='@'+(owner?.username||'?');
+    el.querySelectorAll('div').forEach(d=>{if(!d.children.length&&d.textContent===t)d.remove();});
+  }
+  return el;
+};
+
+// Скрытая планета: окошко по клику не открывается (звук, если есть, играет)
+const _showPlanetDialog=showPlanetDialog;
+showPlanetDialog=function(planet,wrapEl){
+  if(planet.hide_nick){
+    closePlanetDialog();
+    if(planet.sound_url){try{activeAudio=new Audio(planet.sound_url);activeAudio.volume=planet.sound_volume!=null?planet.sound_volume:0.7;activeAudio.play().catch(()=>{});}catch(e){}}
+    return;
+  }
+  return _showPlanetDialog(planet,wrapEl);
+};
+
+// Создание: запоминаем галочку при выборе места
+const _startPlacing=startPlacing;
+startPlacing=function(type){
+  _startPlacing(type);
+  if(placingMode)placingData.hide_nick=isRealAdmin()&&!!$(type+'-hide-nick')?.checked;
+};
+
+// Кнопка «Добавить»: показываем галочку только админу
+const addBtn=$('add-content-btn');
+const _addClick=addBtn.onclick;
+addBtn.onclick=async function(){
+  await _addClick.apply(this,arguments);
+  const a=isRealAdmin();
+  ['planet','deco'].forEach(t=>{const g=$(t+'-hide-nick-group'),c=$(t+'-hide-nick');if(g)g.style.display=a?'':'none';if(c)c.checked=false;});
+};
+
+// Редактирование планеты
+const _openEditPlanet=openEditPlanet;
+openEditPlanet=function(id){
+  _openEditPlanet(id);
+  const p=planetsCache.find(x=>x.id===id);
+  $('edit-planet-hide-nick-group').style.display=isRealAdmin()?'':'none';
+  $('edit-planet-hide-nick').checked=!!p?.hide_nick;
+};
+const _updatePlanet=updatePlanet;
+updatePlanet=async function(){
+  if(isRealAdmin()){
+    const{error}=await sb.from('planets').update({hide_nick:$('edit-planet-hide-nick').checked}).eq('id',$('edit-planet-id').value);
+    if(error){$('edit-planet-error').textContent=error.message;return;}
+  }
+  return _updatePlanet();
+};
+
+// Редактирование декорации
+const _openEditDeco=openEditDeco;
+openEditDeco=function(id){
+  _openEditDeco(id);
+  const d=decosCache.find(x=>x.id===id);
+  $('edit-deco-hide-nick-group').style.display=isRealAdmin()?'':'none';
+  $('edit-deco-hide-nick').checked=!!d?.hide_nick;
+};
+const _updateDeco=updateDeco;
+updateDeco=async function(){
+  if(isRealAdmin()){
+    const{error}=await sb.from('decorations').update({hide_nick:$('edit-deco-hide-nick').checked}).eq('id',$('edit-deco-id').value);
+    if(error){$('edit-deco-error').textContent=error.message;return;}
+  }
+  return _updateDeco();
+};
+})();
+  </script>
 <script>
 function toggleAdminPanel(){adminPanelOpen=!adminPanelOpen;const panel=document.getElementById('admin-panel');if(adminPanelOpen){panel.classList.add('open');loadAdminTab('tickets');}else{panel.classList.remove('open');updateTicketBadge();}}
 function switchAdminTab(tab){const tabs=['tickets','users','online','content','params','custom','clean','settings'];document.querySelectorAll('.admin-tab').forEach((t,i)=>{t.classList.toggle('active',tabs[i]===tab);});tabs.forEach(t=>{const el=document.getElementById('admin-tab-'+t);if(el)el.style.display=t===tab?'':'none';});loadAdminTab(tab);}
