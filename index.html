@@ -5760,6 +5760,7 @@ async function refresh(){
     else if(R.st.level===0&&seenLv)lsSet('rift_lv','0');
     if(R.st.level===0&&prev&&prev.level>0)R.shownKey='';
     try{godSync();questShow();}catch(e){console.error(e);}
+    try{godScareSync();}catch(e){}
   }catch(e){}
   finally{R.busy=false;}
   schedule();kick();
@@ -5768,7 +5769,7 @@ function schedule(){
   clearTimeout(R.timer);const lv=R.st?R.st.level:0;
   const thieves=eyesOn()&&R.st.eyes.some(e=>e.b==='thief'&&!e.gone);
   const gpend=R.st&&R.st.god&&Date.parse(R.st.god.at)>now()&&Date.parse(R.st.god.at)-now()<900000;
-  R.timer=setTimeout(refresh,document.hidden?120000:(thieves?15000:gpend?20000:lv>0?60000:180000));
+R.timer=setTimeout(refresh,document.hidden?120000:(thieves?15000:gpend?20000:lv>0?30000:60000));
   clearTimeout(R.tickTimer);
   if(eyesOn()&&R.st.eyes.some(e=>e.b==='thief'&&!e.gone))R.tickTimer=setTimeout(async()=>{try{if(await rpc('rift_tick')){ping();setTimeout(refresh,300);}}catch(e){}},5000);
 }
@@ -6361,9 +6362,9 @@ function scareFor(trigger){
 }
 function badWords(t){const L=String(scareCfg().wordlist||'').toLowerCase().split(/[,\n]/).map(x=>x.trim()).filter(Boolean);const s=String(t||'').toLowerCase();return L.some(w=>s.indexOf(w)>=0);}
 function godScareSync(){
-  const g=godData();if(!g||!g.scare||!godPresent())return;const k=String(g.scare.at);
+  const g=godData(),sc=(R.st&&R.st.scare)||(g&&g.scare);if(!sc||!sc.at)return;const k=String(sc.at);
   if(lsGet('god_scare_seen')===k)return;lsSet('god_scare_seen',k);
-  if(now()-Date.parse(g.scare.at)<45000)godScare(+g.scare.lvl);
+  if(now()-Date.parse(sc.at)<120000)godScare(+sc.lvl,sc.text?String(sc.text):null);
 }
 /* ---------- задания, гнев и милость бога ---------- */
 function questStatus(id){const q=G.me&&G.me.quests&&G.me.quests[id];return q?q.s:'';}
