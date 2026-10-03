@@ -804,6 +804,7 @@ button.st-chip{border:none;font-family:inherit;cursor:pointer}
 .lv-sform{max-width:460px;margin-top:8px}
 .lv-sform .lv-f2 .lv-f{flex:1;min-width:140px}
 .lv-sform input[type=date]{color-scheme:dark}
+  .nick-hidden .pl-nick{display:none!important}
 </style>
 </head>
 
@@ -2870,8 +2871,9 @@ const _createPlanetEl=createPlanetEl;
 createPlanetEl=function(planet){
   const el=_createPlanetEl(planet);
   if(planet.hide_nick){
+    el.querySelectorAll('.pl-nick').forEach(d=>d.remove());
     el.querySelectorAll('div').forEach(d=>{if(!d.children.length&&d.textContent===planet.username)d.remove();});
-    el.querySelectorAll('img').forEach(i=>{i.alt='';});
+    el.classList.add('nick-hidden');
   }
   return el;
 };
@@ -2882,8 +2884,10 @@ createDecoEl=function(deco){
   const el=_createDecoEl(deco);
   if(deco.hide_nick){
     const owner=usersCache.find(u=>u.id===deco.user_id);
-    const t='@'+(owner?.username||'?');
-    el.querySelectorAll('div').forEach(d=>{if(!d.children.length&&d.textContent===t)d.remove();});
+    const n=owner?.username||'?';
+    el.querySelectorAll('.pl-nick').forEach(d=>d.remove());
+    el.querySelectorAll('div').forEach(d=>{if(!d.children.length&&(d.textContent==='@'+n||d.textContent===n))d.remove();});
+    el.classList.add('nick-hidden');
   }
   return el;
 };
