@@ -5479,7 +5479,7 @@ const LEN={3:900,4:900};
 const BEH={watch:'👀 Наблюдать за разломом',roam:'🛸 Летать и смотреть на декорации',thief:'🦝 Воровать планеты и декорации'};
 const BEH_S={watch:'👀 наблюдает',roam:'🛸 смотрит на декорации',thief:'🦝 ворует'};
 const R={st:null,off:0,adm:null,preview:0,eyes:{},cine:null,raf:0,lastT:0,parts:[],ch:null,seenSent:false,shownKey:'',anchorEl:null,anchorId:null,
-  carried:{},patched:{},timer:null,tickTimer:null,admTimer:null,busy:false,glintAt:0,frameN:0};
+  carried:{},patched:{},dropSeen:{},timer:null,tickTimer:null,admTimer:null,busy:false,glintAt:0,frameN:0};
 const $=id=>document.getElementById(id);
 const now=()=>Date.now()+R.off;
 const isCreator=()=>!!(typeof currentUser!=='undefined'&&currentUser&&CREATORS.includes(currentUser.id));
@@ -5727,7 +5727,10 @@ function updateEyes(dt){
       let C=R.carried[key];if(!C||!C.el||!C.el.isConnected){const el=document.querySelector('['+(g.carry.k==='planet'?'data-planet-id':'data-deco-id')+'="'+g.carry.id+'"]');C=R.carried[key]={el};if(el)el.classList.add('rf-carried');}
       if(C.el){C.el.style.left=(E.x+cam.x).toFixed(1)+'px';C.el.style.top=(E.y+cam.y+off).toFixed(1)+'px';C.el.style.rotate=(Math.sin(t/380)*7).toFixed(1)+'deg';}
     }
-    if(g.dropped&&g.dropped.it){const it=g.dropped.it,m=g.dropped.m;if(+it.x_pos!==+m.to[0]||+it.y_pos!==+m.to[1]){it.x_pos=+m.to[0];it.y_pos=+m.to[1];R.patched[m.k+':'+m.id]=1;updateAllPos();}}
+ /* глаз кладёт вещь ОДИН раз: если она ещё на старом месте (страница не успела обновиться) — переносим; дальше её можно свободно двигать */
+    if(g.dropped&&g.dropped.it){const it=g.dropped.it,m=g.dropped.m,dk=m.k+':'+m.id+':'+m.t2;
+      if(!R.dropSeen[dk]){R.dropSeen[dk]=1;
+        if(Math.abs(+it.x_pos-m.o[0])<1&&Math.abs(+it.y_pos-m.o[1])<1){it.x_pos=+m.to[0];it.y_pos=+m.to[1];R.patched[m.k+':'+m.id]=1;updateAllPos();}}}
   }
   for(const key in R.carried)if(!active[key]){const C=R.carried[key];if(C.el){C.el.classList.remove('rf-carried');C.el.style.rotate='';}delete R.carried[key];updateAllPos();}
 }
