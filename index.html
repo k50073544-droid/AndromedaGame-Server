@@ -5735,6 +5735,9 @@ function updateEyes(dt){
 function applyMoves(moves){
   let ch=false;const cur={};
   (moves||[]).forEach(m=>{const key=(m.k==='planet'?'planet':'deco')+':'+m.id;cur[key]=1;const it=findItem(m.k==='planet'?'planet':'deco',m.id);
+    /* вещь уже передвинул владелец или админ (стоит не там, куда её бросил глаз, и не на старом месте) — не тянем назад */
+    const near=(x,y)=>Math.abs(+it.x_pos-x)<1&&Math.abs(+it.y_pos-y)<1;
+    if(it&&m.ox!=null&&!near(+m.x,+m.y)&&!near(+m.ox,+m.oy)){delete cur[key];delete R.patched[key];return;}
     if(it&&(+it.x_pos!==+m.x||+it.y_pos!==+m.y)){it.x_pos=+m.x;it.y_pos=+m.y;ch=true;}R.patched[key]=1;});
   let lost=false;for(const key in R.patched)if(!cur[key]){delete R.patched[key];lost=true;}
   if(lost&&typeof loadPlanets==='function')loadPlanets();else if(ch)updateAllPos();
