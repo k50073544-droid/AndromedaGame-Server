@@ -3266,6 +3266,7 @@ const onMsg=async(e)=>{
   if(e.data?.type==='andra-fish-lore'){
   const{data:result}=await sb.rpc('set_fish_lore',{p_key:e.data.key,p_text:e.data.text});
   toGame({type:'andra-fish-lore-result',key:e.data.key,text:e.data.text,...(result||{ok:false})});
+      if(e.data?.type==='andra-fish-cat'){const{error:catErr}=await sb.rpc('fish_cat_steal',{p_amount:parseInt(e.data.amount,10)||0,p_guest_id:currentUser?null:(currentGuestData?.id||null)});if(!catErr){if(currentUser){const{data:fp}=await sb.from('profiles').select('*').eq('id',currentUser.id).maybeSingle();if(fp)currentProfile=fp;}else if(currentGuestData?.id){const{data:fg}=await guestRow(currentGuestData.id);if(fg)currentGuestData=fg;}refreshTabletHeader();}}
   }
     };
     const onRec=async(e)=>{
