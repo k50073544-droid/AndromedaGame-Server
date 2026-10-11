@@ -6219,7 +6219,7 @@ function godTimer(){
   if(!el){el=document.createElement('div');el.id='god-timer';el.innerHTML='<b>◉</b><span class="gt-t"></span><em>ОНО ПРОСЫПАЕТСЯ</em>';document.body.appendChild(el);}
   el.classList.add('on');el.classList.toggle('last',left<11000);
   const s=Math.ceil(left/1000),hh=Math.floor(s/3600),mm=Math.floor(s%3600/60),ss=s%60,p=n=>String(n).padStart(2,'0');
-  const t=(hh?p(hh)+':':'')+p(mm)+':'+p(ss);const sp=el.querySelector('.gt-t');if(sp.textContent!==t)sp.textContent=t;
+  const t=(hh>=24?Math.floor(hh/24)+'д '+p(hh%24)+':':(hh?p(hh)+':':''))+p(mm)+':'+p(ss);const sp=el.querySelector('.gt-t');if(sp.textContent!==t)sp.textContent=t;
 }
 /* сверка с сервером: таймер, появление, уход бога */
 function godSync(){
