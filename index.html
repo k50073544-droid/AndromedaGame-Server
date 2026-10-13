@@ -3504,7 +3504,7 @@ if(streamOpts&&streamOpts.stream&&window.STREAMS)html=STREAMS.injectCapture(html
 const onMsg=async(e)=>{
       if(e.source!==frameWin)return;
       if(e.data?.type==='andra-win'){
-        const mult=Math.min(10,Math.max(1,parseInt(e.data.multiplier,10)||1));
+        const mult=Math.min(1024,Math.max(1,parseInt(e.data.multiplier,10)||1));
         const{data:award,error:awardErr}=await sb.rpc('award_game_action',{p_game_id:gameId,p_guest_id:currentUser?null:(currentGuestData?.id||null),p_multiplier:mult});
         if(awardErr){console.error(awardErr);return;}
         const blue=award?.blue||0, gold=award?.gold||0;
