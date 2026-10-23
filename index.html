@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>TheAndrameda Universe</title>
+<script>try{if(localStorage.getItem('ui_style')==='glass')document.documentElement.classList.add('lg-on')}catch(e){}</script>
 <link id="site-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪐</text></svg>">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -351,8 +352,6 @@ button.st-chip{border:none;font-family:inherit;cursor:pointer}
 @keyframes slideDown{from{transform:translateX(-50%) translateY(-20px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
 #news-notify{position:fixed;top:65px;left:50%;transform:translateX(-50%);z-index:610;background:linear-gradient(135deg,#0d1a2e,#061020);border:1px solid var(--glow-cyan);border-radius:12px;padding:10px 18px;font-size:12px;color:var(--glow-cyan);display:none;box-shadow:0 0 20px rgba(34,211,238,0.25);align-items:center;gap:10px;cursor:pointer;animation:slideDown 0.4s ease;white-space:nowrap;}
 #news-notify:hover{background:rgba(34,211,238,0.1)}
-#settings-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-border);background:rgba(8,13,26,0.9);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
-#settings-btn:hover{border-color:var(--glow-cyan);background:rgba(34,211,238,0.08)}
 #settings-popup{position:fixed;bottom:80px;left:22px;z-index:160;background:#080d1a;border:1px solid var(--glass-border);border-radius:14px;padding:14px;width:220px;display:none;flex-direction:column;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.6)}
 /* ===== 📻 радио ===== */
 #radio-open-row{display:flex}
@@ -1218,7 +1217,6 @@ html.god-theme .btn.danger{border-color:rgba(255,140,160,.6)}
 html.god-theme .fab{background:radial-gradient(circle at 50% 40%,#0e0c1a,#000 70%)!important;border:1.5px solid #fff!important;
   box-shadow:0 0 0 4px rgba(255,255,255,.06),0 0 18px rgba(255,255,255,.55),inset 0 0 12px rgba(255,255,255,.15)!important}
 html.god-theme .fab::after{content:'';position:absolute;inset:-7px;border-radius:50%;border:1px dashed rgba(255,255,255,.35);animation:gdSpin 18s linear infinite;pointer-events:none}
-html.god-theme #settings-btn{background:#000;border-color:rgba(255,255,255,.7);box-shadow:0 0 12px rgba(255,255,255,.4)}
 html.god-theme .modal{background:linear-gradient(170deg,#0a0912 0%,#000 100%);border:1px solid rgba(255,255,255,.35);
   box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 40px rgba(255,255,255,.12),inset 0 0 50px rgba(255,255,255,.04)}
 html.god-theme .modal h2{font-family:'Cormorant SC',Georgia,serif;letter-spacing:.1em;font-size:20px;background:none;-webkit-text-fill-color:#fff;text-shadow:0 0 10px rgba(255,255,255,.6)}
@@ -2072,8 +2070,8 @@ html.god-theme .ed-save{background:rgba(0,0,0,.96)}
 </div>
 
 <!-- КНОПКА ШТОРКИ НОВОСТЕЙ -->
-<button id="news-tab-btn" onclick="toggleNewsPanel()">
-  <span class="ntb-icon">📡</span>
+<button id="news-tab-btn" class="hd-news" onclick="toggleNewsPanel()" title="Новости" aria-label="Новости">
+  <svg class="hd-ic" viewBox="0 0 24 24" aria-hidden="true"><g class="hd-w1"><path d="M7.8 4.7a6.14 6.14 0 0 0-.8 7.5"/><path d="M16.2 4.8c2 2 2.26 5.11.8 7.47"/></g><g class="hd-w2"><path d="M4.9 16.1C1 12.2 1 5.8 4.9 1.9"/><path d="M19.1 1.9a9.96 9.96 0 0 1 0 14.1"/></g><circle cx="12" cy="9" r="2"/><path d="M9.5 18h5"/><path d="m8 22 4-11 4 11"/></svg>
   <span class="ntb-badge" id="news-badge"></span>
 </button>
 
@@ -2123,6 +2121,12 @@ html.god-theme .ed-save{background:rgba(0,0,0,.96)}
 <!-- Настройки попап -->
 <div id="settings-popup">
   <h4>⚙️ Настройки</h4>
+  <div id="ui-style" data-v="cosmos">
+    <div class="us-h">Вид интерфейса</div>
+    <div class="us-seg" role="radiogroup" aria-label="Вид интерфейса"><i class="us-th"></i><button type="button" data-v="cosmos" role="radio" onclick="HUD.style('cosmos')">🌌 Космос</button><button type="button" data-v="glass" role="radio" onclick="HUD.style('glass')">💧 Liquid Glass</button></div>
+    <div class="us-note">Стекло с размытием и мягкими анимациями. На слабых телефонах может работать медленнее.</div>
+    <div class="us-god">Сейчас прорыв бога — пока он здесь, действует его оформление.</div>
+  </div>
   <div id="music-volume-section" style="display:none">
     <div style="font-size:10px;color:var(--text-dim);margin-bottom:6px">🎵 Громкость музыки</div>
     <div class="sp-row">
@@ -2182,29 +2186,27 @@ html.god-theme .ed-save{background:rgba(0,0,0,.96)}
 <div id="topbar-right">
 <button class="sk-btn" id="streak-btn" style="display:none" onclick="STREAK.open()" title="Огонёк"></button>
 <button class="user-badge-btn" id="user-badge" style="display:none" onclick="openProfileModal()"></button>
-<button class="btn" id="admin-toggle-btn" style="display:none" onclick="toggleAdminPanel()">⚙️ Панель<span id="admin-ticket-badge" class="ticket-badge"></span></button>
-<a id="get-account-btn" href="https://boosty.to/theandrameda" target="_blank" class="btn get-account" style="display:none">⭐ Получить аккаунт ⭐</a>
-<button class="btn" id="auth-btn" onclick="openModal('auth-modal')">🚀 Войти</button>
-<button class="btn danger small" id="logout-btn" style="display:none" onclick="logout()">Выйти</button>
+<button id="radio-btn" class="hd-chip hd-radio" style="display:none" onclick="RADIO.open()" title="Радио" aria-label="Радио"><svg class="hd-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="8" width="19" height="13" rx="2.5"/><path d="M6 8 16.5 3"/><circle cx="15.5" cy="14.5" r="3"/><path d="M6.5 12.5h3M6.5 16.5h3"/></svg><span class="hd-eq" aria-hidden="true"><i></i><i></i><i></i></span></button>
+<button id="settings-btn" class="hd-chip hd-set" onclick="toggleSettingsPopup(event)" title="Настройки" aria-label="Настройки"><svg class="hd-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+<button class="hd-chip hd-adm" id="admin-toggle-btn" style="display:none" onclick="toggleAdminPanel()" title="Панель администратора" aria-label="Панель администратора"><svg class="hd-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-3.6 8-10V5.2L12 2 4 5.2V12c0 6.4 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg><span class="hd-lbl">Панель</span><span id="admin-ticket-badge" class="ticket-badge"></span></button>
+<a id="get-account-btn" href="https://boosty.to/theandrameda" target="_blank" class="hd-chip hd-gold" style="display:none" title="Получить аккаунт на Boosty"><svg class="hd-ic hd-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.5 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6-4.9-4.5 6.6-.8z"/></svg><span class="hd-lbl">Получить аккаунт</span><span class="hd-lbs">Аккаунт</span></a>
+<button class="hd-chip hd-go" id="auth-btn" onclick="openModal('auth-modal')"><svg class="hd-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg><span>Войти</span></button>
+<button class="hd-chip hd-out" id="logout-btn" style="display:none" onclick="logout()" title="Выйти из аккаунта" aria-label="Выйти"><svg class="hd-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg><span class="hd-lbl">Выйти</span></button>
 </div>
 </div>
 <div id="bottom-left">
-<button class="fab purple" id="add-content-btn" style="display:none">➕</button>
-<button id="settings-btn" onclick="toggleSettingsPopup(event)" title="Настройки">⚙️</button>
+<button class="hd-orb hd-add" id="add-content-btn" style="display:none" aria-label="Добавить планету или декорацию"><svg class="hd-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 </div>
 <div id="bottom-right">
 <div class="games-wrap">
-  <button class="fab games" id="games-btn" onclick="openGamesTablet()">
-    <span class="games-cam"></span>
-    <span class="games-screen">
-      <span class="fg-icon">🎮</span>
-      <span class="fab-badge" id="games-badge"></span>
-    </span>
-    <span class="games-home"></span>
+  <button class="hd-pad" id="games-btn" onclick="openGamesTablet()" title="Игры" aria-label="Игры">
+    <span class="hd-pad-cam"></span>
+    <span class="hd-pad-scr"><svg class="hd-pad-ic" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="hdgPad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a5f3fc"/><stop offset=".45" stop-color="#818cf8"/><stop offset="1" stop-color="#c084fc"/></linearGradient></defs><path class="hd-pb" d="M9.5 8h13a6.5 6.5 0 0 1 6.4 5.4l1 6.6a3.6 3.6 0 0 1-6.3 2.9L21.4 20H10.6l-2.2 2.9a3.6 3.6 0 0 1-6.3-2.9l1-6.6A6.5 6.5 0 0 1 9.5 8z"/><path class="hd-pd" d="M8 14.2h5M10.5 11.7v5"/><circle class="hd-pk" cx="21.6" cy="12.8" r="1.35"/><circle class="hd-pk" cx="24.2" cy="15.5" r="1.35"/></svg></span>
+    <span class="hd-pad-home"></span>
+    <span class="hd-badge" id="games-badge"></span>
   </button>
 </div>
-<button class="fab blue" id="comm-btn" onclick="toggleCommPanel()">💬<span class="fab-badge" id="comm-badge"></span></button>
-<button id="mail-btn" onclick="MAIL.open()" title="Почта" aria-label="Почта"><svg class="ml-ico" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="mlgP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#6366f1"/></linearGradient><linearGradient id="mlgF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bae6fd"/><stop offset="1" stop-color="#60a5fa"/></linearGradient></defs><path class="fo" d="M4.5 12.5 L16 3 L27.5 12.5 Z" fill="#3b82f6"/><rect x="4" y="12" width="24" height="15" rx="2.5" fill="#1e3a8a"/><rect class="lt2" x="8" y="8" width="16" height="13" rx="1.5" fill="#fde68a"/><g class="lt"><rect x="7" y="8" width="18" height="13" rx="1.5" fill="#fff"/><path d="M10 12h12M10 15h9M10 18h6" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round"/></g><path d="M4 13.5 L16 21.5 L28 13.5 V24.5 Q28 27 25.5 27 H6.5 Q4 27 4 24.5 Z" fill="url(#mlgP)"/><path class="fc" d="M4.6 12 H27.4 L16 21 Z" fill="url(#mlgF)"/></svg><span id="mail-badge"></span><span class="ml-bub" id="ml-bub"></span></button>
+<button id="comm-btn" class="lk-fab" onclick="MAIL.open()" title="Чат и почта" aria-label="Чат и почта"><span class="lk-orb"></span><span class="lk-orbit"><span class="lk-sx"><i></i></span></span><svg class="lk-ico" viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="lkgB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#a5f3fc"/></linearGradient><linearGradient id="lkgE" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fef08a"/><stop offset="1" stop-color="#f59e0b"/></linearGradient></defs><g class="lk-env"><rect x="20" y="4.5" width="15" height="11" rx="2"/><path d="M20.8 5.6 27.5 10.6 34.2 5.6"/></g><path class="lk-bb" d="M10 12h17a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H17l-6 5v-5h-1a5 5 0 0 1-5-5v-8a5 5 0 0 1 5-5z"/><g class="lk-dots"><circle cx="13.5" cy="21" r="1.9"/><circle cx="18.5" cy="21" r="1.9"/><circle cx="23.5" cy="21" r="1.9"/></g></svg><span class="lk-b" id="lk-badge-chat"></span><span class="lk-b lk-bm" id="mail-badge"></span><span class="ml-bub" id="ml-bub"></span></button>
 </div>
 <div id="games-tablet-overlay">
   <div class="tablet-shell">
@@ -2334,24 +2336,8 @@ html.god-theme .ed-save{background:rgba(0,0,0,.96)}
 </div>
 <div id="status-bar"><span class="status-dot"></span><span id="planet-count">Загрузка...</span></div>
 <div id="toast"></div>
-<div class="side-panel" id="comm-panel">
-<div class="panel-header">
-<span style="font-size:12px;font-weight:600;color:var(--glow-cyan)">💬 Чат</span>
-<button style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:16px" onclick="toggleCommPanel()">✕</button>
-</div>
-<div id="panel-chat" class="panel-body">
-<div id="chat-messages"></div>
-<div id="chat-action-bar">
-<div id="chat-input-row" style="display:flex;gap:7px">
-<input id="chat-input" placeholder="Сообщение..." maxlength="200">
-<button class="btn primary small" onclick="sendChat()">→</button>
-</div>
-</div>
-</div>
-</div>
-
 <div id="admin-panel">
-<div class="adm-hd"><b>⚙️ Администратор</b><button class="adm-hb adm-wide" onclick="document.getElementById('admin-panel').classList.toggle('wide')" title="Шире / уже">⤢</button><button class="adm-hb" onclick="toggleAdminPanel()" title="Закрыть">✕</button></div>
+<div class="adm-hd"><b><svg class="hd-ic adm-shield" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-3.6 8-10V5.2L12 2 4 5.2V12c0 6.4 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg><span>Администратор<small>управление вселенной</small></span></b><button class="adm-hb adm-wide" onclick="document.getElementById('admin-panel').classList.toggle('wide')" title="Шире / уже">⤢</button><button class="adm-hb" onclick="toggleAdminPanel()" title="Закрыть">✕</button></div>
 <div class="admin-tabs">
 <button class="admin-tab active" onclick="switchAdminTab('tickets')"><i>📬</i><span>Почта</span><b class="adm-tb" id="adm-tb-tickets"></b></button>
 <button class="admin-tab" onclick="switchAdminTab('users')"><i>👥</i><span>Юзеры</span></button>
@@ -3427,7 +3413,7 @@ function ended(){if(godOn())return;next();}
 async function load(force){if(S.loaded&&!force)return;try{const{data}=await sb.from('radio_tracks').select('id,title,url,sort,created_at').order('sort',{ascending:true}).order('created_at',{ascending:true});S.tracks=(data||[]).map(t=>({id:t.id,title:t.title||'Без названия',url:t.url}));}catch(e){S.tracks=S.tracks||[];}S.loaded=true;await pull();btn();}
 function setDef(u,t){S.def=u||'';S.defT=String(t||'').trim();btn();}
 function has(){return list().length>0;}
-function btn(){const b=$('radio-open-row');if(b)b.style.display=(has()||isAdmin())?'':'none';}
+function btn(){const v=(has()||isAdmin())?'':'none';const b=$('radio-open-row');if(b)b.style.display=v;const c=$('radio-btn');if(c&&c.style.display!==v)c.style.display=v;}
 /* ---------- окно ---------- */
 function freq(id){const L=list(),i=Math.max(0,L.findIndex(t=>t.id===id)),n=Math.max(1,L.length-1);return L.length<2?98.4:88.1+i*(19.8/n);}
 function fmt(s){s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
@@ -3508,14 +3494,15 @@ function applyFavicon(url){document.getElementById('site-favicon').href=url||"da
 async function loadFaviconInfo(){const{data}=await sb.from('site_settings').select('value').eq('key','site_favicon').maybeSingle();const infoEl=document.getElementById('favicon-current');if(data?.value){if(infoEl)infoEl.innerHTML='✅ Установлена: <span style="font-size:10px;color:var(--text-dim)">'+escHtml(data.value.split('/').pop().slice(0,40))+'</span>';applyFavicon(data.value);}else{if(infoEl)infoEl.textContent='Иконка не установлена (используется 🪐)';}}
 </script>
 <script>
-function updateChatUI(){const loggedIn=!!currentUser;const commBtn=document.getElementById('comm-btn');if(commBtn)commBtn.style.display=loggedIn?'flex':'none';const br=document.getElementById('bottom-right');if(br)br.classList.toggle('no-comm',!loggedIn);currentPanelTab='chat';if(!loggedIn&&commPanelOpen){commPanelOpen=false;document.getElementById('comm-panel').classList.remove('open');}}
-function toggleCommPanel(){if(!currentUser){openModal('auth-modal');return;}commPanelOpen=!commPanelOpen;const panel=document.getElementById('comm-panel');if(commPanelOpen){panel.classList.add('open');const b=document.getElementById('comm-badge');b.style.display='none';b.textContent='';switchPanelTab('chat');renderChat();setTimeout(()=>{const cm=document.getElementById('chat-messages');if(cm)cm.scrollTop=cm.scrollHeight;},80);}else panel.classList.remove('open');}
-function switchPanelTab(tab){if(tab==='support'){try{MAIL.open('new');}catch(e){}tab='chat';}currentPanelTab=tab;document.getElementById('panel-chat').style.display='flex';if(tab==='chat'){renderChat();setTimeout(()=>{const cm=document.getElementById('chat-messages');if(cm)cm.scrollTop=cm.scrollHeight;},80);}}
-async function initChat(){if(!currentUser)return;const{data}=await sb.from('chat_messages').select('*').order('created_at',{ascending:true}).limit(60);chatMessages=data||[];if(chatChannel){try{chatChannel.unsubscribe();}catch(e){}}chatChannel=sb.channel('chat-v9').on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},payload=>{if(!chatMessages.find(m=>m.id===payload.new.id)){chatMessages.push(payload.new);if(chatMessages.length>100)chatMessages.shift();if(commPanelOpen&&currentPanelTab==='chat')renderChat();}if(!commPanelOpen||currentPanelTab!=='chat'){const b=document.getElementById('comm-badge');b.style.cssText='display:flex;align-items:center;justify-content:center';b.textContent='!';}}).on('postgres_changes',{event:'DELETE',schema:'public',table:'chat_messages'},()=>{sb.from('chat_messages').select('*').order('created_at',{ascending:true}).limit(60).then(({data})=>{chatMessages=data||[];if(commPanelOpen&&currentPanelTab==='chat')renderChat();});}).subscribe();if(chatAutoTimer)clearInterval(chatAutoTimer);chatAutoTimer=setInterval(async()=>{if(!currentUser||document.hidden)return;const{data:top}=await sb.from('chat_messages').select('id').order('created_at',{ascending:false}).limit(1);if(!top||String(top[0]?.id??'')===String(chatMessages[chatMessages.length-1]?.id??''))return;const{data:fresh}=await sb.from('chat_messages').select('*').order('created_at',{ascending:true}).limit(60);if(!fresh)return;if(fresh.map(m=>m.id).join(',')!==chatMessages.map(m=>m.id).join(',')){chatMessages=fresh;if(commPanelOpen&&currentPanelTab==='chat')renderChat();if(!commPanelOpen||currentPanelTab!=='chat'){const b=document.getElementById('comm-badge');b.style.cssText='display:flex;align-items:center;justify-content:center';b.textContent='!';}}},60000);}
-  function renderChat(){const el=document.getElementById('chat-messages');if(!el)return;const isAdmin=currentProfile?.role==='admin'&&!testRestrictions;const wasBottom=el.scrollHeight-el.scrollTop-el.clientHeight<80;el.innerHTML=chatMessages.map(m=>{const mine=m.user_id===currentUser?.id,canDel=mine||isAdmin;const time=new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Moscow'});const lv=m.boosty_level?'<span class="c-level">'+escHtml(m.boosty_level)+'</span>':'';const del=canDel?'<button class="c-del" onclick="deleteChatMsg(\''+m.id+'\')">✕</button>':'';const author=usersCache.find(u=>u.id===m.user_id);const av=avatarHtml(author,'avatar-xs');return'<div class="chat-msg '+(mine?'mine':'other')+'">'+((!mine)?'<div class="c-header" style="cursor:pointer" onclick="openProfileModal(\''+m.user_id+'\')">'+av+'<span class="c-name">'+escHtml(m.username)+'</span>'+lv+'</div>':'')+del+'<div class="c-text">'+escHtml(m.message)+'</div><div class="c-time">'+time+'</div></div>';}).join('');if(wasBottom)el.scrollTop=el.scrollHeight;}
-async function deleteChatMsg(id){await sb.from('chat_messages').delete().eq('id',id);chatMessages=chatMessages.filter(m=>m.id!==id);renderChat();}
-async function sendChat(){if(!currentUser){showToast('❌ Войди чтобы писать');return;}const r=getR();if(!getBool(r.can_chat)&&!(currentProfile?.role==='admin'&&!testRestrictions)){showToast('❌ Чат ограничен');return;}const input=document.getElementById('chat-input'),msg=input.value.trim();if(!msg)return;input.value='';const{error}=await sb.from('chat_messages').insert({user_id:currentUser.id,username:currentProfile.username,boosty_level:currentProfile.boosty_level||null,message:msg});if(error)showToast('Ошибка: '+error.message);}
-document.getElementById('chat-input').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat();});
+function updateChatUI(){currentPanelTab='chat';try{if(window.MAIL)MAIL.chatUI();}catch(e){}}
+function toggleCommPanel(){if(!window.MAIL)return;if(MAIL._S.on)MAIL.close();else MAIL.open('chat');}
+function switchPanelTab(tab){if(!window.MAIL)return;MAIL.open(tab==='support'?'new':'chat');}
+let chatReady=false;
+async function initChat(force){if(!window.MAIL){setTimeout(()=>initChat(force),400);return;}return MAIL.chatInit(force);}
+async function chatRefresh(light){if(window.MAIL)return MAIL.chatRefresh(light);}
+function renderChat(){try{if(window.MAIL)MAIL.chatUpdate(null);}catch(e){}}
+async function deleteChatMsg(id){if(window.MAIL)return MAIL.chatDelete(id);}
+async function sendChat(){if(window.MAIL)return MAIL.chatSend();}
 async function loadMyTickets(){if(!currentUser||!document.getElementById('my-tickets-list'))return;const{data}=await sb.from('support_tickets').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(5);const el=document.getElementById('my-tickets-list');if(!data?.length){el.innerHTML='';return;}el.innerHTML=data.map(t=>'<div class="ticket-user-item"><div class="t-my-msg">📨 '+escHtml(t.message)+'</div>'+(t.reply?'<div class="t-reply-box">💬 Ответ:<br>'+escHtml(t.reply)+'</div>':'<div class="t-no-reply">⏳ Ожидает ответа...</div>')+'</div>').join('');}
 async function sendSupportTicket(){if(!currentUser){showToast('Войди в аккаунт');return;}const msg=document.getElementById('support-message').value.trim(),errEl=document.getElementById('support-error');errEl.textContent='';if(!msg){errEl.textContent='Напиши сообщение';return;}const{error}=await sb.from('support_tickets').insert({user_id:currentUser.id,username:currentProfile.username,message:msg});if(error){errEl.textContent=error.message;return;}document.getElementById('support-message').value='';showToast('📨 Отправлено!');loadMyTickets();}
 async function handleSoundFile(input,type){if(!input.files[0])return;const file=input.files[0];if(file.size>5*1024*1024){showToast('❌ Файл слишком большой (макс 5MB)');return;}const key=type==='planet'?'planet':'edit';soundFileData[key]=file;const mb=(file.size/1024/1024).toFixed(2);document.getElementById(type==='planet'?'planet-sound-upload-text':'edit-sound-upload-text').innerHTML='✅ '+mb+'MB · '+escHtml(file.name);}
@@ -3542,7 +3529,7 @@ async function trackDailyVisit(){
     if(!error)localStorage.setItem('na_visit',day+(currentUser?':u':':a'));
   }catch(e){}
 }
-async function updateUIForRole(){const role=currentProfile?.role||'visitor';const badge=document.getElementById('user-badge');if(currentUser){badge.style.display='flex';const lv=currentProfile?.boosty_level?' · '+currentProfile.boosty_level:'';const ri=role==='admin'?'👑':role==='booster'?'⭐':'';badge.innerHTML=avatarHtml(currentProfile,'avatar-xs')+'<span>'+escHtml(currentProfile?.username||'')+lv+(ri?' '+ri:'')+' · Ур.'+(currentProfile?.level||1)+'</span>';}else badge.style.display='none';document.getElementById('auth-btn').style.display=currentUser?'none':'';document.getElementById('logout-btn').style.display=currentUser?'':'none';document.getElementById('get-account-btn').style.display=currentUser?'none':'';const isRealAdmin=role==='admin'&&!testRestrictions;const isBooster=['booster','admin'].includes(role);document.getElementById('admin-toggle-btn').style.display=isRealAdmin?'':'none';document.getElementById('admin-toggle-btn').style.display=isRealAdmin?'':'none';if(isRealAdmin)updateTicketBadge();if(isBooster){const r=getR();const canP=getBool(r.can_upload_planet),canD=getBool(r.can_upload_deco);document.getElementById('add-content-btn').style.display=(canP||canD)?'flex':'none';if(canP||canD)checkAddContentLimit();}else{document.getElementById('add-content-btn').style.display='none';}}
+async function updateUIForRole(){const role=currentProfile?.role||'visitor';const badge=document.getElementById('user-badge');if(currentUser){badge.style.display='flex';const lv=currentProfile?.boosty_level?' · '+currentProfile.boosty_level:'';const ri=role==='admin'?'👑':role==='booster'?'⭐':'';badge.innerHTML=avatarHtml(currentProfile,'avatar-xs')+'<span class="ub-t"><b class="ub-n">'+escHtml(currentProfile?.username||'')+(ri?' '+ri:'')+'</b><i class="ub-l">Ур.'+(currentProfile?.level||1)+'<span class="ub-b">'+lv+'</span></i></span>';}else badge.style.display='none';document.getElementById('auth-btn').style.display=currentUser?'none':'';document.getElementById('logout-btn').style.display=currentUser?'':'none';document.getElementById('get-account-btn').style.display=currentUser?'none':'';const isRealAdmin=role==='admin'&&!testRestrictions;const isBooster=['booster','admin'].includes(role);document.getElementById('admin-toggle-btn').style.display=isRealAdmin?'':'none';document.getElementById('admin-toggle-btn').style.display=isRealAdmin?'':'none';if(isRealAdmin)updateTicketBadge();if(isBooster){const r=getR();const canP=getBool(r.can_upload_planet),canD=getBool(r.can_upload_deco);document.getElementById('add-content-btn').style.display=(canP||canD)?'flex':'none';if(canP||canD)checkAddContentLimit();}else{document.getElementById('add-content-btn').style.display='none';}}
 async function checkAddContentLimit(){if(!currentUser||!currentProfile)return;const btn=document.getElementById('add-content-btn');if(!btn||btn.style.display==='none')return;const ownerRestr=await getRestrictionsForUser(currentUser.id);const r=getR();const[{count:pCount},{count:dCount}]=await Promise.all([sb.from('planets').select('*',{count:'exact',head:true}).eq('user_id',currentUser.id),sb.from('decorations').select('*',{count:'exact',head:true}).eq('user_id',currentUser.id)]);const canPlanet=getBool(r.can_upload_planet!==undefined?r.can_upload_planet:true)&&!isPlanetLimitReachedFor(pCount||0,currentUser.id,ownerRestr);const canDeco=getBool(r.can_upload_deco!==undefined?r.can_upload_deco:true)&&!isDecoLimitReachedFor(dCount||0,currentUser.id,ownerRestr);if(!canPlanet&&!canDeco){btn.disabled=true;btn.style.opacity='0.4';btn.title='Все лимиты исчерпаны';}else{btn.disabled=false;btn.style.opacity='';btn.title='';}}
 async function doLogin(){const email=document.getElementById('login-email').value.trim(),pass=document.getElementById('login-password').value;const errEl=document.getElementById('login-error'),btn=document.getElementById('login-btn');errEl.textContent='';document.getElementById('login-ban-msg').style.display='none';if(!email||!pass){errEl.textContent='Заполни все поля';return;}btn.textContent='Входим...';btn.disabled=true;const{error}=await sb.auth.signInWithPassword({email,password:pass});btn.textContent='Войти';btn.disabled=false;if(error)errEl.textContent=error.message.includes('Invalid')?'Неверный email или пароль':error.message;}
 async function logout(){if(currentUser){try{await sb.rpc('update_user_presence',{p_user_id:currentUser.id,p_username:currentProfile?.username||'',p_online:false});}catch(e){}}await sb.auth.signOut();showToast('До встречи! 🚀');}
@@ -8133,8 +8120,9 @@ function mapCovered(){
   const t=$('games-tablet-overlay');if(t&&t.classList.contains('on'))return 1;
   if(innerWidth<700){
     const n=$('news-panel');if(n&&n.classList.contains('open'))return 1;
-    const c=$('comm-panel');if(c&&c.classList.contains('open'))return 1;
+    const c=$('ml-win');if(c&&c.classList.contains('on'))return 1;
     const a=$('admin-panel');if(a&&a.classList.contains('open'))return 1;
+    if(document.documentElement.classList.contains('lg-on')&&document.querySelector('.modal-overlay[style*="flex"],#sk-win.on,#radio-win.on'))return 1;
   }
   return 0;
 }
@@ -12591,37 +12579,6 @@ return {open,close,closeReward,buyFreeze,tDay,tRun,tPop,tLadder,admCfg,admSet,ad
 <script>try{cosmosUI();}catch(e){}</script>
 <style id="mail-css">
 /* ===== ✉️ почта ===== */
-#mail-btn{position:absolute;right:5px;bottom:60px;width:40px;height:40px;padding:0;margin:0;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;
-  border:1px solid rgba(125,211,252,.45);background:radial-gradient(circle at 35% 30%,#1e3a8a,#0b1530 75%);
-  box-shadow:0 0 0 1px rgba(34,211,238,.10),0 4px 14px rgba(0,0,0,.5),0 0 14px rgba(34,211,238,.25);transition:transform .2s,bottom .25s,opacity .2s;-webkit-tap-highlight-color:transparent}
-#bottom-right.no-comm #mail-btn,#bottom-right:has(#comm-btn[style*="none"]) #mail-btn{bottom:72px}
-#mail-btn:hover{transform:scale(1.08)}
-#mail-btn .ml-ico{width:27px;height:27px;overflow:visible;pointer-events:none}
-.ml-ico .lt,.ml-ico .lt2{transform-box:fill-box;transform-origin:50% 100%;transition:transform .55s cubic-bezier(.2,1.4,.4,1),opacity .3s}
-.ml-ico .lt{transform:translateY(6px)}
-.ml-ico .lt2{opacity:0;transform:translateY(6px)}
-.ml-ico .fc{transition:opacity .2s}
-.ml-ico .fo{opacity:0;transition:opacity .2s}
-#mail-btn.has{border-color:rgba(253,224,71,.75);animation:mlRing 2.2s ease-out infinite}
-#mail-btn.has .ml-ico .fc{opacity:0}
-#mail-btn.has .ml-ico .fo{opacity:1}
-#mail-btn.has .ml-ico .lt{transform:translateY(-5px);animation:mlPeek 2.6s ease-in-out .6s infinite}
-#mail-btn.many .ml-ico .lt2{opacity:1;transform:translate(4px,-3px) rotate(14deg)}
-@keyframes mlPeek{0%,100%{transform:translateY(-5px)}50%{transform:translateY(-7.5px)}}
-@keyframes mlRing{0%{box-shadow:0 0 0 0 rgba(253,224,71,.6),0 4px 14px rgba(0,0,0,.5)}70%{box-shadow:0 0 0 11px rgba(253,224,71,0),0 4px 14px rgba(0,0,0,.5)}100%{box-shadow:0 0 0 0 rgba(253,224,71,0),0 4px 14px rgba(0,0,0,.5)}}
-#mail-btn.bump{animation:mlBump .8s cubic-bezier(.3,1.6,.5,1)}
-@keyframes mlBump{0%{transform:scale(1)}25%{transform:scale(1.35) rotate(-12deg)}55%{transform:scale(.94) rotate(7deg)}80%{transform:scale(1.06) rotate(-3deg)}100%{transform:scale(1)}}
-#mail-badge{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:9px;background:#ef4444;color:#fff;font:800 10.5px/18px system-ui,sans-serif;text-align:center;
-  box-shadow:0 0 0 2px #060a14,0 0 8px rgba(239,68,68,.7);display:none;pointer-events:none}
-#mail-badge.on{display:block;animation:mlBadge .45s cubic-bezier(.3,1.6,.5,1)}
-#mail-badge.gift{background:#f59e0b;box-shadow:0 0 0 2px #060a14,0 0 8px rgba(245,158,11,.8)}
-@keyframes mlBadge{0%{transform:scale(0)}100%{transform:scale(1)}}
-.ml-bub{position:absolute;right:calc(100% + 11px);top:50%;transform:translateY(-50%) scale(.5);transform-origin:right center;opacity:0;pointer-events:none;white-space:nowrap;
-  padding:8px 12px;border-radius:13px;font:800 12.5px/1.2 system-ui,sans-serif;color:#1c1003;background:linear-gradient(135deg,#fef08a,#fbbf24);
-  box-shadow:0 6px 20px rgba(0,0,0,.45),0 0 16px rgba(251,191,36,.5);transition:opacity .25s,transform .4s cubic-bezier(.3,1.6,.5,1)}
-.ml-bub::after{content:'';position:absolute;right:-6px;top:50%;margin-top:-6px;border:6px solid transparent;border-right:0;border-left-color:#fbbf24}
-.ml-bub.show{opacity:1;transform:translateY(-50%) scale(1);pointer-events:auto}
-html.god-theme #mail-btn{background:radial-gradient(circle at 50% 40%,#0e0c1a,#000 70%);border:1.5px solid #fff}
 #ml-win{position:fixed;inset:0;z-index:10030;display:none;align-items:center;justify-content:center;padding:12px}
 #ml-win.on{display:flex}
 .ml-shade{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(5px)}
@@ -12712,7 +12669,7 @@ html.god-theme #mail-btn{background:radial-gradient(circle at 50% 40%,#0e0c1a,#0
 .ml-re span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ml-link{all:unset;cursor:pointer;color:#a5b4fc;font-weight:700;padding:2px 6px}
 .ml-spin{padding:40px;text-align:center;color:var(--text-dim,#94a3b8);font-size:13px}
-body.ml-open #mail-btn{opacity:0;pointer-events:none}
+body.ml-open #comm-btn{opacity:0;pointer-events:none}
 @media (max-width:520px){.ml-box{height:calc(100dvh - 16px);border-radius:18px}#ml-win{padding:8px}.ml-tabs button{font-size:11.5px}}
 html.god-theme .ml-box{background:linear-gradient(180deg,#07060e,#000);border-color:rgba(255,255,255,.3)}
 /* ===== админка: почта ===== */
@@ -12765,10 +12722,12 @@ html.god-theme .ml-box{background:linear-gradient(180deg,#07060e,#000);border-co
 .ml-sug div{font-size:13px}
 .ml-sug .ml-av{width:30px;height:30px;font-size:13px}
 </style>
-<div id="ml-win"><div class="ml-shade" onclick="MAIL.close()"></div><div class="ml-box" role="dialog" aria-label="Почта">
-<div class="ml-hd"><b>✉️ Почта</b><span class="ml-who" id="ml-who"></span><button class="ml-x" onclick="MAIL.close()" aria-label="Закрыть">✕</button></div>
-<div class="ml-tabs" id="ml-tabs"><button data-t="in" onclick="MAIL.tab('in')">📥 Входящие<i id="ml-tin"></i></button><button data-t="out" onclick="MAIL.tab('out')">📤 Отправленные</button><button data-t="new" onclick="MAIL.compose('admin')">✏️ Написать</button></div>
+<div id="ml-win"><div class="ml-shade" onclick="MAIL.close()"></div><div class="ml-box" role="dialog" aria-label="Чат и почта">
+<div class="ml-hd"><span class="lk-logo" aria-hidden="true"></span><b>Сообщения</b><span class="ml-who" id="ml-who"></span><button class="ml-x" onclick="MAIL.close()" aria-label="Закрыть">✕</button></div>
+<div class="ml-tabs" id="ml-tabs"><button data-t="in" onclick="MAIL.tab('in')">💬 Входящие<i id="ml-tin"></i></button><button data-t="out" onclick="MAIL.tab('out')">📤 Отправленные</button><button data-t="new" onclick="MAIL.compose('admin')">✏️ Написать</button></div>
 <div class="ml-body" id="ml-body"></div>
+<div class="lk-bar" id="lk-bar"></div>
+<div class="lk-menu" id="lk-menu"></div>
 </div></div>
 <script>
 /* ===================== ✉️ ПОЧТА: письма администрации и игрокам (аккаунты и гости) ===================== */
@@ -12807,15 +12766,19 @@ function badge(){
   const b=$('mail-badge'),n=+M.un.n||0,g=+M.un.gifts||0;
   if(b){const txt=n>0?(n>99?'99+':String(n)):(g>0?'🎁':'');if(b.textContent!==txt){b.classList.remove('on');void b.offsetWidth;}b.textContent=txt;b.classList.toggle('on',!!txt);b.classList.toggle('gift',!n&&g>0);}
   const t=$('ml-tin');if(t)t.textContent=n>0?String(n):'';
-  const btn=$('mail-btn');if(btn){btn.classList.toggle('has',n>0||g>0);btn.classList.toggle('many',n>1);btn.title=n>0?('Почта: '+n+' '+plural(n,'новое письмо','новых письма','новых писем')):g>0?'Почта: есть неполученный подарок':'Почта';}
+  const c=chatUnread(),cb=$('lk-badge-chat');
+  if(cb){const tx=c>0?(c>99?'99+':String(c)):'';if(cb.textContent!==tx){cb.classList.remove('on');void cb.offsetWidth;}cb.textContent=tx;cb.classList.toggle('on',!!tx);}
+  const btn=$('comm-btn');if(btn){btn.classList.toggle('mail',n>0||g>0);btn.classList.toggle('chat',c>0);
+    btn.title=[n>0?'✉️ '+n+' '+plural(n,'новое письмо','новых письма','новых писем'):g>0?'🎁 подарок в почте':'',c>0?'💬 '+c+' в общем чате':''].filter(Boolean).join(' · ')||'Чат и почта';}
 }
+function ping(){const btn=$('comm-btn');if(!btn)return;btn.classList.remove('ping');void btn.offsetWidth;btn.classList.add('ping');setTimeout(()=>btn.classList.remove('ping'),900);}
 /* всплывающая подсказка у конверта: «Новое письмо!», «3 новых письма», «Тебе подарок!» */
 let bubT=null;
-function notify(n,g,newGift){
-  if(M.on||(!n&&!g))return;
-  const btn=$('mail-btn'),bb=$('ml-bub');if(!btn||!bb)return;
-  bb.textContent=newGift?'🎁 Тебе пришёл подарок!':n>1?'✉️ '+n+' '+plural(n,'новое письмо','новых письма','новых писем'):n===1?'✉️ Новое письмо!':'🎁 Подарок ждёт в почте';
-  btn.classList.remove('bump');void btn.offsetWidth;btn.classList.add('bump');setTimeout(()=>btn.classList.remove('bump'),900);
+function notify(n,g,newGift,text){
+  if(M.on||(!n&&!g&&!text))return;
+  const bb=$('ml-bub');if(!bb)return;
+  bb.textContent=text||(newGift?'🎁 Тебе пришёл подарок!':n>1?'✉️ '+n+' '+plural(n,'новое письмо','новых письма','новых писем'):n===1?'✉️ Новое письмо!':'🎁 Подарок ждёт в почте');
+  bb.dataset.go=text?'chat':'in';ping();
   bb.classList.add('show');clearTimeout(bubT);bubT=setTimeout(()=>bb.classList.remove('show'),7000);
 }
 function admBadge(){
@@ -12838,7 +12801,7 @@ async function poll(force){
 setInterval(()=>{
   const k=key();
   if(k!==M.key){M.key=k;M.lists={};M.more={};M.cur=null;M.curM=null;M.reply=null;M.un={};M.a.lists={};M.a.cur=null;M.a.dos=null;
-    M.fresh=true;badge();if(k)poll(true);else{admBadge();if(M.on)close();}return;}
+    M.fresh=true;M.seen=null;badge();chatUI();if(k)poll(true);else{admBadge();if(M.on&&M.view!=='chat')close();}return;}
   if(k&&document.visibilityState==='visible'&&Date.now()-M.lastPoll>150000)poll();
 },3000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&key()&&Date.now()-M.lastPoll>60000)poll();});
@@ -12852,12 +12815,15 @@ async function open(t){
     if(!key()){toast('✉️ Не получилось определить профиль — обнови страницу');return;}
   }
   if(!cu()&&(!currentGuestData||!currentGuestData.nickname)){try{const r=await guestRow(gid());if(r&&r.data)currentGuestData=r.data;}catch(e){}}
-  M.on=true;{const bb=$('ml-bub');if(bb)bb.classList.remove('show');}$('ml-win').classList.add('on');document.body.classList.add('ml-open');who();
-  if(t==='new')compose('admin');else tab(t||'in');
+  let go=t;{const bb=$('ml-bub');if(bb){if(!go&&bb.classList.contains('show'))go=bb.dataset.go;bb.classList.remove('show');}}
+  M.on=true;try{commPanelOpen=true;}catch(e){}$('ml-win').classList.add('on');document.body.classList.add('ml-open');who();vvFit();
+  if(typeof chatReady!=='undefined'&&(!chatReady||!chatChannel))chatInit(true);
+  if(!go)go=(+M.un.n||0)+(+M.un.gifts||0)>0?'in':(lsGet('lk_view')||'chat');
+  if(go==='new')compose('admin');else if(go==='chat')chatOpen();else tab(go);
 }
-function close(){M.on=false;const bb=$('ml-bub');if(bb)bb.classList.remove('show');$('ml-win').classList.remove('on');document.body.classList.remove('ml-open');}
+function close(){if(M.view==='chat'){markSeen();roomLeave();menuClose();}M.on=false;try{commPanelOpen=false;}catch(e){}const bb=$('ml-bub');if(bb)bb.classList.remove('show');$('ml-win').classList.remove('on');document.body.classList.remove('ml-open');if(M.view==='chat')lsSet('lk_view','chat');else lsSet('lk_view','in');M.view='list';}
 function tabs(){document.querySelectorAll('#ml-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===M.box));}
-function tab(t){M.box=t;M.cur=null;tabs();if(t==='new'){renderCompose();return;}if(M.lists[t])renderList(t);else $('ml-body').innerHTML=spin();load(t);}
+function tab(t){leaveChat();M.view=t==='new'?'compose':'list';M.box=t;M.cur=null;tabs();if(t==='new'){renderCompose();return;}if(M.lists[t])renderList(t);else $('ml-body').innerHTML=spin();load(t);}
 async function load(box,more){
   try{const L=M.lists[box]||[],before=more&&L.length?L[L.length-1].id:null;
     const r=await rpc('mail_box',{p_guest:gid(),p_box:box,p_before:before});
@@ -12866,10 +12832,10 @@ async function load(box,more){
   }catch(e){if(M.on&&M.box===box&&!M.cur)$('ml-body').innerHTML='<div class="ml-empty">⚠️ '+E(em(e))+'</div>';}
 }
 function renderList(box){
-  const el=$('ml-body'),L=M.lists[box]||[];
-  if(!L.length){el.innerHTML='<div class="ml-empty"><div class="ml-empty-ic">'+(box==='in'?'📭':'📤')+'</div>'+(box==='in'?'Писем пока нет.<br><small>Сюда придут ответы администрации, подарки и письма от других игроков.</small>':'Ты ещё ничего не отправлял.')+'</div>'
+  const el=$('ml-body'),L=M.lists[box]||[],pin=box==='in'?pinRow():'';
+  if(!L.length){el.innerHTML=pin+'<div class="ml-empty"><div class="ml-empty-ic">'+(box==='in'?'📭':'📤')+'</div>'+(box==='in'?'Писем пока нет.<br><small>Сюда придут ответы администрации, подарки и письма от других игроков.</small>':'Ты ещё ничего не отправлял.')+'</div>'
     +'<button class="ml-btn" onclick="MAIL.compose(null)">✍️ Написать письмо</button>';return;}
-  el.innerHTML=L.map(m=>row(m,box)).join('')+(M.more[box]?'<button class="ml-btn gray" onclick="MAIL.more()">Показать ещё</button>':'');
+  el.innerHTML=pin+L.map(m=>row(m,box)).join('')+(M.more[box]?'<button class="ml-btn gray" onclick="MAIL.more()">Показать ещё</button>':'');
 }
 function row(m,box){
   const inb=box==='in',kind=inb?m.fk:m.tk,name=inb?m.from:m.to,un=inb&&!m.read,gift=!!m.gift,newg=gift&&inb&&!m.claimed;
@@ -12877,9 +12843,9 @@ function row(m,box){
     +'<span class="ml-time">'+fdt(m.at)+'</span></div><div class="ml-subj">'+E(m.subject||'(без темы)')+'</div><div class="ml-snip">'+E(m.body)+'</div></div>'+(gift?'<div class="ml-fl'+(newg?' new':'')+'" title="'+(newg?'Подарок ждёт':'Подарок')+'">🎁</div>':'')+'</div>';
 }
 function more(){load(M.box,true);}
-function back(){M.cur=null;M.curM=null;if(M.box==='new')M.box='in';tabs();if(M.lists[M.box])renderList(M.box);else{$('ml-body').innerHTML=spin();load(M.box);}}
+function back(){leaveChat();M.view='list';M.cur=null;M.curM=null;if(M.box==='new')M.box='in';tabs();if(M.lists[M.box])renderList(M.box);else{$('ml-body').innerHTML=spin();load(M.box);}}
 async function read(id){
-  M.cur=id;$('ml-body').innerHTML=spin('Открываю письмо…');
+  leaveChat();M.view='letter';M.cur=id;$('ml-body').innerHTML=spin('Открываю письмо…');
   try{const m=await rpc('mail_open',{p_guest:gid(),p_id:id});M.curM=m;
     for(const b in M.lists)(M.lists[b]||[]).forEach(x=>{if(x.id===id)x.read=true;});
     if(M.cur===id)renderView(m);if(!m.mine&&m.read)poll(true);
@@ -12914,8 +12880,264 @@ async function del(id){
   else if(!confirm('Удалить письмо?'))return;
   try{await rpc('mail_del',{p_guest:gid(),p_id:id});for(const b in M.lists)M.lists[b]=(M.lists[b]||[]).filter(x=>x.id!==id);toast('🗑️ Письмо удалено');back();poll(true);}catch(e){toast('⚠️ '+em(e));}
 }
+/* =================== 💬 ОБЩИЙ ЧАТ — одна большая переписка =================== */
+const RX_LIST=['👍','❤️','😂','😮','😢','🔥','🎉','👀'];
+const EMO=['😀','😂','🥹','😊','😍','🤩','😎','🤔','😮','😢','😭','😡','🥳','😴','🤯','🙃','👍','👎','👏','🙏','💪','🤝','👋','✌️','❤️','💜','💙','🔥','✨','⭐','🌌','🪐','🚀','👾','🎮','🎉','🎁','👀','💀','😈'];
+const CH={rx:{},extra:{},pin:null,more:true,reply:null,edit:null,typing:{},online:0,room:null,sep:0,lastTyping:0,loadingOld:false,newCnt:0,menuId:null,loading:null};
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function msgs(){try{return chatMessages||[];}catch(e){return [];}}
+function setMsgs(L){try{chatMessages=L;}catch(e){}}
+function byId(id){return msgs().find(m=>m.id===id)||null;}
+function ts(x){const d=new Date(x);return isNaN(d)?0:d.getTime();}
+function seen(){if(M.seen==null){M.seen=+(lsGet('lk_seen')||0);}const L=msgs();if(!M.seen&&L.length){M.seen=ts(L[L.length-1].created_at);lsSet('lk_seen',String(M.seen));}return M.seen;}
+function markSeen(){const L=msgs();if(!L.length)return;const t=ts(L[L.length-1].created_at);if(t>(M.seen||0)){M.seen=t;lsSet('lk_seen',String(t));}}
+function chatMuted(){return lsGet('lk_mute')==='1';}
+function chatUnread(){const L=msgs();if(!L.length)return 0;const s=seen(),me=cu()?cu().id:null,mu=chatMuted();let n=0;L.forEach(m=>{if(ts(m.created_at)>s&&(!me||m.user_id!==me)&&(!mu||isMention(m)))n++;});return n;}
+function myNick(){return String((cp()&&cp().username)||'').toLowerCase();}
+function hueOf(s){let h=0;s=String(s||'');for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%360;return h;}
+function snip(t,n){t=String(t||'').replace(/\s+/g,' ').trim();n=n||70;return t.length>n?t.slice(0,n-1)+'…':t;}
+function q1(s){return E(String(s||'').replace(/['\\]/g,''));}
+function uidOf(name){const m=msgs().slice().reverse().find(x=>x.username===name);return m?m.user_id:'';}
+const AVS={};let avBusy=false;
+async function loadAvs(){if(avBusy)return;const need=[...new Set(msgs().map(m=>m.user_id).filter(id=>id&&!(id in AVS)))];if(!need.length)return;avBusy=true;
+  try{need.forEach(id=>AVS[id]=null);const{data}=await sb.from('profiles').select('id,avatar_url,level,role').in('id',need);(data||[]).forEach(p=>AVS[p.id]=p);if(M.on&&M.view==='chat')chatRender(false,true);}catch(e){}avBusy=false;}
+function uav(m){const p=AVS[m.user_id],nm=String(m.username||'?');
+  if(p&&p.avatar_url)return '<img class="lk-a" src="'+E(p.avatar_url)+'" alt="" onerror="this.outerHTML=\'<span class=&quot;lk-a&quot;>'+E(nm[0].toUpperCase())+'</span>\'">';
+  const h=hueOf(nm);return '<span class="lk-a" style="background:linear-gradient(135deg,hsl('+h+',70%,52%),hsl('+((h+50)%360)+',70%,38%))">'+E(nm[0].toUpperCase())+'</span>';}
+function dayLbl(d){const k=x=>x.toLocaleDateString('ru',TZ),n=new Date();if(k(d)===k(n))return 'Сегодня';if(k(d)===k(new Date(n.getTime()-864e5)))return 'Вчера';return d.toLocaleDateString('ru',Object.assign({day:'numeric',month:'long'},TZ));}
+function fmt(t){const me=myNick();
+  return E(t).replace(/\bhttps?:\/\/[^\s<]+/g,u=>{let tail='';while(/[.,;:!?)\]]$/.test(u)){tail=u.slice(-1)+tail;u=u.slice(0,-1);}return '<a class="lk-link" href="'+u+'" target="_blank" rel="noopener noreferrer nofollow" onclick="event.stopPropagation()">'+(u.length>48?u.slice(0,45)+'…':u)+'</a>'+tail;})
+    .replace(/(^|[\s(])@([0-9A-Za-zА-Яа-яЁё_\-.]{2,32})/g,(x,a,n)=>a+'<b class="lk-at'+(me&&n.toLowerCase()===me?' lk-atme':'')+'">@'+n+'</b>');}
+function isMention(m){const me=myNick();if(!me)return false;return new RegExp('(^|[\\s(])@'+me.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?![0-9A-Za-zА-Яа-яЁё_\\-])','i').test(m.message||'');}
+function emojiOnly(t){t=String(t||'').trim();if(!t||t.length>24)return false;try{if(!/^[\p{Extended_Pictographic}\p{Emoji_Component}\u200d\ufe0f\s]+$/u.test(t)||!/\p{Extended_Pictographic}/u.test(t))return false;
+  const s=t.replace(/\s/g,'');return (window.Intl&&Intl.Segmenter?[...new Intl.Segmenter('ru',{granularity:'grapheme'}).segment(s)].length:Math.ceil(s.length/2))<=3;}catch(e){return false;}}
+/* --- реакции --- */
+function rxAdd(id,e,u){const R=CH.rx[id]||(CH.rx[id]={}),a=R[e]||(R[e]=[]);if(!a.includes(u))a.push(u);}
+function rxDel(id,e,u){const R=CH.rx[id];if(!R||!R[e])return;R[e]=R[e].filter(x=>x!==u);if(!R[e].length)delete R[e];}
+function rxMine(id,e){const me=cu()?cu().id:null,R=CH.rx[id];return !!(me&&R&&R[e]&&R[e].includes(me));}
+async function loadRx(ids){ids=(ids||[]).filter(Boolean);for(let i=0;i<ids.length;i+=60){const part=ids.slice(i,i+60);try{const{data}=await sb.from('chat_reactions').select('msg_id,user_id,emoji').in('msg_id',part);part.forEach(id=>delete CH.rx[id]);(data||[]).forEach(r=>rxAdd(r.msg_id,r.emoji,r.user_id));}catch(e){}}}
+function nameOfUid(u){const m=msgs().find(x=>x.user_id===u);return m?m.username:'кто-то';}
+async function react(id,e,fromMenu){
+  if(fromMenu)menuClose();
+  if(!cu()){toast('🔒 Реакции ставят только аккаунты');return;}
+  const me=cu().id,has=rxMine(id,e);
+  if(has){rxDel(id,e,me);chatUpdate(null);const{error}=await sb.from('chat_reactions').delete().eq('msg_id',id).eq('user_id',me).eq('emoji',e);if(error){rxAdd(id,e,me);chatUpdate(null);toast('⚠️ '+error.message);}}
+  else{rxAdd(id,e,me);chatUpdate(null);const{error}=await sb.from('chat_reactions').insert({msg_id:id,user_id:me,emoji:e});if(error&&!/duplicate|unique/i.test(error.message)){rxDel(id,e,me);chatUpdate(null);toast('⚠️ Не получилось поставить реакцию');}}
+}
+/* --- закреп --- */
+function pinFrom(m){if(m.pinned_at)CH.pin=m;else if(CH.pin&&CH.pin.id===m.id)CH.pin=null;}
+async function loadPin(){try{const{data}=await sb.from('chat_messages').select('*').gt('pinned_at','2000-01-01').order('pinned_at',{ascending:false}).limit(1);CH.pin=(data&&data[0])||null;}catch(e){}}
+async function pin(id){menuClose();const off=CH.pin&&CH.pin.id===id;try{await rpc('chat_pin',{p_id:off?null:id});await loadPin();chatUpdate(null);toast(off?'📌 Откреплено':'📌 Сообщение закреплено');}catch(e){toast('⚠️ '+em(e));}}
+function pinBar(){const p=CH.pin;if(!p)return '';return '<div class="lk-pinbar" onclick="MAIL.jump(\''+E(p.id)+'\')"><i>📌</i><div><b>Закреплено · '+E(p.username)+'</b><span>'+E(snip(p.message,90))+'</span></div>'+(realAdm()?'<button onclick="event.stopPropagation();MAIL.pin(\''+E(p.id)+'\')" title="Открепить">✕</button>':'')+'</div>';}
+/* --- загрузка и обновления --- */
+function addMsgs(list){const L=msgs().slice();list.forEach(m=>{if(m&&m.id&&!L.find(x=>x.id===m.id))L.push(m);});L.sort((a,b)=>ts(a.created_at)-ts(b.created_at));while(L.length>500)L.shift();setMsgs(L);}
+function subscribe(){
+  try{if(chatChannel)chatChannel.unsubscribe();}catch(e){}
+  chatChannel=sb.channel('chat-v11')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},p=>{const m=p&&p.new;if(m&&m.id&&!byId(m.id)){addMsgs([m]);chatUpdate([m]);}})
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'chat_messages'},p=>{const m=p&&p.new;if(!m||!m.id)return;const L=msgs(),i=L.findIndex(x=>x.id===m.id);if(i>=0)L[i]=Object.assign({},L[i],m);pinFrom(m);chatUpdate(null);})
+    .on('postgres_changes',{event:'DELETE',schema:'public',table:'chat_messages'},p=>{const id=p&&p.old&&p.old.id;if(!id){chatRefresh(false);return;}setMsgs(msgs().filter(x=>x.id!==id));delete CH.rx[id];if(CH.pin&&CH.pin.id===id)CH.pin=null;chatUpdate(null);})
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_reactions'},p=>{const r=p&&p.new;if(r&&r.msg_id){rxAdd(r.msg_id,r.emoji,r.user_id);chatUpdate(null);}})
+    .on('postgres_changes',{event:'DELETE',schema:'public',table:'chat_reactions'},p=>{const r=p&&p.old;if(r&&r.msg_id){rxDel(r.msg_id,r.emoji,r.user_id);chatUpdate(null);}})
+    .subscribe();
+}
+async function chatInit(force){
+  if(!cu()&&!force&&!chatReady)return;
+  if(CH.loading)return CH.loading;
+  CH.loading=(async()=>{
+    const{data}=await sb.from('chat_messages').select('*').order('created_at',{ascending:false}).limit(80);
+    setMsgs((data||[]).reverse());chatReady=true;CH.more=(data||[]).length>=80;
+    await Promise.all([loadRx(msgs().map(m=>m.id)),loadPin()]);
+    subscribe();
+    if(chatAutoTimer)clearInterval(chatAutoTimer);
+    chatAutoTimer=setInterval(()=>{if(!document.hidden)chatRefresh(true);},60000);
+    chatUpdate(null);
+  })();
+  try{await CH.loading;}catch(e){}finally{CH.loading=null;}
+}
+async function chatRefresh(light){
+  try{const L=msgs();
+    if(light){const{data:top}=await sb.from('chat_messages').select('id').order('created_at',{ascending:false}).limit(1);const last=L[L.length-1];if(String((top&&top[0]&&top[0].id)||'')===String((last&&last.id)||''))return;}
+    const{data}=await sb.from('chat_messages').select('*').order('created_at',{ascending:false}).limit(80);if(!data)return;
+    const fresh=data.reverse(),cut=fresh.length?ts(fresh[0].created_at):0,old=new Set(L.map(m=>m.id));
+    const keep=L.filter(m=>ts(m.created_at)<cut);if(!keep.length)CH.more=fresh.length>=80;setMsgs(keep.concat(fresh));
+    const added=fresh.filter(m=>!old.has(m.id));await loadRx(fresh.map(m=>m.id));chatUpdate(added);
+  }catch(e){}
+}
+async function loadOlder(){
+  const L=msgs();if(CH.loadingOld||!CH.more||!L.length)return;CH.loadingOld=true;const sc=$('ml-body');
+  const ob=$('lk-older');if(ob)ob.textContent='⏳ Загружаю…';
+  try{const{data}=await sb.from('chat_messages').select('*').lt('created_at',L[0].created_at).order('created_at',{ascending:false}).limit(50);
+    const add=(data||[]).reverse().filter(m=>!byId(m.id));CH.more=(data||[]).length>=50;await loadRx(add.map(m=>m.id));
+    const h0=sc.scrollHeight,t0=sc.scrollTop;setMsgs(add.concat(msgs()));chatRender(false,true);sc.scrollTop=t0+(sc.scrollHeight-h0);loadAvs();
+  }catch(e){}
+  CH.loadingOld=false;
+}
+async function fetchExtra(ids){ids=[...new Set(ids)].filter(id=>!(id in CH.extra));if(!ids.length)return;ids.forEach(id=>CH.extra[id]=false);
+  try{const{data}=await sb.from('chat_messages').select('id,user_id,username,message').in('id',ids);(data||[]).forEach(m=>CH.extra[m.id]=m);}catch(e){}
+  if(M.on&&M.view==='chat')chatRender(false,true);}
+/* --- закреплённый чат во входящих --- */
+function pinRow(){
+  const L=msgs(),last=L[L.length-1],n=chatUnread();
+  return '<div class="ml-row lk-pin'+(n?' unread':'')+'" onclick="MAIL.chat()"><div class="lk-gav">🌌</div><div class="ml-mid"><div class="ml-top"><b>Общий чат</b><span class="ml-tag">📌 закреп</span>'
+    +(chatMuted()?'<span class="ml-tag">🔕</span>':'')+(last?'<span class="ml-time">'+fdt(last.created_at)+'</span>':'')+'</div><div class="ml-subj">'+(last?'<span class="lk-pin-nm">'+E(last.username)+':</span> '+E(snip(last.message,90)):'Здесь пока тихо — будь первым!')+'</div>'
+    +'<div class="ml-snip">'+(cu()?'Переписка всей вселенной':'Гости читают, писать могут аккаунты')+'</div></div>'+(n?'<div class="lk-cnt">'+(n>99?'99+':n)+'</div>':'')+'</div>';
+}
+/* --- окно переписки --- */
+function leaveChat(){if(M.view!=='chat')return;markSeen();CH.sep=0;CH.newCnt=0;menuClose();roomLeave();const t=$('ml-tabs');if(t)t.style.display='';const b=$('ml-body');if(b)b.classList.remove('lk-chatv');const bar=$('lk-bar');if(bar){bar.classList.remove('on');bar.innerHTML='';}badge();}
+function chatOpen(){
+  M.view='chat';M.cur=null;const t=$('ml-tabs');if(t)t.style.display='none';const b=$('ml-body');b.classList.add('lk-chatv');
+  const un=chatUnread();CH.sep=un>0?seen():0;CH.newCnt=0;
+  b.innerHTML='<div class="lk-top"><div class="lk-ch"><button class="ml-back" onclick="MAIL.back()" aria-label="Назад">←</button><div class="lk-gav">🌌</div><div class="lk-ct"><b>Общий чат</b><small id="lk-sub"></small></div>'
+    +'<button class="lk-hb" id="lk-mute" onclick="MAIL.muteToggle()"></button></div><div id="lk-pinwrap"></div></div>'
+    +'<div class="lk-msgs" id="lk-msgs">'+(msgs().length?'':'<div class="ml-spin">⏳ Загружаю переписку…</div>')+'</div><button class="lk-new" id="lk-new" onclick="MAIL.chatBottom()">↓</button>';
+  muteBtn();chatSub();chatBar();chatRender(un>0?'sep':true);loadAvs();roomJoin();
+}
+function muteBtn(){const b=$('lk-mute');if(!b)return;const mu=chatMuted();b.textContent=mu?'🔕':'🔔';b.title=mu?'Счётчик выключен — уведомляют только упоминания':'Выключить счётчик новых сообщений';}
+function muteToggle(){lsSet('lk_mute',chatMuted()?'0':'1');muteBtn();badge();toast(chatMuted()?'🔕 Счётчик чата выключен — сообщим только об упоминаниях':'🔔 Счётчик чата включён');}
+function chatRender(toBottom,keep){
+  const box=$('lk-msgs'),sc=$('ml-body');if(!box||M.view!=='chat')return;
+  const pw=$('lk-pinwrap');if(pw)pw.innerHTML=pinBar();
+  const L=msgs(),me=cu()?cu().id:null,adm=realAdm(),atBottom=sc.scrollHeight-sc.scrollTop-sc.clientHeight<90;
+  if(!L.length){box.innerHTML=typeof chatReady!=='undefined'&&chatReady?'<div class="ml-empty"><div class="ml-empty-ic">🌌</div>Здесь пока тихо.<br><small>'+(cu()?'Напиши первое сообщение!':'Как только кто-то напишет — увидишь здесь.')+'</small></div>':'<div class="ml-spin">⏳ Загружаю переписку…</div>';return;}
+  let h=CH.more?'<button class="lk-older" id="lk-older" onclick="MAIL.older()">'+(CH.loadingOld?'⏳ Загружаю…':'⬆ Показать более ранние')+'</button>':'<div class="lk-start">🌌 Начало переписки</div>';
+  let pd='',sep=false;const miss=[];
+  L.forEach((m,i)=>{
+    const d=new Date(m.created_at),dk=d.toLocaleDateString('ru',TZ),p=L[i-1],nx=L[i+1],mine=!!(me&&m.user_id===me);
+    if(dk!==pd){h+='<div class="lk-day"><span>'+dayLbl(d)+'</span></div>';pd=dk;}
+    let brk=false;if(!sep&&CH.sep&&ts(m.created_at)>CH.sep&&!mine){h+='<div class="lk-unr" id="lk-unr"><span>Новые сообщения</span></div>';sep=true;brk=true;}
+    const first=brk||!p||p.user_id!==m.user_id||ts(m.created_at)-ts(p.created_at)>300000||new Date(p.created_at).toLocaleDateString('ru',TZ)!==dk;
+    const last=!nx||nx.user_id!==m.user_id||ts(nx.created_at)-ts(m.created_at)>300000||new Date(nx.created_at).toLocaleDateString('ru',TZ)!==dk||(!sep&&CH.sep&&ts(nx.created_at)>CH.sep&&!(me&&nx.user_id===me));
+    const pr=AVS[m.user_id],tm=d.toLocaleTimeString('ru',Object.assign({hour:'2-digit',minute:'2-digit'},TZ)),id=E(m.id),uid=E(m.user_id),big=emojiOnly(m.message);
+    let qh='';if(m.reply_to){const q=byId(m.reply_to)||CH.extra[m.reply_to];if(q===undefined)miss.push(m.reply_to);
+      qh='<div class="lk-q" onclick="event.stopPropagation();MAIL.jump(\''+E(m.reply_to)+'\')"><b'+(q?' style="color:hsl('+hueOf(q.username)+',85%,72%)"':'')+'>'+(q?E(q.username):'Сообщение')+'</b><span>'+(q?E(snip(q.message,80)):q===false?'удалено или слишком старое':'…')+'</span></div>';}
+    const R=CH.rx[m.id];let rh='';if(R){const ks=Object.keys(R).filter(k=>R[k].length);if(ks.length)rh='<div class="lk-rxs">'+ks.map(k=>'<button class="lk-rx'+(rxMine(m.id,k)?' my':'')+'" title="'+E(R[k].map(nameOfUid).join(', '))+'" onclick="event.stopPropagation();MAIL.react(\''+id+'\',\''+k+'\')">'+k+(R[k].length>1?'<b>'+R[k].length+'</b>':'')+'</button>').join('')+'</div>';}
+    h+='<div class="lk-m'+(mine?' me':'')+(first?' first':'')+(last?' last':'')+(!mine&&isMention(m)?' ment':'')+(big&&!qh?' big':'')+(CH.pin&&CH.pin.id===m.id?' pinned':'')+'" data-id="'+id+'">'
+      +(mine?'':'<div class="lk-av"'+(last?' onclick="MAIL.prof(\''+uid+'\')"':'')+'>'+(last?uav(m):'')+'</div>')
+      +'<div class="lk-bub" onclick="MAIL.menu(\''+id+'\')">'
+      +(!mine&&first?'<div class="lk-nm" style="color:hsl('+hueOf(m.username)+',85%,72%)" onclick="event.stopPropagation();MAIL.at(\''+q1(m.username)+'\',\''+uid+'\')">'+E(m.username)+(pr&&pr.role==='admin'?'<i class="adm">🛡️ админ</i>':'')+(m.boosty_level?'<i>'+E(m.boosty_level)+'</i>':'')+'</div>':'')
+      +qh+'<span class="lk-tx">'+fmt(m.message)+'</span>'+rh
+      +'<span class="lk-tm" title="'+E(d.toLocaleString('ru',TZ))+'">'+(m.edited_at?'изм. ':'')+tm+'</span></div></div>';
+  });
+  box.innerHTML=h;
+  if(miss.length)fetchExtra(miss);
+  if(!keep){
+    const u=$('lk-unr');
+    if(toBottom==='sep'&&u){u.scrollIntoView({block:'start'});sc.scrollTop=Math.max(0,sc.scrollTop-70);}
+    else if(toBottom||atBottom){sc.scrollTop=sc.scrollHeight;markSeen();CH.newCnt=0;}
+  }
+  pill();badge();
+}
+function pill(){const nb=$('lk-new');if(!nb)return;const sc=$('ml-body'),far=sc&&sc.scrollHeight-sc.scrollTop-sc.clientHeight>=90;nb.classList.toggle('on',!!far);nb.innerHTML=CH.newCnt>0?'↓ '+CH.newCnt+' '+plural(CH.newCnt,'новое','новых','новых'):'↓';nb.classList.toggle('cnt',CH.newCnt>0);}
+function chatUpdate(added){
+  seen();
+  if(M.on&&M.view==='chat'){
+    const sc=$('ml-body'),far=sc.scrollHeight-sc.scrollTop-sc.clientHeight>=90,me=cu()?cu().id:null;
+    if(added&&far)CH.newCnt+=added.filter(m=>!(me&&m.user_id===me)).length;
+    chatRender(false,far);loadAvs();
+  }
+  else if(M.on&&M.view==='list'&&M.box==='in')renderList('in');
+  badge();
+  if(added&&added.length&&!(M.on&&M.view==='chat')){const me=cu()?cu().id:null,oth=added.filter(m=>!me||m.user_id!==me);
+    if(oth.length){const mm=oth.find(isMention);if(mm)notify(0,0,false,'💬 @'+mm.username+' упомянул тебя в чате');else if(!chatMuted())ping();}}
+}
+function chatBottom(){const sc=$('ml-body');if(sc)sc.scrollTop=sc.scrollHeight;markSeen();CH.newCnt=0;pill();badge();}
+function jump(id){const go=()=>{const el=document.querySelector('.lk-m[data-id="'+(window.CSS&&CSS.escape?CSS.escape(id):id)+'"]');if(!el)return false;el.scrollIntoView({block:'center',behavior:'smooth'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');return true;};
+  if(go())return;if(!CH.more){toast('Это сообщение уже удалено');return;}
+  (async()=>{for(let k=0;k<4&&CH.more;k++){await loadOlder();if(go())return;}toast('Сообщение слишком старое');})();}
+function muted(){try{const r=getR();return !getBool(r.can_chat)&&!realAdm();}catch(e){return false;}}
+/* --- меню сообщения --- */
+function menu(id){
+  const m=byId(id);if(!m)return;CH.menuId=id;
+  const me=cu()?cu().id:null,mine=!!(me&&m.user_id===me),adm=realAdm(),canEdit=mine&&Date.now()-ts(m.created_at)<15*60e3,uid=E(m.user_id),nmq=q1(m.username),idq=E(id);
+  const it=(ic,t,fn,cls)=>'<button class="lk-mi'+(cls?' '+cls:'')+'" onclick="'+fn+'"><i>'+ic+'</i><span>'+t+'</span></button>';
+  let h='<div class="lk-mshade" onclick="MAIL.menuClose()"></div><div class="lk-msheet" role="menu"><div class="lk-mprev"><b style="color:hsl('+hueOf(m.username)+',85%,72%)">'+E(m.username)+'</b><span>'+E(snip(m.message,120))+'</span></div>';
+  if(cu())h+='<div class="lk-mrx">'+RX_LIST.map(e=>'<button class="'+(rxMine(id,e)?'my':'')+'" onclick="MAIL.react(\''+idq+'\',\''+e+'\',1)">'+e+'</button>').join('')+'</div>';
+  if(cu()&&!muted())h+=it('↩️','Ответить','MAIL.reply(\''+idq+'\')');
+  h+=it('📋','Скопировать текст','MAIL.copy(\''+idq+'\')');
+  if(cu()&&!mine&&!muted())h+=it('@','Упомянуть','MAIL.menuClose();MAIL.at(\''+nmq+'\',\''+uid+'\')');
+  if(!mine)h+=it('👤','Профиль @'+E(m.username),'MAIL.prof(\''+uid+'\')');
+  if(canEdit)h+=it('✏️','Изменить','MAIL.edit(\''+idq+'\')');
+  if(adm)h+=it('📌',CH.pin&&CH.pin.id===id?'Открепить':'Закрепить для всех','MAIL.pin(\''+idq+'\')');
+  if(mine||adm)h+=it('🗑️','Удалить','MAIL.menuClose();deleteChatMsg(\''+idq+'\')','red');
+  if(adm&&!mine)h+=it('🔇','Запретить писать в чат','MAIL.muteUser(\''+uid+'\',\''+nmq+'\')','red');
+  h+='<button class="lk-mi lk-mcancel" onclick="MAIL.menuClose()"><span>Отмена</span></button></div>';
+  const el=$('lk-menu');el.innerHTML=h;el.classList.add('on');
+}
+function menuClose(){const el=$('lk-menu');if(el){el.classList.remove('on');el.innerHTML='';}CH.menuId=null;}
+async function copy(id){menuClose();const m=byId(id);if(!m)return;try{await navigator.clipboard.writeText(m.message);toast('📋 Скопировано');}catch(e){try{const t=document.createElement('textarea');t.value=m.message;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();toast('📋 Скопировано');}catch(x){toast('Не получилось скопировать');}}}
+function reply(id){menuClose();const m=byId(id);if(!m)return;CH.edit=null;CH.reply=m;ctxBar();const ta=$('lk-input');if(ta)ta.focus();}
+function edit(id){menuClose();const m=byId(id);if(!m)return;CH.reply=null;CH.edit=m;ctxBar();const ta=$('lk-input');if(ta){ta.value=m.message;grow();ta.focus();}}
+function ctxCancel(){const wasEdit=!!CH.edit;CH.reply=null;CH.edit=null;ctxBar();if(wasEdit){const ta=$('lk-input');if(ta){ta.value=lsGet('lk_draft')||'';grow();}}}
+function ctxBar(){const c=$('lk-ctx');if(!c)return;const r=CH.reply,e=CH.edit;
+  if(!r&&!e){c.classList.remove('on');c.innerHTML='';return;}
+  c.innerHTML='<i>'+(e?'✏️':'↩️')+'</i><div><b>'+(e?'Редактирование':'Ответ '+E(r.username))+'</b><span>'+E(snip((e||r).message,80))+'</span></div><button onclick="MAIL.ctxCancel()" aria-label="Отменить">✕</button>';c.classList.add('on');}
+async function muteUser(uid,name){menuClose();if(!confirm('Запретить @'+name+' писать в общий чат? Снять запрет можно в «Юзеры» → «Ред.».'))return;
+  const{error}=await sb.from('user_restrictions').upsert({user_id:uid,can_chat:false,updated_at:new Date().toISOString()},{onConflict:'user_id'});toast(error?'⚠️ '+error.message:'🔇 @'+name+' больше не может писать в чат');}
+/* --- поле ввода --- */
+function chatBar(){
+  const bar=$('lk-bar');if(!bar)return;if(M.view!=='chat'){bar.classList.remove('on');bar.innerHTML='';return;}bar.classList.add('on');
+  if(!cu()){bar.innerHTML='<div class="lk-lock"><span>👀 Ты читаешь как гость.<br><small>Писать в общий чат могут только аккаунты.</small></span><button class="ml-btn" onclick="MAIL.close();openModal(\'auth-modal\')">🚀 Войти</button></div>';return;}
+  if(muted()){bar.innerHTML='<div class="lk-lock"><span>🔇 Тебе ограничили общий чат.<br><small>Если это ошибка — напиши администрации в почте.</small></span></div>';return;}
+  if(!$('lk-input')){bar.innerHTML='<div class="lk-ctx" id="lk-ctx"></div><div class="lk-ment" id="lk-ment"></div><div class="lk-emo" id="lk-emo">'+EMO.map(e=>'<button onmousedown="event.preventDefault()" onclick="MAIL.emoAdd(\''+e+'\')">'+e+'</button>').join('')+'</div>'
+    +'<div class="lk-in"><button class="lk-ebtn" onclick="MAIL.emo()" aria-label="Смайлики">😊</button><textarea id="lk-input" rows="1" maxlength="500" enterkeyhint="send" placeholder="Сообщение всей вселенной…"></textarea><button class="lk-send" onclick="sendChat()" aria-label="Отправить"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M3.4 20.4 21 12 3.4 3.6l.02 6.53L15 12 3.42 13.87z" fill="currentColor"/></svg></button></div><div class="lk-cntr" id="lk-cntr"></div>';
+    const ta=$('lk-input');ta.value=lsGet('lk_draft')||'';
+    ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();sendChat();}else if(e.key==='Escape'&&(CH.reply||CH.edit)){e.stopPropagation();ctxCancel();}});
+    ta.addEventListener('input',()=>{grow();if(!CH.edit)lsSet('lk_draft',ta.value);mentionSug();typingPing();const c=$('lk-cntr'),n=ta.value.length;if(c)c.textContent=n>400?n+' / 500':'';});
+    ta.addEventListener('click',mentionSug);setTimeout(grow,0);}
+  ctxBar();
+}
+function grow(){const ta=$('lk-input');if(!ta)return;ta.style.height='auto';ta.style.height=Math.min(120,ta.scrollHeight+2)+'px';}
+function emo(){const p=$('lk-emo');if(p)p.classList.toggle('on');}
+function emoAdd(e){const ta=$('lk-input');if(!ta)return;const s=ta.selectionStart!=null?ta.selectionStart:ta.value.length,en=ta.selectionEnd!=null?ta.selectionEnd:s;ta.value=ta.value.slice(0,s)+e+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+e.length;grow();if(!CH.edit)lsSet('lk_draft',ta.value);try{if(!matchMedia('(pointer:coarse)').matches)ta.focus();}catch(x){}}
+function mentionSug(){const ta=$('lk-input'),box=$('lk-ment');if(!ta||!box)return;const v=ta.value.slice(0,ta.selectionStart||0),m=/(^|\s)@([0-9A-Za-zА-Яа-яЁё_\-.]{0,32})$/.exec(v);
+  if(!m){box.classList.remove('on');box.innerHTML='';return;}
+  const q=m[2].toLowerCase(),me=myNick(),names=[];msgs().slice().reverse().forEach(x=>{const n=x.username;if(n&&n.toLowerCase()!==me&&!names.includes(n)&&n.toLowerCase().startsWith(q))names.push(n);});
+  const L=names.slice(0,6);if(!L.length){box.classList.remove('on');box.innerHTML='';return;}
+  box.innerHTML=L.map(n=>'<button onmousedown="event.preventDefault()" onclick="MAIL.mentPick(\''+q1(n)+'\')">'+uav({username:n,user_id:uidOf(n)})+'<span>@'+E(n)+'</span></button>').join('');box.classList.add('on');}
+function mentPick(n){const ta=$('lk-input');if(!ta)return;const pos=ta.selectionStart||0,v=ta.value,before=v.slice(0,pos).replace(/@([0-9A-Za-zА-Яа-яЁё_\-.]{0,32})$/,'@'+n+' ');ta.value=before+v.slice(pos);ta.focus();ta.selectionStart=ta.selectionEnd=before.length;grow();mentionSug();if(!CH.edit)lsSet('lk_draft',ta.value);}
+function chatErr(e){const t=String((e&&e.message)||e||'');return /too_fast/.test(t)?'⏳ Не так быстро — подожди секунду':/chat_muted/.test(t)?'❌ Тебе ограничили чат':/edit_late/.test(t)?'⏳ Изменить можно только в первые 15 минут':/banned/.test(t)?'🚫 Аккаунт заблокирован':/row-level|policy|not_yours/i.test(t)?'🔒 Так нельзя':'Ошибка: '+t;}
+async function chatSend(){
+  if(!cu()){toast('🔒 Писать в общий чат могут только аккаунты');return;}
+  if(muted()){toast('❌ Тебе ограничили чат');return;}
+  const ta=$('lk-input');if(!ta)return;const msg=ta.value.trim();if(!msg)return;
+  if(msg.length>500){toast('✏️ Слишком длинно — до 500 символов');return;}
+  const box=$('lk-ment');if(box){box.classList.remove('on');box.innerHTML='';}const ep=$('lk-emo');if(ep)ep.classList.remove('on');
+  if(CH.edit){const id=CH.edit.id;if(msg===CH.edit.message){ctxCancel();return;}
+    const{data,error}=await sb.from('chat_messages').update({message:msg}).eq('id',id).select().single();
+    if(error){toast(chatErr(error));return;}
+    if(data){const L=msgs(),i=L.findIndex(x=>x.id===id);if(i>=0)L[i]=Object.assign({},L[i],data);}
+    CH.edit=null;ta.value=lsGet('lk_draft')||'';grow();ctxBar();chatUpdate(null);toast('✏️ Сообщение изменено');return;}
+  const rep=CH.reply?CH.reply.id:null;ta.value='';grow();lsSet('lk_draft','');const c=$('lk-cntr');if(c)c.textContent='';
+  const row={user_id:cu().id,username:cp().username,boosty_level:cp().boosty_level||null,message:msg};if(rep)row.reply_to=rep;
+  const{data,error}=await sb.from('chat_messages').insert(row).select().single();
+  if(error){ta.value=msg;grow();toast(chatErr(error));return;}
+  CH.reply=null;ctxBar();CH.lastTyping=0;
+  if(data&&!byId(data.id))addMsgs([data]);chatRender(true);
+}
+async function chatDelete(id){if(!confirm('Удалить сообщение?'))return;const{error}=await sb.from('chat_messages').delete().eq('id',id);if(error){toast('❌ '+error.message);return;}setMsgs(msgs().filter(m=>m.id!==id));delete CH.rx[id];if(CH.pin&&CH.pin.id===id)CH.pin=null;chatUpdate(null);}
+/* --- кто в чате и кто печатает --- */
+function roomJoin(){if(CH.room)return;try{const key=cu()?'u:'+cu().id:'v:'+(gid()||Math.random().toString(36).slice(2));
+  CH.room=sb.channel('chat-room',{config:{presence:{key}}});
+  CH.room.on('presence',{event:'sync'},()=>{try{CH.online=Object.keys(CH.room.presenceState()||{}).length;}catch(e){}chatSub();})
+    .on('broadcast',{event:'typing'},p=>{const d=p&&p.payload;if(!d||!d.n||(cu()&&d.u===cu().id))return;CH.typing[d.n]=Date.now()+4000;chatSub();setTimeout(chatSub,4200);})
+    .subscribe(st=>{if(st==='SUBSCRIBED'){try{CH.room.track({n:cu()&&cp()?cp().username:null});}catch(e){}}});
+}catch(e){CH.room=null;}}
+function roomLeave(){const r=CH.room;if(!r)return;CH.room=null;CH.online=0;CH.typing={};try{r.untrack();}catch(e){}try{if(sb.removeChannel)sb.removeChannel(r);else r.unsubscribe();}catch(e){}}
+function typingPing(){if(!cu()||!cp()||!CH.room)return;const n=Date.now();if(n-CH.lastTyping<2500)return;CH.lastTyping=n;try{CH.room.send({type:'broadcast',event:'typing',payload:{n:cp().username,u:cu().id}});}catch(e){}}
+function chatSub(){const s=$('lk-sub');if(!s)return;const now=Date.now(),t=Object.keys(CH.typing).filter(k=>CH.typing[k]>now);
+  if(t.length){s.innerHTML='<span class="lk-typing"><i></i><i></i><i></i></span>'+E(t.length===1?t[0]+' печатает…':t.slice(0,2).join(', ')+(t.length>2?' и ещё '+(t.length-2):'')+' печатают…');s.classList.add('ty');return;}
+  s.classList.remove('ty');s.textContent=CH.online>1?'👀 '+CH.online+' сейчас в чате':(cu()?'вся вселенная на связи':'ты читаешь как гость');}
+function chatUI(){if(M.on&&M.view==='chat'){const bar=$('lk-bar');if(bar)bar.innerHTML='';chatBar();chatRender(false,true);chatSub();}badge();}
+function at(name,uid){const ta=$('lk-input');if(cu()&&ta&&!muted()){const v=ta.value;ta.value=(v&&!/\s$/.test(v)?v+' ':v)+'@'+name+' ';ta.focus();grow();if(!CH.edit)lsSet('lk_draft',ta.value);}else prof(uid);}
+function prof(uid){menuClose();try{if(typeof openProfileModal==='function'){close();openProfileModal(uid);}}catch(e){}}
+/* окно не прячется под клавиатурой телефона */
+function vvFit(){const w=$('ml-win'),v=window.visualViewport;if(!w)return;if(!v||!M.on){w.style.height='';w.style.top='';return;}w.style.top=v.offsetTop+'px';w.style.height=v.height+'px';}
+if(window.visualViewport){visualViewport.addEventListener('resize',()=>{if(M.on){vvFit();if(M.view==='chat'&&document.activeElement&&document.activeElement.id==='lk-input')chatBottom();}});visualViewport.addEventListener('scroll',()=>{if(M.on)vvFit();});}
+setTimeout(()=>{const sc=$('ml-body');if(sc)sc.addEventListener('scroll',()=>{if(M.view!=='chat')return;if(sc.scrollTop<60&&CH.more&&!CH.loadingOld)loadOlder();if(sc.scrollHeight-sc.scrollTop-sc.clientHeight<90){if(CH.newCnt||chatUnread()){markSeen();CH.newCnt=0;badge();}}pill();},{passive:true});},0);
 /* ---------- написать ---------- */
-function compose(to,reply){M.cur=null;M.reply=reply||null;if(to!=null&&!reply)M.to=to;M.box='new';tabs();renderCompose();}
+function compose(to,reply){leaveChat();M.view='compose';M.cur=null;M.reply=reply||null;if(to!=null&&!reply)M.to=to;M.box='new';tabs();renderCompose();}
 let mlSugT=null,mlSug=[];
 function sug(v){clearTimeout(mlSugT);mlSugT=setTimeout(async()=>{const q=String(v||'').trim().replace(/^@/,''),el=$('ml-sug');if(!el)return;if(!q){el.innerHTML='';return;}
   try{mlSug=(await rpc('mail_find',{p_guest:gid(),p_q:q}))||[];const e2=$('ml-sug');if(!e2||String(M.toName||'').trim().replace(/^@/,'')!==q)return;
@@ -12945,7 +13167,7 @@ async function send(){
     toast(r&&r.to==='admin'?'📨 Письмо отправлено администрации':'📨 Письмо отправлено');tab('out');
   }catch(e){toast('⚠️ '+em(e));if(btn){btn.disabled=false;btn.textContent='📨 Отправить';}}
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&M.on)close();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&M.on){if(CH.menuId)menuClose();else close();}});
 
 /* =================== АДМИНКА: почта / подарки / досье =================== */
 const A=M.a;
@@ -13127,7 +13349,8 @@ async function aZero(gold,tk){const d=A.dos;if(!d)return;const isU=d.kind==='use
   try{await rpc('adm_player_set',{p_user:isU?d.id:null,p_guest:isU?null:d.id,p_gold:gold?0:null,p_tickets:tk?0:null,p_blue:null});toast('🧹 Обнулено');aDos(isU?d.id:null,isU?null:d.id);}catch(e){toast('⚠️ '+em(e));}}
 function aEdit(id){try{const p=A.dos&&A.dos.profile;if(p&&typeof usersCache!=='undefined'&&!usersCache.find(u=>u.id===id))usersCache.push(p);openEditUser(id);}catch(e){toast('⚠️ '+em(e));}}
 
-return {open,close,tab,read,back,more,claim,del,compose,setTo,send,cnt,poll,badge,sug,pick,
+return {open,close,tab,read,back,more,claim,del,compose,setTo,send,cnt,poll,badge,sug,pick,chat:chatOpen,chatUpdate,chatUI,chatBottom,grow,at,prof,
+  chatInit,chatRefresh,chatSend,chatDelete,older:loadOlder,jump,menu,menuClose,react,copy,reply,edit,ctxCancel,pin,muteUser,muteToggle,emo,emoAdd,mentPick,
   aOpen,aTab,aSearch,aMore,aRead,aReply,aStatus,aDel,aGiftDraw,aCat,aItem,aCompose,aKind,aSug,aPick,aSend,aWrite,aFindView,aFind,aDos,aBal,aBalSave,aZero,aEdit,_S:M};
 })();
 </script>
@@ -13342,22 +13565,264 @@ async function clZero(i,gold,tk){
   showToast('🧹 Обнулено у '+p.name+(data&&data.gold_was!=null&&gold?' (было ✨ '+data.gold_was+')':''));
 }
 </script>
+<style id="link-css">
+/* ===== 💬✉️ кнопка «Чат и почта»: космическая сфера с орбитой ===== */
+#comm-btn.lk-fab{position:relative;width:50px;height:50px;padding:0;margin:0;border:none;border-radius:50%;cursor:pointer;background:none;display:flex;align-items:center;justify-content:center;flex:0 0 auto;-webkit-tap-highlight-color:transparent;transition:transform .2s,opacity .2s}
+.lk-fab:hover{transform:scale(1.07)}
+.lk-fab:active{transform:scale(.94)}
+.lk-orb{position:absolute;inset:0;border-radius:50%;overflow:hidden;
+  background:radial-gradient(circle at 32% 26%,#9d8cff 0%,#5b47e0 26%,#24198a 55%,#0a0b33 82%,#050616 100%);
+  box-shadow:0 0 0 1px rgba(165,180,252,.35),0 6px 18px rgba(0,0,0,.55),0 0 22px rgba(99,102,241,.5),inset 0 -8px 14px rgba(34,211,238,.3),inset 0 5px 10px rgba(255,255,255,.14)}
+.lk-orb::before{content:'';position:absolute;inset:0;border-radius:50%;padding:2px;
+  background:conic-gradient(from 0deg,transparent 0 12%,#22d3ee 28%,transparent 44% 58%,#e879f9 74%,transparent 90%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:lkSpin 7s linear infinite}
+.lk-orb::after{content:'';position:absolute;inset:0;border-radius:50%;opacity:.75;
+  background:radial-gradient(1px 1px at 22% 70%,#fff,transparent),radial-gradient(1px 1px at 76% 28%,#fff,transparent),radial-gradient(1.3px 1.3px at 64% 80%,rgba(255,255,255,.85),transparent),radial-gradient(1px 1px at 38% 18%,rgba(255,255,255,.7),transparent),radial-gradient(90% 60% at 50% 110%,rgba(34,211,238,.35),transparent 70%)}
+@keyframes lkSpin{to{transform:rotate(360deg)}}
+.lk-orbit{position:absolute;left:50%;top:50%;width:0;height:0;transform:rotate(-24deg);pointer-events:none;z-index:3}
+.lk-orbit::before{content:'';position:absolute;left:-34px;top:-11px;width:68px;height:22px;box-sizing:border-box;border-radius:50%;border:1px solid rgba(165,243,252,.28)}
+.lk-sx{position:absolute;left:0;top:0;animation:lkOx 3.4s cubic-bezier(.37,0,.63,1) infinite alternate}
+.lk-sx i{position:absolute;display:block;width:6px;height:6px;left:-3px;top:-3px;border-radius:50%;background:radial-gradient(circle,#fff 0,#a5f3fc 55%,#22d3ee 100%);box-shadow:0 0 6px #22d3ee,0 0 12px rgba(34,211,238,.8);animation:lkOy 3.4s cubic-bezier(.37,0,.63,1) -1.7s infinite alternate}
+@keyframes lkOx{from{transform:translateX(-34px)}to{transform:translateX(34px)}}
+@keyframes lkOy{from{transform:translateY(-11px) scale(.65);opacity:.65}to{transform:translateY(11px) scale(1.15);opacity:1}}
+.lk-ico{position:relative;z-index:2;width:32px;height:32px;overflow:visible;pointer-events:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.45))}
+.lk-ico .lk-bb{fill:url(#lkgB)}
+.lk-ico .lk-dots circle{fill:#4f46e5;transform-box:fill-box;transform-origin:center}
+.lk-ico .lk-env{transform-box:fill-box;transform-origin:50% 100%;transition:transform .45s cubic-bezier(.3,1.6,.5,1)}
+.lk-ico .lk-env rect{fill:rgba(224,231,255,.55);stroke:rgba(255,255,255,.75);stroke-width:1}
+.lk-ico .lk-env path{fill:none;stroke:rgba(79,70,229,.8);stroke-width:1.2;stroke-linejoin:round}
+.lk-fab.mail .lk-env{transform:translate(1px,-3px) rotate(12deg);animation:lkEnv 2.4s ease-in-out .5s infinite}
+.lk-fab.mail .lk-env rect{fill:url(#lkgE);stroke:#fff7d6}
+.lk-fab.mail .lk-env path{stroke:#92400e}
+@keyframes lkEnv{0%,100%{transform:translate(1px,-3px) rotate(12deg)}50%{transform:translate(1px,-5px) rotate(4deg)}}
+.lk-fab.chat .lk-dots circle{animation:lkDot 1.2s ease-in-out infinite}
+.lk-fab.chat .lk-dots circle:nth-child(2){animation-delay:.15s}
+.lk-fab.chat .lk-dots circle:nth-child(3){animation-delay:.3s}
+@keyframes lkDot{0%,60%,100%{transform:translateY(0);fill:#4f46e5}30%{transform:translateY(-2.6px);fill:#0891b2}}
+.lk-fab::before{content:'';position:absolute;inset:-2px;border-radius:50%;border:2px solid transparent;opacity:0;pointer-events:none;z-index:0}
+.lk-fab.chat::before{border-color:#22d3ee;animation:lkPulse 2.4s ease-out infinite}
+.lk-fab.mail::before{border-color:#fbbf24;animation:lkPulse 2s ease-out infinite}
+@keyframes lkPulse{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.6)}}
+.lk-fab.ping{animation:lkBump .8s cubic-bezier(.3,1.6,.5,1)}
+@keyframes lkBump{0%{transform:scale(1)}25%{transform:scale(1.28) rotate(-10deg)}55%{transform:scale(.94) rotate(6deg)}80%{transform:scale(1.05) rotate(-2deg)}100%{transform:scale(1)}}
+.lk-b{position:absolute;top:-6px;min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:9px;font:800 10.5px/18px system-ui,sans-serif;text-align:center;color:#fff;display:none;z-index:5;pointer-events:none}
+.lk-b.on{display:block;animation:lkBadge .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes lkBadge{0%{transform:scale(0)}100%{transform:scale(1)}}
+#lk-badge-chat{left:-6px;background:#06b6d4;color:#00262e;box-shadow:0 0 0 2px #060a14,0 0 8px rgba(34,211,238,.75)}
+#mail-badge.lk-bm{right:-6px;background:#ef4444;box-shadow:0 0 0 2px #060a14,0 0 8px rgba(239,68,68,.75)}
+#mail-badge.lk-bm.gift{background:#f59e0b;box-shadow:0 0 0 2px #060a14,0 0 8px rgba(245,158,11,.8)}
+#comm-btn .ml-bub{position:absolute;right:calc(100% + 12px);top:50%;transform:translateY(-50%) scale(.5);transform-origin:right center;opacity:0;pointer-events:none;white-space:nowrap;z-index:6;
+  padding:8px 12px;border-radius:13px;font:800 12.5px/1.2 system-ui,sans-serif;color:#1c1003;background:linear-gradient(135deg,#fef08a,#fbbf24);
+  box-shadow:0 6px 20px rgba(0,0,0,.45),0 0 16px rgba(251,191,36,.5);transition:opacity .25s,transform .4s cubic-bezier(.3,1.6,.5,1)}
+#comm-btn .ml-bub::after{content:'';position:absolute;right:-6px;top:50%;margin-top:-6px;border:6px solid transparent;border-right:0;border-left-color:#fbbf24}
+#comm-btn .ml-bub.show{opacity:1;transform:translateY(-50%) scale(1);pointer-events:auto}
+@media (prefers-reduced-motion:reduce){.lk-orb::before,.lk-sx,.lk-sx i,.lk-fab::before,.lk-fab .lk-env,.lk-dots circle{animation:none!important}}
+/* ===== окно: заголовок ===== */
+.lk-logo{width:22px;height:22px;flex:0 0 auto;border-radius:50%;background:radial-gradient(circle at 32% 26%,#9d8cff,#3b2fb5 50%,#0a0b33);box-shadow:0 0 10px rgba(99,102,241,.6);position:relative}
+.lk-logo::after{content:'';position:absolute;left:-4px;right:-4px;top:8px;height:6px;border-radius:50%;border:1px solid rgba(165,243,252,.55);transform:rotate(-20deg)}
+/* закреплённый общий чат во входящих */
+.ml-row.lk-pin{background:linear-gradient(100deg,rgba(99,102,241,.16),rgba(34,211,238,.06));border-color:rgba(129,140,248,.35)}
+.ml-row.lk-pin.unread{border-color:rgba(34,211,238,.6);box-shadow:0 0 14px rgba(34,211,238,.12)}
+.lk-pin-nm{color:#a5b4fc;font-weight:700}
+.lk-gav{width:40px;height:40px;flex:0 0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;background:radial-gradient(circle at 32% 26%,#9d8cff,#3b2fb5 48%,#0a0b33);box-shadow:0 0 12px rgba(99,102,241,.5),inset 0 -4px 8px rgba(34,211,238,.3)}
+.ml-row .lk-gav{width:38px;height:38px;font-size:18px}
+.lk-cnt{align-self:center;flex:0 0 auto;min-width:22px;height:22px;padding:0 6px;box-sizing:border-box;border-radius:11px;background:#06b6d4;color:#00262e;font-weight:800;font-size:11.5px;line-height:22px;text-align:center;box-shadow:0 0 8px rgba(34,211,238,.5)}
+/* ===== переписка общего чата ===== */
+.ml-body.lk-chatv{padding:0;display:flex;flex-direction:column}
+.lk-top{position:sticky;top:0;z-index:4;background:#0b0e22;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.07)}
+.lk-ch{display:flex;align-items:center;gap:10px;padding:9px 10px 9px 12px}
+.lk-ct{flex:1}
+.lk-hb{all:unset;cursor:pointer;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex:0 0 auto}
+.lk-hb:hover{background:rgba(255,255,255,.08)}
+.lk-ct small.ty{color:#67e8f9}
+.lk-typing{display:inline-flex;gap:2px;margin-right:5px;vertical-align:middle}
+.lk-typing i{width:4px;height:4px;border-radius:50%;background:#67e8f9;animation:lkTy 1.1s ease-in-out infinite}
+.lk-typing i:nth-child(2){animation-delay:.15s}.lk-typing i:nth-child(3){animation-delay:.3s}
+@keyframes lkTy{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-3px);opacity:1}}
+.lk-pinbar{display:flex;align-items:center;gap:9px;margin:0 10px 8px;padding:7px 10px;border-radius:12px;cursor:pointer;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.35)}
+.lk-pinbar>i{font-style:normal;font-size:15px}
+.lk-pinbar>div{flex:1;min-width:0;font-size:12px;line-height:1.3}
+.lk-pinbar b{display:block;color:#fcd34d;font-size:11px}
+.lk-pinbar span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e2e8f0}
+.lk-pinbar button{all:unset;cursor:pointer;padding:4px 6px;color:#94a3b8;font-size:13px}
+.lk-older{all:unset;cursor:pointer;align-self:center;margin:8px 0 4px;padding:6px 14px;border-radius:14px;font-size:12px;font-weight:700;color:#a5b4fc;background:rgba(99,102,241,.12);border:1px solid rgba(129,140,248,.3)}
+.lk-start{align-self:center;margin:10px 0 4px;font-size:11.5px;color:var(--text-dim,#94a3b8)}
+.lk-unr{display:flex;align-items:center;gap:8px;margin:12px 0 4px;color:#67e8f9;font-size:11.5px;font-weight:800}
+.lk-unr::before,.lk-unr::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(34,211,238,.6),transparent)}
+.lk-q{display:block;margin:2px 0 5px;padding:4px 8px;border-left:3px solid rgba(165,180,252,.8);border-radius:4px 8px 8px 4px;background:rgba(0,0,0,.22);cursor:pointer;font-size:12px;line-height:1.3;white-space:normal}
+.lk-q b{display:block;font-size:11.5px;color:#c7d2fe}
+.lk-q span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.85;max-width:240px}
+.lk-m.me .lk-q{background:rgba(0,0,0,.2);border-left-color:rgba(255,255,255,.8)}
+.lk-m.me .lk-q b{color:#fff!important}
+.lk-rxs{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;white-space:normal}
+.lk-rx{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:12px;font-size:13px;line-height:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.lk-rx b{font-size:11px;font-weight:800;color:#e2e8f0}
+.lk-rx.my{background:rgba(34,211,238,.18);border-color:rgba(34,211,238,.6)}
+.lk-m.me .lk-rx{background:rgba(0,0,0,.2);border-color:rgba(255,255,255,.25)}
+.lk-m.me .lk-rx.my{background:rgba(255,255,255,.28);border-color:#fff}
+.lk-m.big .lk-bub{background:none!important;border:none!important;box-shadow:none!important;padding:2px 4px}
+.lk-m.big .lk-tx{font-size:38px;line-height:1.15}
+.lk-m.big .lk-tm{float:none;display:block;text-align:right;margin:0}
+.lk-m.pinned .lk-bub{outline:1px dashed rgba(251,191,36,.6);outline-offset:2px}
+.lk-m.flash .lk-bub{animation:lkFlash 1.6s ease-out}
+@keyframes lkFlash{0%,30%{box-shadow:0 0 0 3px rgba(34,211,238,.8),0 0 20px rgba(34,211,238,.6)}100%{box-shadow:none}}
+.lk-link{color:#7dd3fc;text-decoration:underline;word-break:break-all}
+.lk-m.me .lk-link{color:#fff}
+.lk-new.cnt{padding:8px 14px}
+.lk-menu{position:absolute;inset:0;z-index:20;display:none;align-items:flex-end;justify-content:center}
+.lk-menu.on{display:flex}
+.lk-mshade{position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(2px);animation:lkFade .2s}
+.lk-msheet{position:relative;width:100%;max-width:440px;margin:0 8px calc(8px + env(safe-area-inset-bottom,0px));padding:10px;border-radius:18px;box-sizing:border-box;background:linear-gradient(180deg,#141a36,#0a0d22);border:1px solid rgba(129,140,248,.35);box-shadow:0 -10px 40px rgba(0,0,0,.6);animation:lkUp .25s cubic-bezier(.2,1.2,.4,1)}
+@keyframes lkUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@keyframes lkFade{from{opacity:0}}
+.lk-mprev{padding:4px 6px 10px;font-size:12.5px;line-height:1.35;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:8px}
+.lk-mprev b{display:block;font-size:12px}
+.lk-mprev span{color:#cbd5e1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lk-mrx{display:flex;justify-content:space-between;gap:4px;padding:2px 2px 10px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:6px}
+.lk-mrx button{all:unset;cursor:pointer;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;transition:transform .15s,background .15s}
+.lk-mrx button:hover,.lk-mrx button:active{transform:scale(1.25);background:rgba(255,255,255,.08)}
+.lk-mrx button.my{background:rgba(34,211,238,.2);box-shadow:0 0 0 1px rgba(34,211,238,.6)}
+.lk-mi{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;padding:11px 10px;border-radius:11px;font-size:14px;color:#e2e8f0}
+.lk-mi:hover{background:rgba(255,255,255,.06)}
+.lk-mi i{font-style:normal;width:22px;text-align:center;font-size:16px;font-weight:800;color:#a5b4fc}
+.lk-mi.red{color:#fca5a5}
+.lk-mcancel{justify-content:center;margin-top:4px;background:rgba(255,255,255,.05);font-weight:700}
+.lk-ctx{display:none;align-items:center;gap:9px;margin:0 0 8px;padding:6px 8px 6px 10px;border-left:3px solid #818cf8;border-radius:4px 10px 10px 4px;background:rgba(99,102,241,.12);font-size:12px;line-height:1.3}
+.lk-ctx.on{display:flex}
+.lk-ctx>i{font-style:normal;font-size:15px}
+.lk-ctx>div{flex:1;min-width:0}
+.lk-ctx b{display:block;color:#c7d2fe}
+.lk-ctx span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#cbd5e1}
+.lk-ctx button{all:unset;cursor:pointer;padding:4px 8px;color:#94a3b8}
+.lk-ment{display:none;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.lk-ment.on{display:flex}
+.lk-ment button{all:unset;cursor:pointer;display:flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:16px;font-size:12.5px;font-weight:700;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.lk-ment .lk-a{width:24px;height:24px;font-size:11px}
+.lk-emo{display:none;grid-template-columns:repeat(10,1fr);gap:2px;margin:0 0 8px;padding:6px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);max-height:150px;overflow-y:auto}
+.lk-emo.on{display:grid}
+.lk-emo button{all:unset;cursor:pointer;font-size:21px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:8px}
+.lk-emo button:hover{background:rgba(255,255,255,.1)}
+.lk-ebtn{all:unset;cursor:pointer;flex:0 0 auto;width:38px;height:42px;display:flex;align-items:center;justify-content:center;font-size:21px;opacity:.85}
+.lk-cntr{text-align:right;font-size:10.5px;color:#fca5a5;margin-top:3px}
+.lk-cntr:empty{display:none}
+@media (max-width:420px){.lk-emo{grid-template-columns:repeat(8,1fr)}}
+.lk-ch .ml-back{padding:4px 8px 4px 2px;font-size:20px;line-height:1}
+.lk-ct{min-width:0}.lk-ct b{display:block;font-size:14.5px}.lk-ct small{display:block;color:var(--text-dim,#94a3b8);font-size:11px;margin-top:1px}
+.lk-msgs{flex:1;padding:6px 10px 14px;display:flex;flex-direction:column;gap:2px}
+.lk-day{text-align:center;margin:12px 0 6px}
+.lk-day span{display:inline-block;font-size:11px;font-weight:700;padding:3px 11px;border-radius:11px;background:rgba(255,255,255,.07);color:var(--text-dim,#94a3b8)}
+.lk-m{display:flex;align-items:flex-end;gap:6px}
+.lk-m.first{margin-top:7px}
+.lk-m.me{justify-content:flex-end}
+.lk-av{width:30px;height:30px;flex:0 0 30px;cursor:pointer}
+.lk-a{width:30px;height:30px;border-radius:50%;object-fit:cover;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;background:#334155;box-shadow:0 0 0 1px rgba(255,255,255,.15)}
+.lk-bub{position:relative;max-width:78%;padding:7px 11px 6px;border-radius:17px;font-size:13.5px;line-height:1.42;color:#e8edf7;word-break:break-word;white-space:pre-wrap;cursor:default;
+  background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.06)}
+.lk-m:not(.me) .lk-bub{border-top-left-radius:6px;border-bottom-left-radius:6px}
+.lk-m:not(.me).first .lk-bub{border-top-left-radius:17px}
+.lk-m:not(.me).last .lk-bub{border-bottom-left-radius:4px}
+.lk-m.me .lk-bub{background:linear-gradient(135deg,#4f46e5,#0e7490);border-color:rgba(165,243,252,.15);color:#fff;border-top-right-radius:6px;border-bottom-right-radius:6px;box-shadow:0 2px 10px rgba(79,70,229,.25)}
+.lk-m.me.first .lk-bub{border-top-right-radius:17px}
+.lk-m.me.last .lk-bub{border-bottom-right-radius:4px}
+.lk-m.ment .lk-bub{box-shadow:0 0 0 1px rgba(251,191,36,.65),0 0 14px rgba(251,191,36,.22)}
+.lk-nm{font-size:12px;font-weight:800;margin-bottom:1px;cursor:pointer;white-space:normal}
+.lk-nm i{font-style:normal;font-size:9.5px;font-weight:700;margin-left:6px;padding:1px 6px;border-radius:8px;background:rgba(245,158,11,.15);color:#fbbf24;vertical-align:1px}
+.lk-nm i.adm{background:rgba(239,68,68,.15);color:#fca5a5}
+.lk-tm{float:right;font-size:10px;opacity:.55;margin:7px 0 -3px 10px;white-space:nowrap;user-select:none}
+.lk-at{color:#67e8f9;font-weight:700}
+.lk-at.lk-atme{color:#fde047}
+.lk-m.me .lk-at{color:#fff;text-decoration:underline}
+.lk-del{display:none;position:absolute;top:-9px;right:-7px;width:22px;height:22px;padding:0;border-radius:50%;border:2px solid #0b0e22;background:#ef4444;color:#fff;font-size:10px;cursor:pointer;align-items:center;justify-content:center}
+.lk-m.sel .lk-del{display:flex}
+@media (hover:hover){.lk-bub:hover .lk-del{display:flex}}
+.lk-new{position:sticky;bottom:10px;align-self:center;display:none;margin-top:-40px;padding:8px 14px;border-radius:18px;border:none;cursor:pointer;font-weight:800;font-size:12px;color:#00262e;background:#22d3ee;box-shadow:0 4px 16px rgba(0,0,0,.45),0 0 12px rgba(34,211,238,.5);z-index:3}
+.lk-new.on{display:block}
+.lk-bar{flex:0 0 auto;display:none;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(255,255,255,.08);background:rgba(6,8,22,.92)}
+.lk-bar.on{display:block}
+.lk-in{display:flex;align-items:flex-end;gap:8px}
+.lk-in textarea{flex:1;box-sizing:border-box;resize:none;min-height:42px;max-height:110px;padding:10px 15px;border-radius:21px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#fff;font:inherit;font-size:14.5px;line-height:1.4;outline:none}
+.lk-in textarea:focus{border-color:rgba(34,211,238,.6);box-shadow:0 0 0 3px rgba(34,211,238,.12)}
+.lk-send{flex:0 0 auto;width:42px;height:42px;padding:0;border-radius:50%;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#6366f1,#06b6d4);box-shadow:0 4px 14px rgba(34,211,238,.35);transition:transform .15s}
+.lk-send:active{transform:scale(.9)}
+.lk-lock{display:flex;align-items:center;gap:10px;font-size:12.5px;color:#cbd5e1;line-height:1.4}
+.lk-lock span{flex:1}.lk-lock small{color:var(--text-dim,#94a3b8)}
+.lk-lock .ml-btn{width:auto;margin:0;padding:10px 16px;flex:0 0 auto}
+/* ===== прорыв бога: та же кнопка и чат в чёрно-белом ===== */
+html.god-theme .lk-orb{background:radial-gradient(circle at 50% 38%,#15121f 0%,#06050c 62%,#000 100%);box-shadow:0 0 0 1.5px #fff,0 0 16px rgba(255,255,255,.45),0 6px 18px #000,inset 0 0 14px rgba(255,255,255,.1)}
+html.god-theme .lk-orb::before{background:conic-gradient(from 0deg,transparent 0 18%,#fff 32%,transparent 46% 64%,rgba(255,255,255,.55) 80%,transparent 94%)}
+html.god-theme .lk-orb::after{opacity:.45;background:radial-gradient(1px 1px at 22% 70%,#fff,transparent),radial-gradient(1px 1px at 76% 28%,#fff,transparent),radial-gradient(1.3px 1.3px at 64% 80%,#fff,transparent)}
+html.god-theme .lk-orbit::before{border:1px dashed rgba(255,255,255,.5)}
+html.god-theme .lk-sx i{background:#fff;box-shadow:0 0 8px #fff,0 0 16px rgba(255,255,255,.75)}
+html.god-theme .lk-ico .lk-bb{fill:#000;stroke:#fff;stroke-width:1.7}
+html.god-theme .lk-ico .lk-dots circle{fill:#fff}
+html.god-theme .lk-fab.chat .lk-dots circle{animation-name:gdLkDot}
+@keyframes gdLkDot{0%,60%,100%{transform:translateY(0);fill:#fff}30%{transform:translateY(-2.6px);fill:#bdb8dc}}
+html.god-theme .lk-ico .lk-env rect{fill:#000;stroke:#fff}
+html.god-theme .lk-ico .lk-env path{stroke:#fff}
+html.god-theme .lk-fab.mail .lk-env rect{fill:#fff;stroke:#fff}
+html.god-theme .lk-fab.mail .lk-env path{stroke:#000}
+html.god-theme .lk-fab.chat::before,html.god-theme .lk-fab.mail::before{border-color:#fff}
+html.god-theme #lk-badge-chat,html.god-theme #mail-badge.lk-bm,html.god-theme #mail-badge.lk-bm.gift{background:#fff;color:#000;box-shadow:0 0 0 2px #000,0 0 10px rgba(255,255,255,.9)}
+html.god-theme #comm-btn .ml-bub{background:#000;color:#fff;border:1px solid #fff;font-family:'Pixelify Sans',system-ui,sans-serif;font-weight:600;letter-spacing:.04em;text-shadow:0 0 6px rgba(255,255,255,.6);box-shadow:0 0 18px rgba(255,255,255,.35),0 6px 20px #000}
+html.god-theme #comm-btn .ml-bub::after{border-left-color:#fff}
+html.god-theme .lk-logo,html.god-theme .lk-gav{background:radial-gradient(circle at 50% 40%,#15121f,#000 70%);box-shadow:0 0 0 1px #fff,0 0 12px rgba(255,255,255,.4)}
+html.god-theme .lk-logo::after{border-color:rgba(255,255,255,.7);border-style:dashed}
+html.god-theme .ml-row.lk-pin{background:linear-gradient(100deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border-color:rgba(255,255,255,.4)}
+html.god-theme .ml-row.lk-pin.unread{border-color:#fff;box-shadow:0 0 14px rgba(255,255,255,.15)}
+html.god-theme .lk-pin-nm{color:#fff}
+html.god-theme .lk-cnt{background:#fff;color:#000;box-shadow:0 0 8px rgba(255,255,255,.6)}
+html.god-theme .lk-top{background:#000;border-bottom-color:rgba(255,255,255,.18)}
+html.god-theme .lk-pinbar{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.45)}
+html.god-theme .lk-pinbar b{color:#fff;font-family:'Pixelify Sans',system-ui,sans-serif;letter-spacing:.05em}
+html.god-theme .lk-older{background:#000;border-color:rgba(255,255,255,.4);color:#fff}
+html.god-theme .lk-unr{color:#fff;font-family:'Pixelify Sans',system-ui,sans-serif;letter-spacing:.08em}
+html.god-theme .lk-unr::before,html.god-theme .lk-unr::after{background:linear-gradient(90deg,transparent,#fff,transparent)}
+html.god-theme .lk-q{background:rgba(255,255,255,.06);border-left-color:#fff}
+html.god-theme .lk-q b{color:#fff!important}
+html.god-theme .lk-m.me .lk-q{background:rgba(0,0,0,.08);border-left-color:#000}
+html.god-theme .lk-m.me .lk-q b{color:#000!important}
+html.god-theme .lk-rx{background:#000;border-color:rgba(255,255,255,.3)}
+html.god-theme .lk-rx.my{background:#fff;border-color:#fff}
+html.god-theme .lk-rx.my b{color:#000}
+html.god-theme .lk-m.me .lk-rx{background:rgba(0,0,0,.08);border-color:rgba(0,0,0,.3)}
+html.god-theme .lk-m.me .lk-rx b{color:#000}
+html.god-theme .lk-link{color:#fff}
+html.god-theme .lk-m.me .lk-link{color:#000}
+html.god-theme .lk-msheet{background:linear-gradient(180deg,#0a0912,#000);border-color:rgba(255,255,255,.4);box-shadow:0 0 30px rgba(255,255,255,.1),0 -10px 40px #000}
+html.god-theme .lk-mi i{color:#fff}
+html.god-theme .lk-mrx button.my{background:#fff;box-shadow:0 0 12px rgba(255,255,255,.6)}
+html.god-theme .lk-ctx{background:rgba(255,255,255,.06);border-left-color:#fff}
+html.god-theme .lk-ctx b{color:#fff}
+html.god-theme .lk-ment button,html.god-theme .lk-emo{background:#000;border-color:rgba(255,255,255,.3)}
+html.god-theme .lk-typing i{background:#fff}
+html.god-theme .lk-ct small.ty{color:#fff}
+html.god-theme .lk-m.flash .lk-bub{animation-name:gdLkFlash}
+@keyframes gdLkFlash{0%,30%{box-shadow:0 0 0 3px #fff,0 0 22px rgba(255,255,255,.7)}100%{box-shadow:none}}
+html.god-theme .lk-ct b{font-family:'Cormorant SC',Georgia,serif;letter-spacing:.08em;font-size:16px;text-shadow:0 0 8px rgba(255,255,255,.5)}
+html.god-theme .lk-day span{background:#000;border:1px solid rgba(255,255,255,.25);color:#bdb8dc;font-family:'Pixelify Sans',system-ui,sans-serif;font-weight:500;letter-spacing:.06em}
+html.god-theme .lk-a{background:#000!important;box-shadow:0 0 0 1px rgba(255,255,255,.6);font-family:'Cormorant SC',Georgia,serif}
+html.god-theme .lk-bub{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.22);color:#f7f6ff}
+html.god-theme .lk-m.me .lk-bub{background:#fff;color:#000;border-color:#fff;box-shadow:0 0 12px rgba(255,255,255,.35)}
+html.god-theme .lk-m.me .lk-at{color:#000}
+html.god-theme .lk-nm{color:#fff!important;text-shadow:0 0 6px rgba(255,255,255,.45)}
+html.god-theme .lk-nm i{background:rgba(255,255,255,.1);color:#e8e6ff}
+html.god-theme .lk-at{color:#fff;text-decoration:underline}
+html.god-theme .lk-m.ment .lk-bub{box-shadow:0 0 0 1px #fff,0 0 16px rgba(255,255,255,.35)}
+html.god-theme .lk-del{background:#fff;color:#000;border-color:#000}
+html.god-theme .lk-new{background:#fff;color:#000;box-shadow:0 0 14px rgba(255,255,255,.6)}
+html.god-theme .lk-bar{background:#000;border-top-color:rgba(255,255,255,.2)}
+html.god-theme .lk-in textarea{background:#000;border-color:rgba(255,255,255,.35)}
+html.god-theme .lk-in textarea:focus{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.12),0 0 12px rgba(255,255,255,.25)}
+html.god-theme .lk-send{background:#000;border:1px solid #fff;box-shadow:0 0 12px rgba(255,255,255,.45)}
+html.god-theme .lk-send:hover{background:#fff;color:#000}
+html.god-theme.gev-on .lk-orb{box-shadow:0 0 0 1.5px #ff4d79,0 0 18px rgba(255,77,121,.55),0 6px 18px #000}
+html.god-theme.gev-on .lk-sx i{background:#ff4d79;box-shadow:0 0 8px #ff4d79,0 0 16px rgba(255,77,121,.8)}
+html.god-theme.gev-on #lk-badge-chat,html.god-theme.gev-on #mail-badge.lk-bm{background:#ff4d79;color:#fff;box-shadow:0 0 0 2px #000,0 0 10px #ff4d79}
+html.god-theme.gev-on .lk-m.me .lk-bub{background:#ff4d79;border-color:#ff4d79;color:#fff}
+</style>
 <style id="god-new-css">
 /* ===== прорыв бога: почта, расписание, заморозка ===== */
 /* кнопка-конверт */
-html.god-theme #mail-btn{background:radial-gradient(circle at 50% 40%,#0e0c1a,#000 70%);border:1.5px solid rgba(255,255,255,.85);box-shadow:0 0 12px rgba(255,255,255,.35)}
-html.god-theme #mail-btn::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:1px dashed rgba(255,255,255,.3);animation:gdSpin 18s linear infinite;pointer-events:none}
-html.god-theme #mail-btn .ml-ico rect,html.god-theme #mail-btn .ml-ico path:not(.fo):not(.fc){fill:#000;stroke:#fff;stroke-width:1.1}
-html.god-theme #mail-btn .ml-ico .lt rect{fill:#fff;stroke:none}
-html.god-theme #mail-btn .ml-ico .lt path{stroke:#000;fill:none;stroke-width:1.3}
-html.god-theme #mail-btn .ml-ico .lt2{fill:#a7a4c0;stroke:none}
-html.god-theme #mail-btn .ml-ico .fc{fill:#14121f;stroke:#fff;stroke-width:1.1}
-html.god-theme #mail-btn .ml-ico .fo{fill:#14121f;stroke:rgba(255,255,255,.7);stroke-width:1}
-html.god-theme #mail-btn.has{border-color:#fff;animation:gdMlRing 2.2s ease-out infinite}
-@keyframes gdMlRing{0%{box-shadow:0 0 0 0 rgba(255,255,255,.7),0 0 12px rgba(255,255,255,.4)}70%{box-shadow:0 0 0 12px rgba(255,255,255,0),0 0 12px rgba(255,255,255,.4)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0),0 0 12px rgba(255,255,255,.4)}}
-html.god-theme #mail-btn.bump{animation:mlBump .8s cubic-bezier(.3,1.6,.5,1)}
-html.god-theme #mail-badge{background:#fff;color:#000;box-shadow:0 0 0 2px #000,0 0 10px rgba(255,255,255,.9)}
-html.god-theme #mail-badge.gift{background:#fff}
 html.god-theme .ml-bub{background:#000;color:#fff;border:1px solid #fff;font-family:'Pixelify Sans',system-ui,sans-serif;font-weight:600;letter-spacing:.04em;text-shadow:0 0 6px rgba(255,255,255,.6);box-shadow:0 0 18px rgba(255,255,255,.35),0 6px 20px #000}
 html.god-theme .ml-bub::after{border-left-color:#fff}
 /* окно почты */
@@ -13445,8 +13910,582 @@ html.god-theme .gsa-f input,html.god-theme .gsa-f select,html.god-theme .gsa inp
 /* бой с богом — розовые акценты, как у радио */
 html.god-theme.gev-on .ml-box,html.god-theme.gev-on .gs-hero{border-color:rgba(255,77,121,.5);box-shadow:0 0 30px rgba(255,40,90,.18),0 20px 60px #000}
 html.god-theme.gev-on .ml-box::before{background:linear-gradient(90deg,transparent,#ff4d79,transparent);box-shadow:0 0 10px #ff4d79}
-html.god-theme.gev-on #mail-badge{background:#ff4d79;color:#fff;box-shadow:0 0 0 2px #000,0 0 10px #ff4d79}
 html.god-theme.gev-on .ml-row.unread .ml-top b::before{background:#ff4d79;box-shadow:0 0 6px #ff4d79}
 </style>
+<style id="hud-css">
+/* ===== главный экран: новые кнопки ===== */
+:root{--hd-spring:cubic-bezier(.3,1.5,.5,1)}
+@supports (transition-timing-function:linear(0,1)){:root{--hd-spring:linear(0,.009,.035 2.1%,.141,.281 6.7%,.723 12.9%,.938 16.7%,1.017,1.077,1.121,1.149 24.3%,1.159,1.163,1.161,1.154 29.9%,1.129 32.8%,1.051 39.6%,1.017 43.1%,.991,.977 51%,.974 53.8%,.975 57.1%,.997 69.8%,1.003 76.9%,1.004 83.8%,1)}}
+.hd-ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto;pointer-events:none;transition:transform .5s var(--hd-spring)}
+
+/* --- шапка --- */
+#topbar{padding:10px 16px;gap:10px;align-items:center}
+#logo{position:relative;padding-left:36px;line-height:1.15;white-space:nowrap}
+#logo::before{content:'';position:absolute;left:0;top:50%;width:30px;height:30px;margin-top:-15px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='p' cx='.34' cy='.28' r='.85'%3E%3Cstop offset='0' stop-color='%23cffafe'/%3E%3Cstop offset='.35' stop-color='%2367e8f9'/%3E%3Cstop offset='.7' stop-color='%236366f1'/%3E%3Cstop offset='1' stop-color='%23312e81'/%3E%3C/radialGradient%3E%3ClinearGradient id='r' x1='0' x2='1'%3E%3Cstop offset='0' stop-color='%2322d3ee'/%3E%3Cstop offset='1' stop-color='%23c084fc'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg transform='rotate%28-22 16 16%29'%3E%3Cellipse cx='16' cy='16' rx='14.5' ry='4.6' fill='none' stroke='url%28%23r%29' stroke-width='1.5' opacity='.45'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='8.2' fill='url%28%23p%29'/%3E%3Cg transform='rotate%28-22 16 16%29'%3E%3Cpath d='M1.5 16A14.5 4.6 0 0 0 30.5 16' fill='none' stroke='url%28%23r%29' stroke-width='1.9' stroke-linecap='round'/%3E%3C/g%3E%3Ccircle cx='26.5' cy='6' r='1.1' fill='%23fff' opacity='.9'/%3E%3C/svg%3E") center/contain no-repeat;filter:drop-shadow(0 0 6px rgba(99,102,241,.55))}
+#logo span{margin-top:2px}
+#topbar-right{flex-wrap:nowrap;gap:3px;padding:4px;border-radius:999px;margin-left:auto;
+  background:linear-gradient(180deg,rgba(20,26,58,.82),rgba(8,11,28,.82));
+  box-shadow:0 0 0 1px rgba(148,163,255,.2),0 10px 26px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.07)}
+.hd-chip{all:unset;box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;
+  font:600 12px/1 system-ui,'Segoe UI',sans-serif;color:#e2e8f0;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;
+  transition:background-color .2s,color .2s,box-shadow .2s,transform .45s var(--hd-spring)}
+.hd-chip .hd-ic{width:17px;height:17px}
+.hd-chip:hover{background-color:rgba(255,255,255,.08)}
+.hd-chip:active{transform:scale(.93)}
+.hd-chip:focus-visible,#bottom-left .hd-orb:focus-visible,.hd-pad:focus-visible,#news-tab-btn.hd-news:focus-visible,#user-badge:focus-visible,#streak-btn:focus-visible{outline:2px solid #67e8f9;outline-offset:2px}
+.hd-lbs{display:none}
+.hd-adm{color:#c4b5fd}
+.hd-adm:hover{color:#ede9fe;background-color:rgba(139,92,246,.18)}
+@media (hover:hover){.hd-adm:hover .hd-ic{transform:rotate(-8deg) scale(1.08)}}
+.hd-out{color:#fda4af}
+.hd-out:hover{color:#ffe4e6;background-color:rgba(244,63,94,.16)}
+@media (hover:hover){.hd-out:hover .hd-ic{transform:translateX(2px)}}
+.hd-go{padding:0 15px;color:#fff;background:linear-gradient(135deg,#22d3ee,#6366f1 58%,#a855f7);box-shadow:0 0 18px rgba(99,102,241,.45),inset 0 1px 0 rgba(255,255,255,.4)}
+.hd-go:hover{background-color:transparent;box-shadow:0 0 24px rgba(34,211,238,.55),inset 0 1px 0 rgba(255,255,255,.5)}
+@media (hover:hover){.hd-go:hover .hd-ic{transform:translateX(2px)}}
+.hd-gold{color:#fde68a;background:rgba(251,191,36,.1);box-shadow:inset 0 0 0 1px rgba(251,191,36,.5)}
+.hd-gold:hover{color:#fff7d6;background-color:rgba(251,191,36,.2)}
+.hd-gold .hd-star{fill:#fbbf24;stroke:none;filter:drop-shadow(0 0 4px rgba(251,191,36,.7))}
+@media (hover:hover){.hd-gold:hover .hd-star{transform:rotate(72deg) scale(1.1)}}
+/* настройки в капсуле */
+.hd-set{width:34px;padding:0;color:#a5f3fc}
+.hd-set .hd-ic{width:18px;height:18px}
+.hd-set:hover{color:#ecfeff;background-color:rgba(103,232,249,.14)}
+@media (hover:hover){.hd-set:hover .hd-ic{transform:rotate(60deg)}}
+body:has(#settings-popup.open) .hd-set{color:#ecfeff;background-color:rgba(103,232,249,.2);box-shadow:inset 0 0 0 1px rgba(103,232,249,.55),0 0 14px rgba(34,211,238,.35)}
+body:has(#settings-popup.open) .hd-set .hd-ic{transform:rotate(90deg)}
+/* порядок в капсуле: у аккаунтов настройки рядом с «Панелью», у гостей — слева от огонька */
+#topbar-right>#radio-btn{order:5}
+#topbar-right>#settings-btn{order:10}
+#topbar-right>#streak-btn{order:20}
+#topbar-right>#user-badge{order:30}
+#topbar-right>#admin-toggle-btn{order:50}
+#topbar-right>#logout-btn{order:60}
+#topbar-right>#get-account-btn{order:70}
+#topbar-right>#auth-btn{order:80}
+#topbar-right:has(>#user-badge[style*="flex"])>#radio-btn{order:35}
+#topbar-right:has(>#user-badge[style*="flex"])>#settings-btn{order:40}
+/* радио — отдельная кнопка; когда играет музыка, на ней пляшет эквалайзер */
+#radio-open-row{display:none!important}
+.hd-radio{width:34px;padding:0;color:#f9a8d4}
+.hd-radio .hd-ic{width:18px;height:18px}
+.hd-radio:hover{color:#fdf2f8;background-color:rgba(244,114,182,.16)}
+@media (hover:hover){.hd-radio:hover .hd-ic{transform:rotate(-8deg) scale(1.08)}}
+.hd-eq{position:absolute;right:5px;bottom:5px;display:none;align-items:flex-end;gap:1px;height:8px;pointer-events:none}
+.hd-eq i{display:block;width:2px;height:100%;border-radius:1px;background:#f472b6;box-shadow:0 0 4px rgba(244,114,182,.8);transform-origin:50% 100%;animation:hdEq .9s ease-in-out infinite}
+.hd-eq i:nth-child(2){animation-delay:-.3s}
+.hd-eq i:nth-child(3){animation-delay:-.6s}
+@keyframes hdEq{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+.hd-radio.play{color:#fbcfe8;box-shadow:inset 0 0 0 1px rgba(244,114,182,.45),0 0 12px rgba(244,114,182,.25)}
+.hd-radio.play .hd-eq{display:flex}
+.hd-radio.play .hd-ic{transform:translate(-2px,-1px) scale(.92)}
+body:has(#god-dlg.on) #radio-btn,body:has(.gd-menu) #radio-btn{opacity:0;pointer-events:none}
+#topbar-right .ticket-badge{top:-3px;right:-3px;min-width:17px;height:17px;font-size:9.5px;box-shadow:0 0 0 2px #0b1030,0 0 8px rgba(239,68,68,.7)}
+/* огонёк и профиль внутри капсулы */
+#topbar-right .sk-btn{height:34px;box-sizing:border-box;margin:0;padding:0 11px 0 7px;border-radius:999px;border:1px solid transparent;background:rgba(255,255,255,.05);transition:background-color .2s,transform .45s var(--hd-spring)}
+#topbar-right .sk-btn:hover{background:rgba(251,146,60,.14);border-color:transparent}
+#topbar-right .sk-btn:active{transform:scale(.93)}
+#topbar-right .sk-btn .sk-mini{left:10px;right:10px;bottom:3px}
+#user-badge.user-badge-btn{height:34px;box-sizing:border-box;padding:0 12px 0 4px;gap:7px;border-radius:999px;border:none;background:rgba(255,255,255,.05);color:#e2e8f0;transition:background-color .2s,transform .45s var(--hd-spring)}
+#user-badge.user-badge-btn:hover{background:rgba(103,232,249,.12)}
+#user-badge.user-badge-btn:active{transform:scale(.95)}
+#user-badge .avatar-circle{width:26px;height:26px;font-size:11px;box-shadow:0 0 0 1.5px rgba(103,232,249,.65),0 0 8px rgba(34,211,238,.35)}
+.ub-t{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;text-align:left}
+.ub-n{font:600 12px/1.1 system-ui,'Segoe UI',sans-serif;color:#f1f5f9;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ub-l{font:600 10px/1 system-ui,'Segoe UI',sans-serif;font-style:normal;color:#67e8f9;white-space:nowrap}
+
+/* --- круглые кнопки слева внизу --- */
+#bottom-left{gap:10px}
+#bottom-left .hd-orb{all:unset;box-sizing:border-box;position:relative;width:48px;height:48px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#dbeafe;-webkit-tap-highlight-color:transparent;
+  background:radial-gradient(circle at 34% 26%,#41508a 0%,#1b2453 34%,#0c1132 68%,#060818 100%);
+  box-shadow:0 0 0 1px rgba(148,163,255,.3),0 6px 16px rgba(0,0,0,.55),inset 0 -7px 12px rgba(34,211,238,.16),inset 0 4px 8px rgba(255,255,255,.1);
+  transition:transform .5s var(--hd-spring),box-shadow .25s,filter .25s}
+#bottom-left .hd-orb::before{content:'';position:absolute;inset:0;border-radius:50%;padding:1.5px;pointer-events:none;opacity:.55;
+  background:conic-gradient(from 200deg,transparent 0 18%,#67e8f9 32%,transparent 46% 62%,#a78bfa 78%,transparent 92%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;transition:opacity .25s,transform .8s var(--hd-spring)}
+#bottom-left .hd-orb .hd-ic{position:relative;z-index:1;filter:drop-shadow(0 0 5px rgba(103,232,249,.55))}
+@media (hover:hover){#bottom-left .hd-orb:hover{transform:scale(1.07)}}
+@media (hover:hover){#bottom-left .hd-orb:hover::before{opacity:1;transform:rotate(120deg)}}
+#bottom-left .hd-orb:active{transform:scale(.9)}
+#bottom-left .hd-add{color:#fff;background:radial-gradient(circle at 34% 26%,#d8b4fe 0%,#9b6cf7 26%,#6025c9 56%,#2a0f63 84%,#16083a 100%);
+  box-shadow:0 0 0 1px rgba(216,180,254,.4),0 6px 16px rgba(0,0,0,.5),0 0 20px rgba(139,92,246,.5),inset 0 -7px 12px rgba(34,211,238,.3),inset 0 4px 8px rgba(255,255,255,.18)}
+#bottom-left .hd-add .hd-ic{width:24px;height:24px;stroke-width:2.4;filter:drop-shadow(0 1px 3px rgba(30,0,80,.6))}
+@media (hover:hover){#bottom-left .hd-add:hover .hd-ic{transform:rotate(90deg)}}
+#bottom-left .hd-add:disabled{filter:grayscale(.85);cursor:not-allowed}
+
+/* --- игровой планшет --- */
+.hd-pad{all:unset;box-sizing:border-box;position:relative;width:50px;height:62px;border-radius:14px;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;padding:5px 5px 5px;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  border:1.5px solid transparent;
+  background:linear-gradient(165deg,#1a2550,#0b1029 55%,#070a1a) padding-box,linear-gradient(150deg,#67e8f9,#6366f1 45%,#a855f7 75%,#22d3ee) border-box;
+  box-shadow:0 6px 18px rgba(0,0,0,.55),0 0 20px rgba(34,211,238,.2),inset 0 1px 0 rgba(255,255,255,.12);
+  transition:transform .5s var(--hd-spring),box-shadow .25s}
+.hd-pad-cam{width:4px;height:4px;border-radius:50%;flex:0 0 auto;margin-bottom:4px;background:#0b1530;box-shadow:0 0 0 1px rgba(103,232,249,.6),0 0 5px rgba(103,232,249,.6)}
+.hd-pad-scr{flex:1;width:100%;border-radius:8px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(120% 80% at 50% 0%,rgba(103,232,249,.24),transparent 62%),linear-gradient(170deg,#0c1b3d,#050b1c);
+  box-shadow:inset 0 0 0 1px rgba(103,232,249,.32),inset 0 0 12px rgba(34,211,238,.16)}
+.hd-pad-scr::before{content:'';position:absolute;inset:0;opacity:.6;background-image:linear-gradient(rgba(103,232,249,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(103,232,249,.08) 1px,transparent 1px);background-size:5px 5px}
+.hd-pad-scr::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.28) 50%,transparent 62%);background-size:260% 100%;background-position:130% 0;opacity:0}
+.hd-pad-ic{position:relative;z-index:1;width:30px;height:30px;filter:drop-shadow(0 0 5px rgba(34,211,238,.55));transition:transform .5s var(--hd-spring)}
+.hd-pad-ic .hd-pb{fill:url(#hdgPad)}
+.hd-pad-ic .hd-pd{fill:none;stroke:#0b1030;stroke-width:1.9;stroke-linecap:round}
+.hd-pad-ic .hd-pk{fill:#0b1030}
+.hd-pad-home{width:16px;height:3px;border-radius:2px;margin-top:4px;flex:0 0 auto;background:rgba(103,232,249,.5)}
+@media (hover:hover){.hd-pad:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(0,0,0,.55),0 0 26px rgba(34,211,238,.35),inset 0 1px 0 rgba(255,255,255,.14)}}
+@media (hover:hover){.hd-pad:hover .hd-pad-ic{transform:rotate(-10deg) scale(1.1)}}
+@media (hover:hover){.hd-pad:hover .hd-pad-scr::after{opacity:1;animation:hdSheen 1.1s ease-out}}
+.hd-pad:active{transform:scale(.93)}
+.hd-pad:has(#games-badge[style*="flex"]) .hd-pad-scr::after{opacity:1;animation:hdSheen 3.2s ease-in-out infinite}
+@keyframes hdSheen{0%{background-position:130% 0}60%,100%{background-position:-30% 0}}
+
+/* --- значки-счётчики --- */
+.hd-badge{position:absolute;top:-6px;right:-6px;z-index:3;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:9px;display:none;align-items:center;justify-content:center;
+  font:800 10px/1 system-ui,sans-serif;color:#fff;background:linear-gradient(135deg,#fb7185,#e11d48);box-shadow:0 0 0 2px #070a1a,0 0 10px rgba(244,63,94,.6)}
+
+/* --- вкладка новостей --- */
+#news-tab-btn.hd-news{all:unset;box-sizing:border-box;position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:540;width:38px;height:60px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#a5f3fc;-webkit-tap-highlight-color:transparent;
+  border-radius:16px 0 0 16px;border:1px solid rgba(103,232,249,.32);border-right:none;
+  background:linear-gradient(165deg,#16224a,#0a1029 60%,#070b1c);
+  box-shadow:-6px 0 22px rgba(0,0,0,.45),-2px 0 16px rgba(34,211,238,.12),inset 1px 1px 0 rgba(255,255,255,.08);
+  transition:width .45s var(--hd-spring),box-shadow .25s,opacity .2s,color .2s}
+#news-tab-btn.hd-news .hd-ic{width:22px;height:22px;filter:drop-shadow(0 0 5px rgba(34,211,238,.5))}
+#news-tab-btn.hd-news .hd-w1,#news-tab-btn.hd-news .hd-w2{transition:opacity .3s}
+#news-tab-btn.hd-news .hd-w2{opacity:.45}
+@media (hover:hover){#news-tab-btn.hd-news:hover{width:44px;color:#ecfeff;box-shadow:-6px 0 22px rgba(0,0,0,.45),-2px 0 22px rgba(34,211,238,.3),inset 1px 1px 0 rgba(255,255,255,.1)}}
+#news-tab-btn.hd-news:hover .hd-w2{opacity:1}
+#news-tab-btn.hd-news:has(.ntb-badge[style*="flex"]){color:#ecfeff;border-color:rgba(103,232,249,.7)}
+#news-tab-btn.hd-news:has(.ntb-badge[style*="flex"]) .hd-w1{animation:hdWave 1.6s ease-in-out infinite}
+#news-tab-btn.hd-news:has(.ntb-badge[style*="flex"]) .hd-w2{animation:hdWave 1.6s ease-in-out .25s infinite}
+@keyframes hdWave{0%,100%{opacity:.25}40%{opacity:1}}
+#news-tab-btn.hd-news .ntb-badge{position:absolute;top:-6px;left:-6px;right:auto;width:auto;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:9px;
+  font:800 10px/1 system-ui,sans-serif;color:#fff;background:linear-gradient(135deg,#fb7185,#e11d48);box-shadow:0 0 0 2px #070a1a,0 0 10px rgba(244,63,94,.6);writing-mode:horizontal-tb}
+
+/* --- телефон: всё в одну строку между логотипом и правым краем --- */
+@media (max-width:600px){
+  #topbar{padding:8px 8px 8px 10px;gap:6px;flex-wrap:wrap}
+  #logo{flex:0 0 auto;width:min-content;font-size:12.5px;letter-spacing:.3px;padding-left:25px;white-space:normal;line-height:1.1}
+  #logo::before{width:21px;height:21px;margin-top:-10.5px}
+  #logo span{font-size:6px;letter-spacing:1px;white-space:normal;line-height:1.3;margin-top:2px}
+  #topbar-right{min-width:0;gap:2px;padding:3px}
+  #topbar-right .hd-chip{height:32px}
+  #topbar-right .hd-lbl,#topbar-right .hd-lbs{display:none}
+  .hd-adm,.hd-out,.hd-gold,.hd-set,.hd-radio{width:32px;padding:0}
+  .hd-go{padding:0 11px;gap:5px}
+  #topbar-right .sk-btn{height:32px;padding:0 8px 0 5px;font-size:13px}
+  #user-badge.user-badge-btn{position:relative;height:32px;padding:0 3px;gap:0}
+  #user-badge .ub-n,#user-badge .ub-b{display:none}
+  #user-badge .ub-t{position:absolute;right:-5px;bottom:-5px;z-index:2}
+  #user-badge .ub-l{font-size:8px;line-height:1;padding:2px 4px;border-radius:7px;color:#fff;background:linear-gradient(135deg,#0891b2,#6366f1);box-shadow:0 0 0 1.5px #0b1030}
+  #topbar-right .ticket-badge{top:-6px;right:-5px;min-width:15px;height:15px;font-size:8.5px}
+  .hd-gold{animation:hdCta 4.5s ease-in-out infinite}
+  #bottom-left{left:16px;bottom:22px}
+  #bottom-right{right:16px}
+}
+@keyframes hdCta{0%,70%,100%{box-shadow:inset 0 0 0 1px rgba(251,191,36,.5)}82%{box-shadow:inset 0 0 0 1px rgba(251,191,36,.9),0 0 14px rgba(251,191,36,.55)}}
+@media (max-width:380px){
+  #topbar{padding:7px 6px 7px 8px;gap:5px}
+  #logo{font-size:12px;padding-left:23px}
+  #logo::before{width:19px;height:19px;margin-top:-9.5px}
+  #topbar-right{gap:1px;padding:2px}
+  #topbar-right .hd-chip,#topbar-right .sk-btn,#user-badge.user-badge-btn{height:30px}
+  .hd-adm,.hd-out,.hd-gold,.hd-set,.hd-radio{width:30px}
+  .hd-chip .hd-ic{width:16px;height:16px}
+  #user-badge .avatar-circle{width:24px;height:24px}
+  #topbar-right .sk-btn{padding:0 7px 0 4px}
+  .hd-go{padding:0 9px;font-size:11.5px}
+}
+html:not(.lg-on) #settings-popup.open{transform-origin:calc(100% - 20px) -10px;animation:hdDrop .3s cubic-bezier(.2,.9,.3,1.15)}
+@keyframes hdDrop{from{opacity:0;transform:translateY(-8px) scale(.94)}to{opacity:1;transform:none}}
+#settings-popup{width:236px;top:62px;right:12px;bottom:auto;left:auto;max-height:calc(100dvh - 80px);overflow-y:auto;overscroll-behavior:contain}
+@media (prefers-reduced-motion:reduce){.hd-ic,#bottom-left .hd-orb,#bottom-left .hd-orb::before,.hd-pad,.hd-pad-ic,.hd-chip,#news-tab-btn.hd-news{transition:none!important}.hd-pad-scr::after,#news-tab-btn.hd-news .hd-w1,#news-tab-btn.hd-news .hd-w2,.hd-eq i,.hd-gold{animation:none!important}}
+
+/* ===== прорыв бога ===== */
+html.god-theme #logo{padding-left:0}
+html.god-theme #logo::before{content:'◉\00a0';position:static;width:auto;height:auto;margin:0;background:none;filter:none}
+html.god-theme #topbar-right{background:#000;box-shadow:0 0 0 1px rgba(255,255,255,.4),0 0 18px rgba(255,255,255,.15),inset 0 0 12px rgba(255,255,255,.06)}
+html.god-theme .hd-chip{color:#fff;font-family:'Pixelify Sans',system-ui,sans-serif;letter-spacing:.04em;text-shadow:0 0 6px rgba(255,255,255,.45)}
+html.god-theme .hd-chip:hover{background-color:rgba(255,255,255,.12)}
+html.god-theme .hd-out{color:#ffd1dc}
+html.god-theme .hd-go{background:#fff;color:#000;text-shadow:none;box-shadow:0 0 16px rgba(255,255,255,.55)}
+html.god-theme .hd-go:hover{background:#000;color:#fff;box-shadow:0 0 0 1px #fff,0 0 18px rgba(255,255,255,.6)}
+html.god-theme .hd-gold{background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.65)}
+html.god-theme .hd-gold .hd-star{fill:#fff;filter:drop-shadow(0 0 5px #fff)}
+html.god-theme #topbar-right .sk-btn,html.god-theme #user-badge.user-badge-btn{background:rgba(255,255,255,.06)}
+html.god-theme #user-badge .avatar-circle{box-shadow:0 0 0 1.5px #fff,0 0 8px rgba(255,255,255,.5)}
+html.god-theme .ub-n{color:#fff;font-family:'Pixelify Sans',system-ui,sans-serif;letter-spacing:.03em}
+html.god-theme .ub-l{color:#bdb8dc}
+@media (max-width:600px){html.god-theme #user-badge .ub-l{color:#000;background:#fff;box-shadow:0 0 0 1.5px #000}}
+html.god-theme .hd-radio{color:#fff}
+html.god-theme .hd-eq i{background:#fff;box-shadow:0 0 4px #fff}
+html.god-theme .hd-radio.play{box-shadow:inset 0 0 0 1px rgba(255,255,255,.6),0 0 12px rgba(255,255,255,.35)}
+html.god-theme #topbar-right .ticket-badge,html.god-theme .hd-badge,html.god-theme #news-tab-btn.hd-news .ntb-badge{background:#fff;color:#000;box-shadow:0 0 0 2px #000,0 0 10px rgba(255,255,255,.8)}
+html.god-theme #bottom-left .hd-orb,html.god-theme #bottom-left .hd-add{color:#fff;background:radial-gradient(circle at 50% 40%,#0e0c1a,#000 70%);box-shadow:0 0 0 1.5px #fff,0 0 0 5px rgba(255,255,255,.06),0 0 18px rgba(255,255,255,.5),inset 0 0 12px rgba(255,255,255,.15)}
+html.god-theme #bottom-left .hd-orb::before{padding:0;inset:-7px;opacity:1;background:none;border:1px dashed rgba(255,255,255,.35);-webkit-mask:none;mask:none;animation:gdSpin 18s linear infinite}
+html.god-theme #bottom-left .hd-orb .hd-ic{filter:drop-shadow(0 0 5px rgba(255,255,255,.8))}
+html.god-theme body:has(#settings-popup.open) .hd-set{color:#000;background:#fff;box-shadow:0 0 16px rgba(255,255,255,.7)}
+html.god-theme .hd-set{color:#fff}
+html.rf-lite.god-theme #bottom-left .hd-orb::before{display:none}
+html.god-theme .hd-pad{background:#000;border:1.5px solid #fff;box-shadow:0 0 0 4px rgba(255,255,255,.06),0 0 18px rgba(255,255,255,.5),inset 0 0 12px rgba(255,255,255,.12)}
+html.god-theme .hd-pad-scr{background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.6),inset 0 0 10px rgba(255,255,255,.15)}
+html.god-theme .hd-pad-scr::before{background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px)}
+html.god-theme .hd-pad-ic{filter:drop-shadow(0 0 6px rgba(255,255,255,.8))}
+html.god-theme .hd-pad-ic .hd-pb{fill:#fff}
+html.god-theme .hd-pad-ic .hd-pd{stroke:#000}
+html.god-theme .hd-pad-ic .hd-pk{fill:#000}
+html.god-theme .hd-pad-cam,html.god-theme .hd-pad-home{background:#fff;box-shadow:0 0 6px #fff}
+html.god-theme .hd-pad:hover{box-shadow:0 0 0 4px rgba(255,255,255,.1),0 0 26px rgba(255,255,255,.7),inset 0 0 12px rgba(255,255,255,.18)}
+html.god-theme #news-tab-btn.hd-news{color:#fff;background:#000!important;border:1px solid rgba(255,255,255,.75)!important;border-right:none!important;box-shadow:0 0 14px rgba(255,255,255,.4)!important}
+html.god-theme #news-tab-btn.hd-news .hd-ic{filter:drop-shadow(0 0 5px rgba(255,255,255,.8))}
+html.god-theme.gev-on #topbar-right{box-shadow:0 0 0 1px rgba(255,77,121,.6),0 0 18px rgba(255,40,90,.25)}
+html.god-theme.gev-on #bottom-left .hd-orb,html.god-theme.gev-on .hd-pad{box-shadow:0 0 0 1.5px #ff4d79,0 0 18px rgba(255,40,90,.45),inset 0 0 12px rgba(255,77,121,.18)}
+</style>
+<style id="glass-css">
+/* ===== 💧 Liquid Glass (включается в настройках, во время прорыва бога не действует) ===== */
+/* кнопки: прозрачное стекло с бликом, который следует за пальцем/курсором */
+html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,#news-tab-btn.hd-news,#topbar-right,#comm-btn .lk-orb){
+  background:radial-gradient(60px 42px at var(--mx,30%) var(--my,4%),rgba(255,255,255,.3),rgba(255,255,255,0) 72%),
+    linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.03) 36%,rgba(255,255,255,.01) 64%,rgba(255,255,255,.09));
+  -webkit-backdrop-filter:blur(12px) saturate(200%) brightness(1.12)!important;backdrop-filter:blur(12px) saturate(200%) brightness(1.12)!important;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:inset 1.5px 1.5px 0 -.5px rgba(255,255,255,.75),inset -1.5px -1.5px 0 -.5px rgba(255,255,255,.35),inset 0 0 0 .5px rgba(255,255,255,.15),inset 4px 4px 9px rgba(165,243,252,.12),inset -4px -4px 9px rgba(244,114,182,.1),0 10px 26px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.25)}
+html.lg-on:not(.god-theme) #news-tab-btn.hd-news{border-right:none;color:#fff}
+html.lg-on:not(.god-theme) #bottom-left .hd-orb::before{opacity:0}
+html.lg-on:not(.god-theme) #bottom-left .hd-orb{color:#fff}
+html.lg-on:not(.god-theme) #bottom-left .hd-add{background-color:rgba(139,92,246,.32)}
+html.lg-on:not(.god-theme) #bottom-left .hd-orb .hd-ic,html.lg-on:not(.god-theme) #news-tab-btn.hd-news .hd-ic{filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+html.lg-on:not(.god-theme) body:has(#settings-popup.open) .hd-set{color:#fff;background-color:rgba(255,255,255,.2);box-shadow:inset 1.5px 1.5px 0 -.5px rgba(255,255,255,.75),inset -1px -1px 0 -.5px rgba(255,255,255,.3),0 0 16px rgba(165,243,252,.35)}
+html.lg-on:not(.god-theme) #games-btn.hd-pad{background-color:rgba(255,255,255,.05)}
+html.lg-on:not(.god-theme) .hd-pad-scr{background:linear-gradient(170deg,rgba(6,12,32,.5),rgba(6,10,26,.35));box-shadow:inset 0 0 0 1px rgba(255,255,255,.22),inset 0 1px 6px rgba(0,0,0,.35)}
+html.lg-on:not(.god-theme) .hd-pad-scr::before{opacity:.25}
+html.lg-on:not(.god-theme) .hd-pad-cam,html.lg-on:not(.god-theme) .hd-pad-home{background:rgba(255,255,255,.65);box-shadow:0 0 4px rgba(255,255,255,.6)}
+html.lg-on:not(.god-theme) #comm-btn .lk-orb{background-color:rgba(99,102,241,.24)}
+html.lg-on:not(.god-theme) #comm-btn .lk-orb::after{opacity:.35}
+html.lg-on:not(.god-theme) #comm-btn .lk-orb::before{opacity:.6}
+/* шапка */
+html.lg-on:not(.god-theme) #topbar{background:linear-gradient(180deg,rgba(3,5,15,.5),transparent)}
+html.lg-on:not(.god-theme) #topbar-right :is(.sk-btn,#user-badge.user-badge-btn){background:rgba(255,255,255,.07)}
+html.lg-on:not(.god-theme) #topbar-right :is(.sk-btn,#user-badge.user-badge-btn,.hd-chip):hover{background-color:rgba(255,255,255,.16)}
+html.lg-on:not(.god-theme) .hd-go{background:linear-gradient(135deg,rgba(34,211,238,.78),rgba(99,102,241,.72) 58%,rgba(168,85,247,.72));box-shadow:inset 0 1px 1px rgba(255,255,255,.75),inset 0 -1px 1px rgba(255,255,255,.2),0 4px 14px rgba(99,102,241,.35)}
+html.lg-on:not(.god-theme) .hd-gold{background:rgba(251,191,36,.16);box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 0 0 1px rgba(251,191,36,.45)}
+html.lg-on:not(.god-theme) .ub-l{color:#cffafe}
+html.lg-on:not(.god-theme) #topbar-right .ticket-badge,html.lg-on:not(.god-theme) .hd-badge,html.lg-on:not(.god-theme) #news-tab-btn.hd-news .ntb-badge{box-shadow:0 0 0 1.5px rgba(255,255,255,.7),0 2px 8px rgba(225,29,72,.5)}
+
+/* окна: матовое стекло */
+html.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,#radio-win .rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell){
+  background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.04) 26%,rgba(255,255,255,.02) 70%,rgba(255,255,255,.08)),rgba(12,16,40,.56)!important;
+  -webkit-backdrop-filter:blur(26px) saturate(170%)!important;backdrop-filter:blur(26px) saturate(170%)!important;
+  border:1px solid rgba(255,255,255,.22)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(255,255,255,.08),inset 0 0 40px rgba(255,255,255,.03),0 30px 70px rgba(0,0,0,.45)!important}
+html.lg-on:not(.god-theme) #news-panel{background:linear-gradient(200deg,rgba(255,255,255,.12),rgba(255,255,255,.03) 30%,rgba(255,255,255,.02) 75%,rgba(255,255,255,.06)),rgba(10,14,36,.6)!important;
+  -webkit-backdrop-filter:blur(26px) saturate(170%)!important;backdrop-filter:blur(26px) saturate(170%)!important;border-left:1px solid rgba(255,255,255,.24)!important;
+  box-shadow:inset 1px 0 0 rgba(255,255,255,.35),-20px 0 60px rgba(0,0,0,.45)!important;transition:transform .55s cubic-bezier(.2,.9,.25,1)}
+html.lg-on:not(.god-theme) #news-panel .np-header{background:rgba(255,255,255,.04)!important}
+html.lg-on:not(.god-theme) .tablet-shell::before{opacity:.15}
+html.lg-on:not(.god-theme) :is(#toast,#news-notify){background:linear-gradient(150deg,rgba(255,255,255,.2),rgba(255,255,255,.06)),rgba(12,16,40,.5)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(180%)!important;backdrop-filter:blur(18px) saturate(180%)!important;
+  border:1px solid rgba(255,255,255,.3)!important;color:#fff!important;box-shadow:inset 0 1px 1px rgba(255,255,255,.7),0 10px 28px rgba(0,0,0,.35)!important;border-radius:999px}
+/* затемнение за окнами — светлее, чтобы стекло было видно */
+html.lg-on:not(.god-theme) :is(.modal-overlay,.ml-shade,.sk-shade,#radio-win .rd-shade){background:rgba(4,6,18,.4)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html.lg-on:not(.god-theme) #games-tablet-overlay{background:rgba(2,4,12,.42)!important;-webkit-backdrop-filter:blur(8px)!important;backdrop-filter:blur(8px)!important}
+
+/* настройки: переключатель вида */
+#ui-style{display:flex;flex-direction:column;gap:6px}
+.us-h{font-size:10px;color:var(--text-dim,#94a3b8)}
+.us-seg{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:3px;border-radius:12px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.us-seg button{all:unset;position:relative;z-index:1;padding:8px 2px;border-radius:9px;text-align:center;cursor:pointer;font:600 11px/1.1 system-ui,'Segoe UI',sans-serif;color:#94a3b8;white-space:nowrap;transition:color .25s;-webkit-tap-highlight-color:transparent}
+.us-seg button:focus-visible{outline:2px solid #67e8f9;outline-offset:1px}
+.us-th{position:absolute;z-index:0;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:9px;
+  background:linear-gradient(135deg,rgba(34,211,238,.35),rgba(99,102,241,.4));box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 2px 10px rgba(34,211,238,.25);
+  transition:translate .55s var(--hd-spring)}
+#ui-style[data-v="cosmos"] .us-seg button[data-v="cosmos"],#ui-style[data-v="glass"] .us-seg button[data-v="glass"]{color:#fff}
+#ui-style[data-v="glass"] .us-th{translate:100% 0;background:linear-gradient(150deg,rgba(255,255,255,.4),rgba(255,255,255,.12));box-shadow:inset 0 1px 1px rgba(255,255,255,.85),inset 0 -1px 1px rgba(255,255,255,.2),0 2px 10px rgba(0,0,0,.25)}
+.us-th.go{animation:usSquish .55s ease-out}
+@keyframes usSquish{35%{scale:1.16 .84}70%{scale:.97 1.04}100%{scale:1}}
+.us-note,.us-god{display:none;font-size:10px;line-height:1.4;color:var(--text-dim,#94a3b8)}
+#ui-style[data-v="glass"] .us-note{display:block}
+html.god-theme .us-god{display:block;color:#e8e6ff}
+html.god-theme .us-seg{background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
+html.god-theme .us-th,html.god-theme #ui-style[data-v="glass"] .us-th{background:#fff;box-shadow:0 0 12px rgba(255,255,255,.5)}
+html.god-theme #ui-style .us-seg button{color:#a7a4c0;font-family:'Pixelify Sans',system-ui,sans-serif}
+html.god-theme #ui-style[data-v="cosmos"] .us-seg button[data-v="cosmos"],html.god-theme #ui-style[data-v="glass"] .us-seg button[data-v="glass"]{color:#000}
+
+/* живые анимации стекла: пружинный отклик на нажатие и появление окон */
+html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,.hd-chip,#user-badge.user-badge-btn,#topbar-right .sk-btn):is(:hover,:active){transform:none}
+html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,.hd-chip,#user-badge.user-badge-btn,#topbar-right .sk-btn,#news-tab-btn.hd-news,#comm-btn){transition:scale .6s var(--hd-spring),width .45s var(--hd-spring),background-color .25s,box-shadow .25s,color .2s}
+@media (hover:hover){html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,#comm-btn):hover{scale:1.08}html.lg-on:not(.god-theme) :is(.hd-chip,#user-badge.user-badge-btn,#topbar-right .sk-btn):hover{scale:1.05}}
+html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,.hd-chip,#user-badge.user-badge-btn,#topbar-right .sk-btn,#news-tab-btn.hd-news,#comm-btn):active{scale:.88;transition-duration:.12s}
+html.lg-on:not(.god-theme) .lg-j{animation:lgJelly .75s linear}
+@keyframes lgJelly{0%{scale:.88}22%{scale:1.12 .9}42%{scale:.95 1.06}62%{scale:1.03 .98}82%{scale:.99 1.01}100%{scale:1}}
+/* окна вытекают из кнопок (ведёт liquid.js): содержимое проявляется, когда стекло уже разлилось */
+.lg-mi>*{animation:lgKid .42s ease .22s both}
+/* телефоны: размытие слабее — так же красиво, но в разы легче для видеокарты */
+html.rf-lite.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,#news-tab-btn.hd-news,#topbar-right,#comm-btn .lk-orb){-webkit-backdrop-filter:blur(8px) saturate(190%)!important;backdrop-filter:blur(8px) saturate(190%)!important}
+html.rf-lite.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,#radio-win .rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,#news-panel,#admin-panel,#toast,#news-notify){-webkit-backdrop-filter:blur(16px) saturate(160%)!important;backdrop-filter:blur(16px) saturate(160%)!important}
+html.rf-lite.lg-on:not(.god-theme) #games-tablet-overlay{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:rgba(2,4,12,.6)!important}
+/* телефоны: пока окно летит — без размытия (его пересчёт каждый кадр и давал лаги), иней появляется, когда окно встало */
+html.lg-on.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,#radio-win .rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,#news-panel,#admin-panel).lg-fly{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background-color:rgba(14,18,46,.9)!important}
+@keyframes lgKid{from{opacity:0}to{opacity:1}}
+html body .lg-ghost{position:fixed;z-index:100002;pointer-events:none;box-sizing:border-box;margin:0;
+  background:radial-gradient(70% 40% at 30% 0%,rgba(255,255,255,.2),transparent 70%),linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.04) 30%,rgba(255,255,255,.02) 70%,rgba(255,255,255,.08)),rgba(14,18,44,.62);
+  border:1px solid rgba(255,255,255,.24);box-shadow:inset 1.5px 1.5px 0 -.5px rgba(255,255,255,.7),inset -1.5px -1.5px 0 -.5px rgba(255,255,255,.3),0 20px 50px rgba(0,0,0,.35)}
+/* у каждой кнопки свой жест, когда из неё вытекает окно */
+.lg-src.hd-set .hd-ic{animation:lgSpin .75s var(--hd-spring)}
+@keyframes lgSpin{from{rotate:-200deg}to{rotate:0deg}}
+#comm-btn.lg-src .lk-ico,.hd-pad.lg-src .hd-pad-ic,#user-badge.lg-src .avatar-circle,#streak-btn.lg-src .sk-flame,.hd-gold.lg-src .hd-star,.hd-go.lg-src .hd-ic{animation:lgPopI .6s ease-out}
+@keyframes lgPopI{30%{scale:1.32}60%{scale:.9}100%{scale:1}}
+.hd-pad.lg-src .hd-pad-scr::after{opacity:1;animation:hdSheen .7s ease-out}
+#news-tab-btn.lg-src .hd-w1,#news-tab-btn.lg-src .hd-w2{animation:hdWave .45s ease-in-out 2}
+.hd-adm.lg-src .hd-ic{animation:lgFlip .7s ease}
+@keyframes lgFlip{from{rotate:y 0deg}to{rotate:y 360deg}}
+#bottom-left .hd-add.lg-src .hd-ic{animation:lgSpin .7s var(--hd-spring)}
+/* волна при включении стекла */
+.lg-wave{position:fixed;z-index:100000;left:0;top:0;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,255,255,0) 55%,rgba(165,243,252,.22) 68%,rgba(255,255,255,.55) 72%,rgba(232,121,249,.18) 76%,rgba(255,255,255,0) 82%);
+  animation:lgWave .9s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes lgWave{0%{transform:scale(0);opacity:1}70%{opacity:.85}100%{transform:scale(var(--ws,60));opacity:0}}
+@media (prefers-reduced-motion:reduce){.lg-mi>*,.lg-src *,.lg-j,.us-th.go{animation:none!important}.lg-wave,.lg-ghost{display:none}}
+</style>
+<style id="adm3-css">
+/* ===== админка: обновлённое оформление ===== */
+#admin-panel{background:radial-gradient(120% 34% at 100% 0%,rgba(99,102,241,.16),transparent 62%),radial-gradient(90% 26% at 0% 100%,rgba(34,211,238,.08),transparent 62%),linear-gradient(180deg,#0c1132,#080b20 42%,#050816);
+  border-left:1px solid rgba(148,163,255,.18);box-shadow:-18px 0 50px rgba(0,0,0,.55)}
+#admin-panel .adm-hd{gap:8px;padding:12px 12px 12px 16px;border-bottom:1px solid rgba(148,163,255,.12);background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,0))}
+#admin-panel .adm-hd>b{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:700;color:#f8fafc;letter-spacing:.01em}
+#admin-panel .adm-hd>b .adm-shield{width:26px;height:26px;padding:4px;box-sizing:border-box;border-radius:9px;color:#fde68a;stroke-width:2;background:linear-gradient(150deg,rgba(251,191,36,.28),rgba(245,158,11,.08));box-shadow:inset 0 0 0 1px rgba(251,191,36,.45),0 0 12px rgba(251,191,36,.18)}
+#admin-panel .adm-hd>b small{display:block;font-size:10.5px;font-weight:500;color:#94a3b8;letter-spacing:0;margin-top:1px}
+#admin-panel .adm-hb{width:36px;height:36px;border-radius:12px;border:1px solid rgba(148,163,255,.16);background:rgba(255,255,255,.04);color:#cbd5e1;transition:background-color .2s,border-color .2s,color .2s,transform .4s var(--hd-spring)}
+#admin-panel .adm-hb:hover{background:rgba(255,255,255,.09);border-color:rgba(148,163,255,.35);color:#fff}
+#admin-panel .adm-hb:active{transform:scale(.9)}
+#admin-panel .admin-tabs{gap:6px;padding:10px 10px 12px;border-bottom:1px solid rgba(148,163,255,.12)}
+#admin-panel .admin-tab{gap:3px;border-radius:14px;border:1px solid rgba(148,163,255,.1);background:rgba(255,255,255,.035);color:#94a3b8;
+  transition:background-color .2s,border-color .2s,color .2s,box-shadow .2s,transform .4s var(--hd-spring)}
+#admin-panel .admin-tab i{font-size:18px;filter:saturate(.85)}
+#admin-panel .admin-tab:hover{background:rgba(255,255,255,.07);color:#e2e8f0;border-color:rgba(148,163,255,.24)}
+#admin-panel .admin-tab:active{transform:scale(.94)}
+#admin-panel .admin-tab.active{color:#fff;border-color:rgba(103,232,249,.6);background:linear-gradient(150deg,rgba(34,211,238,.26),rgba(99,102,241,.26) 60%,rgba(168,85,247,.2));box-shadow:0 0 18px rgba(34,211,238,.18),inset 0 1px 0 rgba(255,255,255,.16)}
+#admin-panel .admin-tab.active i{filter:none;transform:scale(1.08)}
+#admin-panel .admin-tab .adm-tb{top:3px;right:5px;background:linear-gradient(135deg,#fb7185,#e11d48);box-shadow:0 0 0 2px #0b1030,0 0 8px rgba(244,63,94,.55)}
+#admin-panel .admin-content{scrollbar-width:thin;scrollbar-color:rgba(148,163,255,.3) transparent}
+#admin-panel .admin-section-title{display:flex;align-items:center;gap:10px;margin:16px 0 9px;padding:0;border:none;font-size:12.5px;font-weight:700;letter-spacing:.02em;text-transform:none;color:#fde68a}
+#admin-panel .admin-section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(253,230,138,.4),rgba(253,230,138,0))}
+#admin-panel .admin-content>div>.admin-section-title:first-child{margin-top:2px}
+#admin-panel :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),select,textarea){border-radius:10px;background-color:rgba(255,255,255,.045);border:1px solid rgba(148,163,255,.2);color:#e2e8f0;transition:border-color .2s,box-shadow .2s,background-color .2s}
+#admin-panel :is(input,select,textarea):focus{outline:none;border-color:rgba(103,232,249,.7);box-shadow:0 0 0 3px rgba(34,211,238,.15);background-color:rgba(255,255,255,.06)}
+#admin-panel .btn{border-radius:10px}
+@media (max-width:700px){
+  #admin-panel .adm-hd{padding:10px 8px 10px 14px}
+  #admin-panel .adm-hd>b{font-size:16px}
+  #admin-panel .adm-hb{width:40px;height:40px}
+  #admin-panel .admin-tabs{gap:5px;padding:8px 8px 10px}
+  #admin-panel .admin-section-title{font-size:13px}
+}
+/* оформление бога */
+html.god-theme #admin-panel{background:linear-gradient(180deg,#07060e,#000)!important;border-left-color:rgba(255,255,255,.3);box-shadow:-14px 0 50px #000,-1px 0 18px rgba(255,255,255,.1)}
+html.god-theme #admin-panel .adm-hd{background:#000;border-bottom-color:rgba(255,255,255,.25)}
+html.god-theme #admin-panel .adm-hd>b{font-family:'Cormorant SC',Georgia,serif;letter-spacing:.1em;font-size:18px;color:#fff;text-shadow:0 0 10px rgba(255,255,255,.55)}
+html.god-theme #admin-panel .adm-hd>b .adm-shield{color:#fff;background:#000;box-shadow:inset 0 0 0 1px #fff,0 0 12px rgba(255,255,255,.4)}
+html.god-theme #admin-panel .adm-hb{background:#000;border-color:rgba(255,255,255,.3);color:#fff}
+html.god-theme #admin-panel .admin-tab{background:rgba(0,0,0,.6);border-color:rgba(255,255,255,.16);color:#a7a4c0;font-family:'Pixelify Sans',system-ui,sans-serif}
+html.god-theme #admin-panel .admin-tab i{filter:grayscale(1) brightness(1.6)}
+html.god-theme #admin-panel .admin-tab.active{background:#fff;color:#000;border-color:#fff;box-shadow:0 0 16px rgba(255,255,255,.45)}
+html.god-theme #admin-panel .admin-tab.active i{filter:grayscale(1)}
+html.god-theme #admin-panel .admin-tab .adm-tb{background:#fff;color:#000;box-shadow:0 0 0 2px #000}
+html.god-theme #admin-panel .admin-section-title{color:#fff;font-family:'Pixelify Sans',system-ui,sans-serif;letter-spacing:.08em}
+html.god-theme #admin-panel .admin-section-title::after{background:linear-gradient(90deg,rgba(255,255,255,.5),rgba(255,255,255,0))}
+html.god-theme #admin-panel :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),select,textarea){background-color:#000;border-color:rgba(255,255,255,.3)}
+/* 💧 стекло */
+html.lg-on:not(.god-theme) #admin-panel{background:radial-gradient(120% 30% at 100% 0%,rgba(129,140,248,.16),transparent 60%),linear-gradient(200deg,rgba(255,255,255,.12),rgba(255,255,255,.03) 28%,rgba(255,255,255,.02) 75%,rgba(255,255,255,.06)),rgba(10,14,36,.58)!important;
+  -webkit-backdrop-filter:blur(28px) saturate(170%)!important;backdrop-filter:blur(28px) saturate(170%)!important;
+  border-left:1px solid rgba(255,255,255,.24);box-shadow:inset 1px 0 0 rgba(255,255,255,.3),-20px 0 60px rgba(0,0,0,.45)}
+html.lg-on:not(.god-theme) #admin-panel .adm-hd{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.01));border-bottom-color:rgba(255,255,255,.14)}
+html.lg-on:not(.god-theme) #admin-panel .adm-hb{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+html.lg-on:not(.god-theme) #admin-panel .admin-tabs{border-bottom-color:rgba(255,255,255,.14)}
+html.lg-on:not(.god-theme) #admin-panel .admin-tab{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);color:#cbd5e1;box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
+html.lg-on:not(.god-theme) #admin-panel .admin-tab:hover{background:rgba(255,255,255,.12)}
+html.lg-on:not(.god-theme) #admin-panel .admin-tab.active{color:#fff;border-color:rgba(255,255,255,.35);background:radial-gradient(60px 40px at 30% 0%,rgba(255,255,255,.35),transparent 70%),linear-gradient(150deg,rgba(103,232,249,.3),rgba(129,140,248,.26));
+  box-shadow:inset 1.5px 1.5px 0 -.5px rgba(255,255,255,.75),inset -1.5px -1.5px 0 -.5px rgba(255,255,255,.3),0 6px 18px rgba(0,0,0,.25)}
+html.lg-on:not(.god-theme) #admin-panel :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),select,textarea){background-color:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18)}
+</style>
+<script>
+/* ===== вид интерфейса: Космос / Liquid Glass ===== */
+window.HUD=(function(){
+  const R=document.documentElement,KEY='ui_style';
+  const HL='#bottom-left .hd-orb,.hd-pad,#news-tab-btn,#topbar-right,#comm-btn';
+  const JELLY='#bottom-left .hd-orb,.hd-pad,.hd-chip,#user-badge,#streak-btn,#news-tab-btn,#comm-btn';
+  const on=()=>R.classList.contains('lg-on')&&!R.classList.contains('god-theme');
+  const rm=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
+  function cur(){return R.classList.contains('lg-on')?'glass':'cosmos';}
+  function sync(){const w=document.getElementById('ui-style');if(!w)return;const v=cur();w.dataset.v=v;w.querySelectorAll('.us-seg button').forEach(b=>b.setAttribute('aria-checked',b.dataset.v===v?'true':'false'));}
+  function wave(){
+    if(rm()||R.classList.contains('god-theme'))return;
+    const b=document.getElementById('settings-btn');const r=b?b.getBoundingClientRect():{left:24,top:innerHeight-46,width:44,height:44};
+    const x=r.left+r.width/2,y=r.top+r.height/2,far=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));
+    const d=document.createElement('div');d.className='lg-wave';d.style.left=x+'px';d.style.top=y+'px';d.style.setProperty('--ws',(far*2.3/40).toFixed(1));
+    document.body.appendChild(d);setTimeout(()=>d.remove(),1000);
+  }
+  function style(v){
+    v=v==='glass'?'glass':'cosmos';if(v===cur()){sync();return;}
+    try{localStorage.setItem(KEY,v);}catch(e){}
+    R.classList.toggle('lg-on',v==='glass');sync();
+    const th=document.querySelector('#ui-style .us-th');if(th&&!rm()){th.classList.remove('go');void th.offsetWidth;th.classList.add('go');}
+    if(v==='glass')wave();
+  }
+  /* блик следует за пальцем/курсором */
+  let last=null,pend=null,raf=0;
+  function paint(){raf=0;const e=pend;pend=null;if(!e)return;
+    const el=on()&&e.target&&e.target.closest?e.target.closest(HL):null;
+    if(last&&last!==el){last.style.removeProperty('--mx');last.style.removeProperty('--my');}
+    last=el;if(!el)return;const r=el.getBoundingClientRect();
+    el.style.setProperty('--mx',Math.round(e.clientX-r.left)+'px');el.style.setProperty('--my',Math.round(e.clientY-r.top)+'px');}
+  function mv(e){pend=e;if(!raf)raf=requestAnimationFrame(paint);}
+  document.addEventListener('pointermove',mv,{passive:true});
+  document.addEventListener('pointerdown',mv,{passive:true});
+  /* «желе» после нажатия */
+  document.addEventListener('click',e=>{if(!on()||rm())return;const el=e.target&&e.target.closest?e.target.closest(JELLY):null;if(!el)return;
+    el.classList.remove('lg-j');void el.offsetWidth;el.classList.add('lg-j');clearTimeout(el._lgj);el._lgj=setTimeout(()=>el.classList.remove('lg-j'),800);},true);
+  /* настройки открываются прямо под шестерёнкой в шапке */
+  function placeSet(){
+    const p=document.getElementById('settings-popup'),b=document.getElementById('settings-btn');if(!p||!b||!p.classList.contains('open'))return;
+    const r=b.getBoundingClientRect();if(!r.width){p.style.top='62px';p.style.right='12px';return;}
+    const w=p.offsetWidth||236;let right=innerWidth-r.right-6;right=Math.max(8,Math.min(right,innerWidth-w-8));
+    p.style.right=right+'px';p.style.left='auto';p.style.bottom='auto';p.style.top=Math.round(r.bottom+10)+'px';
+  }
+  const _tsp=window.toggleSettingsPopup;
+  if(typeof _tsp==='function')window.toggleSettingsPopup=function(e){_tsp(e);placeSet();};
+  /* шапка на телефоне: если капсула ушла на вторую строку — места много, показываем подписи */
+  let fitRaf=0;
+  function fit(){fitRaf=0;const tb=document.getElementById('topbar'),cap=document.getElementById('topbar-right'),lg=document.getElementById('logo');if(!tb||!cap||!lg)return;
+    tb.classList.remove('hd-two');const two=cap.offsetTop>lg.offsetTop+12;tb.classList.toggle('hd-two',two);placeSet();}
+  const refit=()=>{if(!fitRaf)fitRaf=requestAnimationFrame(fit);};
+  addEventListener('resize',refit);
+  try{const cap=document.getElementById('topbar-right');if(cap)new MutationObserver(rs=>{for(const r of rs){const t=r.target;if(t===cap||t.parentElement===cap||(r.type==='childList'&&t.parentElement===cap&&t.id==='user-badge')){refit();return;}}}).observe(cap,{attributes:true,attributeFilter:['style','class'],subtree:true,childList:true});}catch(e){}
+  setTimeout(refit,0);setTimeout(refit,1500);
+  /* радио в шапке: видимость как у старой кнопки в настройках + эквалайзер, пока играет музыка */
+  let rk=0;
+  setInterval(()=>{const b=document.getElementById('radio-btn');if(!b)return;
+    if(++rk%3===1){try{RADIO.btn();}catch(e){}}
+    let p=false;try{p=!!(typeof bgMusicAudio!=='undefined'&&bgMusicAudio&&!bgMusicAudio.paused);}catch(e){}
+    if(b.classList.contains('play')!==p)b.classList.toggle('play',p);},1000);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();
+  return {style,sync,cur,placeSet,fit:refit};
+})();
+</script>
+<script>
+/* ===== 💧 Liquid Glass: окна вытекают из кнопки и втягиваются обратно ===== */
+window.LIQ=(function(){
+  const R=document.documentElement;
+  const rm=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
+  const on=()=>R.classList.contains('lg-on')&&!R.classList.contains('god-theme')&&!rm()&&!!Element.prototype.animate;
+  let SPR='cubic-bezier(.3,1.35,.5,1)';
+  try{if(CSS.supports('transition-timing-function','linear(0,1)'))SPR='linear(0,.009,.035 2.1%,.141,.281 6.7%,.723 12.9%,.938 16.7%,1.017,1.077,1.121,1.149 24.3%,1.159,1.163,1.161,1.154 29.9%,1.129 32.8%,1.051 39.6%,1.017 43.1%,.991,.977 51%,.974 53.8%,.975 57.1%,.997 69.8%,1.003 76.9%,1.004 83.8%,1)';}catch(e){}
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  /* телефоны и слабые ПК: только transform/opacity (их считает видеокарта), без перерисовки углов и размытия во время полёта */
+  const lite=()=>R.classList.contains('rf-lite')||(typeof PERF!=='undefined'&&PERF.lite);
+  /* откуда открыли: последняя нажатая кнопка (или точка касания) */
+  const CTRL='.hd-chip,.hd-orb,.hd-pad,#news-tab-btn,#comm-btn,#user-badge,#streak-btn,button,a,[onclick],[role=button],.ml-row,.lk-m';
+  let tap=null;
+  document.addEventListener('pointerdown',e=>{const el=e.target&&e.target.closest?e.target.closest(CTRL):null;tap={x:e.clientX,y:e.clientY,t:performance.now(),el};},{capture:true,passive:true});
+  function rectOf(el){const r=el.getBoundingClientRect();if(!r.width||!r.height)return null;return {x:r.left+r.width/2,y:r.top+r.height/2,w:r.width,h:r.height,el};}
+  function origin(){
+    if(!tap||performance.now()-tap.t>1500)return null;
+    const el=tap.el;
+    if(el&&el.isConnected){const o=rectOf(el);if(o&&o.w<=260&&o.h<=140)return o;}
+    return {x:tap.x,y:tap.y,w:44,h:44,el:null};
+  }
+  /* окна сайта: корень → видимая «коробка» */
+  const vis=e=>e.style.display!=='none'&&getComputedStyle(e).display!=='none';
+  const W=[
+    ['#settings-popup',null,e=>e.classList.contains('open')],
+    ['#ml-win','.ml-box',e=>e.classList.contains('on')],
+    ['#games-tablet-overlay','.tablet-shell',e=>e.classList.contains('on')],
+    ['#news-panel',null,e=>e.classList.contains('open')],
+    ['#admin-panel',null,e=>e.classList.contains('open')],
+    ['#sk-win','.sk-box',e=>e.classList.contains('on')],
+    ['#sk-rw','.sk-box',e=>e.classList.contains('on')],
+    ['#radio-win','.rd-box',e=>e.classList.contains('on')],
+    ['.modal-overlay','.modal',vis],
+    ['#planet-dialog','.planet-dialog-inner',vis]
+  ];
+  const boxOf=el=>{const m=el.__liq;return m&&m.box?el.querySelector(m.box):el;};
+  const mo=new MutationObserver(recs=>{const seen=new Set();for(const r of recs){if(seen.has(r.target))continue;seen.add(r.target);check(r.target);}});
+  const ro=window.ResizeObserver?new ResizeObserver(ents=>{for(const en of ents){const b=en.target,el=b.__liqRoot;if(el&&el.__liq&&el.__liq.shown&&!(b.getAnimations&&b.getAnimations().length))keep(el,b);}}):null;
+  function attach(){
+    for(const [sel,box,fn] of W){document.querySelectorAll(sel).forEach(el=>{if(el.__liq)return;el.__liq={box,fn,shown:false};try{el.__liq.shown=!!fn(el);}catch(e){}
+      mo.observe(el,{attributes:true,attributeFilter:['class','style']});});}
+  }
+  function keep(el,b){const m=el.__liq;const r=b.getBoundingClientRect();if(r.width&&r.height){m.rect={left:r.left,top:r.top,width:r.width,height:r.height};m.br=getComputedStyle(b).borderRadius||'18px';}}
+  function check(el){const m=el.__liq;if(!m)return;let now=false;try{now=!!m.fn(el);}catch(e){}
+    if(now===m.shown)return;m.shown=now;if(now)opened(el);else closed(el);}
+  /* ---- появление: капля из кнопки разливается в окно ---- */
+  function opened(el){
+    const m=el.__liq;m.org=origin();
+    if(el.__liqT){el.style.transition=el.__liqT.t;el.__liqT=null;}
+    const b=boxOf(el);if(!b)return;
+    if(ro&&!b.__liqRoot){b.__liqRoot=el;ro.observe(b);}
+    if(!on()){keep(el,b);return;}
+    morphIn(el,b,m.org);
+  }
+  function morphIn(el,b,o){
+    const pt=b.style.transition,ptf=b.style.transform;
+    b.style.transition='none';b.style.transform='none';
+    const r=b.getBoundingClientRect();
+    b.style.transform=ptf;
+    if(!r.width||!r.height){b.style.transition=pt;return;}
+    const m=el.__liq;m.rect={left:r.left,top:r.top,width:r.width,height:r.height};
+    const brF=getComputedStyle(b).borderRadius||'18px';m.br=brF;
+    const cx=r.left+r.width/2,cy=r.top+r.height/2;
+    const f=o||{x:cx,y:cy+30,w:Math.min(90,r.width*.25),h:Math.min(90,r.height*.25)};
+    const sx=clamp(f.w/r.width,.03,1),sy=clamp(f.h/r.height,.03,1);
+    const dx=f.x-cx,dy=f.y-cy,d=Math.hypot(dx,dy)||1,ux=Math.abs(dx)/d,uy=Math.abs(dy)/d;
+    const ms=.5,st=.2;
+    const msx=Math.max(sx,ms*(1+st*ux-st*.7*uy)),msy=Math.max(sy,ms*(1+st*uy-st*.7*ux));
+    const pto=b.style.transformOrigin;b.style.transformOrigin='50% 50%';
+    const L=lite(),dur=L?560:680;
+    b.classList.add('lg-mi');if(L)b.classList.add('lg-fly');
+    if(o&&o.el)pour(o.el);
+    /* полёт и разлив: только transform/opacity — анимация идёт в видеокарте и не зависит от загрузки страницы */
+    const a=b.animate([
+      {offset:0,transform:`translate(${dx}px,${dy}px) scale(${sx},${sy})`,opacity:L?.6:.75,easing:'cubic-bezier(.45,0,.3,1)'},
+      {offset:.34,transform:`translate(${dx*.3}px,${dy*.3}px) scale(${msx},${msy})`,opacity:1,easing:'cubic-bezier(.2,.7,.3,1)'},
+      {offset:.66,transform:'translate(0px,0px) scale(1.03,.975)',easing:'ease-in-out'},
+      {offset:.84,transform:'translate(0px,0px) scale(.993,1.012)',easing:'ease-out'},
+      {offset:1,transform:'translate(0px,0px) scale(1,1)',opacity:1}
+    ],{duration:dur});
+    /* форма капли — отдельной анимацией и только на ПК */
+    let a2=null;if(!L)a2=b.animate([{borderRadius:'50%'},{offset:.34,borderRadius:'44% 56% 52% 48% / 52% 44% 56% 48%'},{offset:.66,borderRadius:brF},{borderRadius:brF}],{duration:dur});
+    const done=()=>{b.style.transition=pt;b.style.transformOrigin=pto;b.classList.remove('lg-mi','lg-fly');if(a2)try{a2.cancel();}catch(e){}};
+    a.onfinish=done;a.oncancel=done;
+  }
+  /* ---- закрытие: стекло втягивается обратно в кнопку ---- */
+  function closed(el){
+    const m=el.__liq;if(!on()||!m.rect)return;
+    if(el.id==='news-panel'||el.id==='games-tablet-overlay'){el.__liqT={t:el.style.transition};el.style.transition='none';}
+    let t=null;if(m.org&&m.org.el&&m.org.el.isConnected)t=rectOf(m.org.el);if(!t&&m.org)t=m.org;
+    ghost(m.rect,m.br||'18px',t);
+  }
+  function ghost(r,br,t){
+    const g=document.createElement('div');g.className='lg-ghost';
+    g.style.cssText='left:'+r.left+'px;top:'+r.top+'px;width:'+r.width+'px;height:'+r.height+'px;border-radius:'+br;
+    document.body.appendChild(g);
+    const cx=r.left+r.width/2,cy=r.top+r.height/2;
+    const T=t||{x:cx,y:cy,w:30,h:30};
+    const sx=clamp(T.w/r.width,.03,1),sy=clamp(T.h/r.height,.03,1),dx=T.x-cx,dy=T.y-cy;
+    const L=lite(),dur=L?400:460;
+    const a=g.animate([
+      {offset:0,transform:'translate(0px,0px) scale(1,1)',opacity:.95},
+      {offset:.3,transform:`translate(${dx*.06}px,${dy*.06}px) scale(.94,.97)`,opacity:.95},
+      {offset:1,transform:`translate(${dx}px,${dy}px) scale(${sx},${sy})`,opacity:.2}
+    ],{duration:dur,easing:'cubic-bezier(.55,0,.8,.25)'});
+    if(!L)g.animate([{borderRadius:br},{offset:.3,borderRadius:'46% 54% 50% 50% / 54% 46% 54% 46%'},{borderRadius:'50%'}],{duration:dur,easing:'cubic-bezier(.55,0,.8,.25)'});
+    const end=()=>{g.remove();if(t&&t.el)gulp(t.el);};a.onfinish=end;a.oncancel=end;
+  }
+  /* ---- кнопки тоже живые ---- */
+  function pour(el){try{el.classList.remove('lg-src');void el.offsetWidth;el.classList.add('lg-src');clearTimeout(el.__lgs);el.__lgs=setTimeout(()=>el.classList.remove('lg-src'),900);
+    el.animate([{scale:'1'},{scale:'.8 1.16',offset:.22},{scale:'1.14 .9',offset:.5},{scale:'.97 1.03',offset:.75},{scale:'1'}],{duration:620,easing:'ease-out'});}catch(e){}}
+  function gulp(el){try{el.animate([{scale:'1'},{scale:'1.22 .84',offset:.3},{scale:'.92 1.08',offset:.6},{scale:'1'}],{duration:480,easing:'ease-out'});}catch(e){}}
+  attach();setInterval(attach,2500);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attach);
+  return {attach,ghost,_W:W};
+})();
+</script>
 </body>
 </html>
