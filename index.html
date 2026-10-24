@@ -14221,7 +14221,7 @@ html.lg-on:not(.god-theme) #games-tablet-overlay{background:rgba(2,4,12,.45)!imp
 html.rf-lite.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,#news-tab-btn.hd-news,#topbar-right)::before,html.rf-lite.lg-on:not(.god-theme) #comm-btn .lk-orb{-webkit-backdrop-filter:blur(5px) saturate(190%) brightness(1.1)!important;backdrop-filter:blur(5px) saturate(190%) brightness(1.1)!important}
 html.rf-lite.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,#radio-win .rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,#news-panel,#admin-panel,#toast,#news-notify){-webkit-backdrop-filter:blur(12px) saturate(180%)!important;backdrop-filter:blur(12px) saturate(180%)!important}
 /* пока окно летит — без размытия: пересчёт размытия каждый кадр и давал лаги. Иней появляется, когда окно встало */
-html.lg-on.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,#radio-win .rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,#news-panel,#admin-panel).lg-fly{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background-color:rgba(14,18,46,calc(var(--lg-wa) + .25))!important}
+html.lg-on.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,#radio-win .rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,#news-panel,#admin-panel).lg-fly{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background-color:rgba(36,36,42,calc(var(--lg-wa) + .34))!important}
 
 /* --- настройки вида --- */
 #ui-style{display:flex;flex-direction:column;gap:6px}
@@ -14840,7 +14840,7 @@ html.lg-on:not(.god-theme) #radio-win .rd-needle{background:#ff375f!important;bo
 
 /* ---- общие мелочи для всех тем ---- */
 /* вкладка новостей больше не торчит поверх открытых окон */
-body:has(.modal-overlay[style*="flex"],#ml-win.on,#sk-win.on,#radio-win.on,#settings-popup.open,#games-tablet-overlay.on) #news-tab-btn{opacity:0!important;pointer-events:none!important}
+body:has(.modal-overlay[style*="flex"],#ml-win.on,#sk-win.on,#radio-win.on,#settings-popup.open,#games-tablet-overlay.on,.lg-closing) #news-tab-btn{opacity:0!important;pointer-events:none!important}
 #settings-popup.open~#news-tab-btn{opacity:0;pointer-events:none}
 </style>
 <script>
@@ -14850,7 +14850,11 @@ window.HUD=(function(){
   const TILT='#bottom-left .hd-orb,.hd-pad,#comm-btn';
   const on=()=>R.classList.contains('lg-on')&&!R.classList.contains('god-theme');
   const rm=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
-  function cur(){return R.classList.contains('lg-on')?'glass':'cosmos';}
+  let pendV=null,pendT=0,akT=0;
+  function cur(){return pendV||(R.classList.contains('lg-on')?'glass':'cosmos');}
+  const AKnow=()=>{const v=parseFloat(getComputedStyle(R).getPropertyValue('--ak'));return isFinite(v)&&v>0?v:1;};
+  const live=()=>!R.classList.contains('fx-off')&&!rm();
+  const shown=id=>{const w=document.getElementById(id);return !!(w&&w.offsetParent);};
   const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}};
   const AKV={slow:1.6,norm:1,fast:.6,off:1};
   function curA(){const a=ls('ui_anim');return AKV[a]?a:'norm';}
@@ -14863,20 +14867,20 @@ window.HUD=(function(){
   /* прозрачность стекла: 0 — матовое, 100 — почти прозрачное */
   function glassT(v){v=Math.max(0,Math.min(100,Math.round(+v||0)));ls('ui_glass_t',String(v));R.style.setProperty('--lg-t',(v/100).toFixed(2));const l=document.getElementById('us-tv');if(l)l.textContent=v+'%';}
   /* скорость всех анимаций сайта (наших): плавно / обычно / быстро / выкл */
-  function anim(a){if(!AKV[a])a='norm';ls('ui_anim',a);R.style.setProperty('--ak',AKV[a]);R.classList.toggle('fx-off',a==='off');sync();squish('us-ak');}
-  function wave(){
-    if(rm()||R.classList.contains('god-theme'))return;
-    const b=document.getElementById('settings-btn');const r=b?b.getBoundingClientRect():{left:24,top:innerHeight-46,width:44,height:44};
-    const x=r.left+r.width/2,y=r.top+r.height/2,far=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));
-    const d=document.createElement('div');d.className='lg-wave';d.style.left=x+'px';d.style.top=y+'px';d.style.setProperty('--ws',(far*2.3/40).toFixed(1));
-    document.body.appendChild(d);setTimeout(()=>d.remove(),1000);
-  }
+  /* сначала ползунок плавно переезжает, и только потом включается выбранная скорость — даже «Выкл» */
+  function anim(a){if(!AKV[a])a='norm';ls('ui_anim',a);clearTimeout(akT);
+    const apply=()=>{R.style.setProperty('--ak',AKV[a]);R.classList.toggle('fx-off',a==='off');};
+    if(a==='off'&&live()&&shown('us-ak')){sync();squish('us-ak');akT=setTimeout(apply,Math.round(480*AKnow()));}
+    else{apply();sync();squish('us-ak');}}
+  /* смена вида: ползунок «Космос / Liquid Glass» сначала спокойно доезжает до места, и только когда он встал —
+     меняется оформление. Раньше тема включалась сразу, первый кадр стекла на телефоне тяжёлый — и анимация ползунка «пропадала» */
   function style(v){
     v=v==='glass'?'glass':'cosmos';if(v===cur()){sync();return;}
     try{localStorage.setItem(KEY,v);}catch(e){}
-    R.classList.toggle('lg-on',v==='glass');sync();
-    squish('us-v');
-    if(v==='glass'&&!R.classList.contains('fx-off'))wave();
+    clearTimeout(pendT);
+    const apply=()=>{pendV=null;R.classList.toggle('lg-on',v==='glass');sync();};
+    if(live()&&shown('us-v')){pendV=v;sync();squish('us-v');pendT=setTimeout(apply,Math.round(460*AKnow()));}
+    else{apply();squish('us-v');}
   }
   /* 3D: на ПК стеклянные кнопки наклоняются к курсору, блик смещается (только transform — без перерисовки) */
   let tl=null,pend=null,raf=0;
