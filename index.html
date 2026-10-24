@@ -7785,8 +7785,8 @@ function goalText(go){
 const GQ={pend:{},ft:{},busy:{},last:{},cur:null,games:{},tier:{},sp:null,spP:null,noDb:false,cele:[]};
 function gqActive(){if(!TM.on&&!godPresent())return [];const qs=gqState();return dlgList().filter(d=>d&&d.type==='quest'&&qGoals(d).length&&qs[d.id]&&qs[d.id].s==='accepted');}
 /* виды рыб: для фильтра по редкости и для выбора конкретной рыбы в админке */
-function gqSpecies(){if(!GQ.spP)GQ.spP=Promise.resolve(sb.from('fish_species').select('key,name,tier')).then(r=>{GQ.sp=((r&&r.data)||[]).slice().sort((a,b)=>(TIER_R[a.tier]||0)-(TIER_R[b.tier]||0)||String(a.name).localeCompare(String(b.name),'ru'));GQ.sp.forEach(s=>{GQ.tier[s.key]=s.tier||'';});return GQ.sp;}).catch(()=>{GQ.spP=null;return [];});return GQ.spP;}
-async function gqTier(key){if(!key)return '';if(GQ.tier[key]!=null)return GQ.tier[key];await gqSpecies();return GQ.tier[key]||'';}
+function gqSpecies(){if(!GQ.spP)GQ.spP=Promise.resolve(sb.from('fish_species').select('key,name,tier')).then(r=>{GQ.sp=((r&&r.data)||[]).filter(s=>!/^god_/.test(s.key)).concat([{key:'god_abyss',name:'Око Бездны',tier:'divine'},{key:'god_mirror',name:'Зеркальная',tier:'divine'},{key:'god_judge',name:'Суд бога',tier:'divine'}]).slice().sort((a,b)=>(TIER_R[a.tier]||0)-(TIER_R[b.tier]||0)||String(a.name).localeCompare(String(b.name),'ru'));GQ.sp.forEach(s=>{GQ.tier[s.key]=s.tier||'';});return GQ.sp;}).catch(()=>{GQ.spP=null;return [];});return GQ.spP;}
+async function gqTier(key){if(!key)return '';if(/^god_/.test(key))return 'divine';if(GQ.tier[key]!=null)return GQ.tier[key];await gqSpecies();return GQ.tier[key]||'';}
 function fishOk(e,go){if(go.sp)return e.key===go.sp;const f=go.f,tier=e.tier;if(!f)return true;if(f==='divine')return tier==='divine';if(f==='secret')return tier==='secret'||tier==='divine';return (TIER_R[tier]||0)>=(TIER_R[f]||0);}
 /* события: open, run{score}, award{blue,gold}, stars{n}, fish{success,fishKey,amount}, time{min}, slot{tier,gold_delta}, doors, m{k,add,cur} — из счётчика в игре */
 async function gqEv(gid,kind,data){
