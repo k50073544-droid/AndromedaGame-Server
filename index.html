@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600;700;800&display=swap">
 <title>TheAndrameda Universe</title>
-<script>try{if(localStorage.getItem('ui_style')==='glass')document.documentElement.classList.add('lg-on')}catch(e){}</script>
+<script>try{var h=document.documentElement,ls=localStorage;if(ls.getItem('ui_style')==='glass')h.classList.add('lg-on');var t=ls.getItem('ui_glass_t');if(t!==null)h.style.setProperty('--lg-t',(Math.max(0,Math.min(100,+t))/100).toFixed(2));var a=ls.getItem('ui_anim');var K={slow:1.6,fast:.6,off:1};if(a&&K[a])h.style.setProperty('--ak',K[a]);if(a==='off')h.classList.add('fx-off');}catch(e){}</script>
 <link id="site-favicon" rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪐</text></svg>">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -2072,6 +2073,7 @@ html.god-theme .ed-save{background:rgba(0,0,0,.96)}
 <!-- КНОПКА ШТОРКИ НОВОСТЕЙ -->
 <button id="news-tab-btn" class="hd-news" onclick="toggleNewsPanel()" title="Новости" aria-label="Новости">
   <svg class="hd-ic" viewBox="0 0 24 24" aria-hidden="true"><g class="hd-w1"><path d="M7.8 4.7a6.14 6.14 0 0 0-.8 7.5"/><path d="M16.2 4.8c2 2 2.26 5.11.8 7.47"/></g><g class="hd-w2"><path d="M4.9 16.1C1 12.2 1 5.8 4.9 1.9"/><path d="M19.1 1.9a9.96 9.96 0 0 1 0 14.1"/></g><circle cx="12" cy="9" r="2"/><path d="M9.5 18h5"/><path d="m8 22 4-11 4 11"/></svg>
+  <span class="hd-ping" aria-hidden="true"></span>
   <span class="ntb-badge" id="news-badge"></span>
 </button>
 
@@ -2121,10 +2123,14 @@ html.god-theme .ed-save{background:rgba(0,0,0,.96)}
 <!-- Настройки попап -->
 <div id="settings-popup">
   <h4>⚙️ Настройки</h4>
-  <div id="ui-style" data-v="cosmos">
+  <div id="ui-style" data-v="cosmos" data-ak="norm">
     <div class="us-h">Вид интерфейса</div>
-    <div class="us-seg" role="radiogroup" aria-label="Вид интерфейса"><i class="us-th"></i><button type="button" data-v="cosmos" role="radio" onclick="HUD.style('cosmos')">🌌 Космос</button><button type="button" data-v="glass" role="radio" onclick="HUD.style('glass')">💧 Liquid Glass</button></div>
-    <div class="us-note">Стекло с размытием и мягкими анимациями. На слабых телефонах может работать медленнее.</div>
+    <div class="us-seg" id="us-v" role="radiogroup" aria-label="Вид интерфейса"><i class="us-th"></i><button type="button" data-v="cosmos" role="radio" onclick="HUD.style('cosmos')">🌌 Космос</button><button type="button" data-v="glass" role="radio" onclick="HUD.style('glass')">💧 Liquid Glass</button></div>
+    <div class="us-row us-glass"><label for="us-t">💧 Прозрачность стекла</label><b id="us-tv">55%</b></div>
+    <input class="us-rng us-glass" type="range" id="us-t" min="0" max="100" step="1" value="55" oninput="HUD.glassT(this.value)" aria-label="Прозрачность стекла">
+    <div class="us-h">Скорость анимаций</div>
+    <div class="us-seg us4" id="us-ak" role="radiogroup" aria-label="Скорость анимаций"><i class="us-th"></i><button type="button" data-a="slow" role="radio" onclick="HUD.anim('slow')">Плавно</button><button type="button" data-a="norm" role="radio" onclick="HUD.anim('norm')">Обычно</button><button type="button" data-a="fast" role="radio" onclick="HUD.anim('fast')">Быстро</button><button type="button" data-a="off" role="radio" onclick="HUD.anim('off')">Выкл</button></div>
+    <div class="us-note">Тормозит на слабом телефоне? Поставь скорость «Быстро» или выключи анимации.</div>
     <div class="us-god">Сейчас прорыв бога — пока он здесь, действует его оформление.</div>
   </div>
   <div id="music-volume-section" style="display:none">
@@ -2930,13 +2936,16 @@ function isDecoLimitReachedFor(count,ownerId,restr){const r=restr||{};if(r.infin
 function orbitSpeedToDuration(speed){const s=Math.max(1,Math.min(10,parseInt(speed)||5));return Math.round(3+((10-s)/9)*57)+'s';}
 function orbitSpeedToDurationMs(speed){const s=Math.max(1,Math.min(10,parseInt(speed)||5));return(3+((10-s)/9)*57)*1000;}
 function animateOrbits(now){
+  now=now||performance.now();const pz=document.documentElement.classList.contains('rf-paused')||document.hidden;
   for(const o of orbitItems){
-    const elapsed=(now-o.start)%o.durationMs;
-    const angle=(elapsed/o.durationMs)*Math.PI*2;
-    const dx=Math.cos(angle)*o.radius,dy=Math.sin(angle)*o.radius;
-    o.el.style.transform='translate('+dx.toFixed(2)+'px,'+dy.toFixed(2)+'px)';
+    if(!o.el||!o.el.isConnected)continue;
+    if(!o.wa||o.waEl!==o.el){
+      try{o.el.style.transform='';const r=o.radius;o.wa=o.el.animate([{transform:'rotate(0deg) translateX('+r+'px) rotate(0deg)'},{transform:'rotate(360deg) translateX('+r+'px) rotate(-360deg)'}],{duration:o.durationMs,iterations:Infinity});o.wa.currentTime=((now-o.start)%o.durationMs+o.durationMs)%o.durationMs;o.waEl=o.el;}
+      catch(e){const elapsed=(now-o.start)%o.durationMs,angle=(elapsed/o.durationMs)*Math.PI*2;o.el.style.transform='translate('+(Math.cos(angle)*o.radius).toFixed(2)+'px,'+(Math.sin(angle)*o.radius).toFixed(2)+'px)';continue;}
+    }
+    if(pz&&o.wa.playState==='running')o.wa.pause();else if(!pz&&o.wa.playState==='paused')o.wa.play();
   }
-  orbitRafId=requestAnimationFrame(animateOrbits);
+  orbitRafId=setTimeout(()=>animateOrbits(performance.now()),400);
 }
 function getOrbitValue(rangeId,numId){const n=parseInt(document.getElementById(numId)?.value);if(!isNaN(n)&&n>0)return n;const r=parseInt(document.getElementById(rangeId)?.value);return isNaN(r)?0:r;}
 
@@ -6615,7 +6624,7 @@ function drawCracks(lv,len,h,animate,cfo){
 /* ---------- кадр ---------- */
 function kick(){if(!R.raf)R.raf=requestAnimationFrame(frame);}
 function frame(ts){
-  R.raf=0;if(typeof PERF!=='undefined'&&PERF.covered){R.lastT=0;return;}
+  R.raf=0;if(typeof PERF!=='undefined'&&(PERF.covered||(PERF.paused&&document.documentElement.classList.contains('lg-on')))){R.lastT=0;return;}
   const dt=Math.min(0.06,(ts-(R.lastT||ts))/1000)||0.016;R.lastT=ts;R.frameN++;
   let need=false;const v=view();
   const c=R.cine;
@@ -8118,6 +8127,8 @@ if(PERF.lite)document.documentElement.classList.add('rf-lite');
 function mapCovered(){
   if(document.getElementById('pg-frame'))return 2;/* игра на весь экран — карту можно не рисовать совсем */
   const t=$('games-tablet-overlay');if(t&&t.classList.contains('on'))return 1;
+  if(document.querySelector('.lg-closing'))return 1;/* окно сворачивается — космос проснётся, когда анимация закончится */
+  if(document.documentElement.classList.contains('lg-on')&&!document.documentElement.classList.contains('god-theme')&&document.querySelector('#ml-win.on,#admin-panel.open,#news-panel.open,.modal-overlay[style*="flex"],#sk-win.on,#radio-win.on'))return 1;/* стекло: пока открыто окно, космос за ним замирает — размытие не пересчитывается каждый кадр */
   if(innerWidth<700){
     const n=$('news-panel');if(n&&n.classList.contains('open'))return 1;
     const c=$('ml-win');if(c&&c.classList.contains('on'))return 1;
@@ -8128,7 +8139,7 @@ function mapCovered(){
 }
 function perfTick(){
   const lv=mapCovered(),cv=lv===2,pz=lv>=1,H=document.documentElement;
-  if(pz!==PERF.paused){PERF.paused=pz;H.classList.toggle('rf-paused',pz);}
+  if(pz!==PERF.paused){PERF.paused=pz;H.classList.toggle('rf-paused',pz);if(!pz&&!PERF.covered){R.lastT=0;try{kick();}catch(e){}}}
   if(cv!==PERF.covered){PERF.covered=cv;H.classList.toggle('rf-covered',cv);if(!cv){R.lastT=0;const rt=$('rf-root');if(rt)rt._tf='';if(G.el)G.el._tf='';kick();}}
 }
 setInterval(perfTick,250);
@@ -13591,11 +13602,11 @@ async function clZero(i,gold,tk){
 .lk-ico .lk-env{transform-box:fill-box;transform-origin:50% 100%;transition:transform .45s cubic-bezier(.3,1.6,.5,1)}
 .lk-ico .lk-env rect{fill:rgba(224,231,255,.55);stroke:rgba(255,255,255,.75);stroke-width:1}
 .lk-ico .lk-env path{fill:none;stroke:rgba(79,70,229,.8);stroke-width:1.2;stroke-linejoin:round}
-.lk-fab.mail .lk-env{transform:translate(1px,-3px) rotate(12deg);animation:lkEnv 2.4s ease-in-out .5s infinite}
+.lk-fab.mail .lk-env{transform:translate(1px,-3px) rotate(12deg);animation:lkEnv 2.4s ease-in-out .5s 3}
 .lk-fab.mail .lk-env rect{fill:url(#lkgE);stroke:#fff7d6}
 .lk-fab.mail .lk-env path{stroke:#92400e}
 @keyframes lkEnv{0%,100%{transform:translate(1px,-3px) rotate(12deg)}50%{transform:translate(1px,-5px) rotate(4deg)}}
-.lk-fab.chat .lk-dots circle{animation:lkDot 1.2s ease-in-out infinite}
+.lk-fab.chat .lk-dots circle{animation:lkDot 1.2s ease-in-out 4}
 .lk-fab.chat .lk-dots circle:nth-child(2){animation-delay:.15s}
 .lk-fab.chat .lk-dots circle:nth-child(3){animation-delay:.3s}
 @keyframes lkDot{0%,60%,100%{transform:translateY(0);fill:#4f46e5}30%{transform:translateY(-2.6px);fill:#0891b2}}
@@ -13931,7 +13942,6 @@ html.god-theme.gev-on .ml-row.unread .ml-top b::before{background:#ff4d79;box-sh
   transition:background-color .2s,color .2s,box-shadow .2s,transform .45s var(--hd-spring)}
 .hd-chip .hd-ic{width:17px;height:17px}
 .hd-chip:hover{background-color:rgba(255,255,255,.08)}
-.hd-chip:active{transform:scale(.93)}
 .hd-chip:focus-visible,#bottom-left .hd-orb:focus-visible,.hd-pad:focus-visible,#news-tab-btn.hd-news:focus-visible,#user-badge:focus-visible,#streak-btn:focus-visible{outline:2px solid #67e8f9;outline-offset:2px}
 .hd-lbs{display:none}
 .hd-adm{color:#c4b5fd}
@@ -13984,11 +13994,12 @@ body:has(#god-dlg.on) #radio-btn,body:has(.gd-menu) #radio-btn{opacity:0;pointer
 /* огонёк и профиль внутри капсулы */
 #topbar-right .sk-btn{height:34px;box-sizing:border-box;margin:0;padding:0 11px 0 7px;border-radius:999px;border:1px solid transparent;background:rgba(255,255,255,.05);transition:background-color .2s,transform .45s var(--hd-spring)}
 #topbar-right .sk-btn:hover{background:rgba(251,146,60,.14);border-color:transparent}
-#topbar-right .sk-btn:active{transform:scale(.93)}
+#topbar-right .sk-btn.risk{animation:none}
+#topbar-right .sk-btn.risk::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(251,146,60,.85),0 0 9px rgba(251,146,60,.35);opacity:0;animation:hdRisk calc(2.6s*var(--ak,1)) ease-in-out infinite}
+@keyframes hdRisk{50%{opacity:1}}
 #topbar-right .sk-btn .sk-mini{left:10px;right:10px;bottom:3px}
 #user-badge.user-badge-btn{height:34px;box-sizing:border-box;padding:0 12px 0 4px;gap:7px;border-radius:999px;border:none;background:rgba(255,255,255,.05);color:#e2e8f0;transition:background-color .2s,transform .45s var(--hd-spring)}
 #user-badge.user-badge-btn:hover{background:rgba(103,232,249,.12)}
-#user-badge.user-badge-btn:active{transform:scale(.95)}
 #user-badge .avatar-circle{width:26px;height:26px;font-size:11px;box-shadow:0 0 0 1.5px rgba(103,232,249,.65),0 0 8px rgba(34,211,238,.35)}
 .ub-t{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;text-align:left}
 .ub-n{font:600 12px/1.1 system-ui,'Segoe UI',sans-serif;color:#f1f5f9;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -14006,7 +14017,6 @@ body:has(#god-dlg.on) #radio-btn,body:has(.gd-menu) #radio-btn{opacity:0;pointer
 #bottom-left .hd-orb .hd-ic{position:relative;z-index:1;filter:drop-shadow(0 0 5px rgba(103,232,249,.55))}
 @media (hover:hover){#bottom-left .hd-orb:hover{transform:scale(1.07)}}
 @media (hover:hover){#bottom-left .hd-orb:hover::before{opacity:1;transform:rotate(120deg)}}
-#bottom-left .hd-orb:active{transform:scale(.9)}
 #bottom-left .hd-add{color:#fff;background:radial-gradient(circle at 34% 26%,#d8b4fe 0%,#9b6cf7 26%,#6025c9 56%,#2a0f63 84%,#16083a 100%);
   box-shadow:0 0 0 1px rgba(216,180,254,.4),0 6px 16px rgba(0,0,0,.5),0 0 20px rgba(139,92,246,.5),inset 0 -7px 12px rgba(34,211,238,.3),inset 0 4px 8px rgba(255,255,255,.18)}
 #bottom-left .hd-add .hd-ic{width:24px;height:24px;stroke-width:2.4;filter:drop-shadow(0 1px 3px rgba(30,0,80,.6))}
@@ -14024,7 +14034,7 @@ body:has(#god-dlg.on) #radio-btn,body:has(.gd-menu) #radio-btn{opacity:0;pointer
   background:radial-gradient(120% 80% at 50% 0%,rgba(103,232,249,.24),transparent 62%),linear-gradient(170deg,#0c1b3d,#050b1c);
   box-shadow:inset 0 0 0 1px rgba(103,232,249,.32),inset 0 0 12px rgba(34,211,238,.16)}
 .hd-pad-scr::before{content:'';position:absolute;inset:0;opacity:.6;background-image:linear-gradient(rgba(103,232,249,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(103,232,249,.08) 1px,transparent 1px);background-size:5px 5px}
-.hd-pad-scr::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.28) 50%,transparent 62%);background-size:260% 100%;background-position:130% 0;opacity:0}
+.hd-pad-scr::after{content:'';position:absolute;top:0;bottom:0;left:0;width:55%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.3) 50%,transparent);transform:translateX(-120%);opacity:0;pointer-events:none}
 .hd-pad-ic{position:relative;z-index:1;width:30px;height:30px;filter:drop-shadow(0 0 5px rgba(34,211,238,.55));transition:transform .5s var(--hd-spring)}
 .hd-pad-ic .hd-pb{fill:url(#hdgPad)}
 .hd-pad-ic .hd-pd{fill:none;stroke:#0b1030;stroke-width:1.9;stroke-linecap:round}
@@ -14032,10 +14042,9 @@ body:has(#god-dlg.on) #radio-btn,body:has(.gd-menu) #radio-btn{opacity:0;pointer
 .hd-pad-home{width:16px;height:3px;border-radius:2px;margin-top:4px;flex:0 0 auto;background:rgba(103,232,249,.5)}
 @media (hover:hover){.hd-pad:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(0,0,0,.55),0 0 26px rgba(34,211,238,.35),inset 0 1px 0 rgba(255,255,255,.14)}}
 @media (hover:hover){.hd-pad:hover .hd-pad-ic{transform:rotate(-10deg) scale(1.1)}}
-@media (hover:hover){.hd-pad:hover .hd-pad-scr::after{opacity:1;animation:hdSheen 1.1s ease-out}}
-.hd-pad:active{transform:scale(.93)}
-.hd-pad:has(#games-badge[style*="flex"]) .hd-pad-scr::after{opacity:1;animation:hdSheen 3.2s ease-in-out infinite}
-@keyframes hdSheen{0%{background-position:130% 0}60%,100%{background-position:-30% 0}}
+@media (hover:hover){.hd-pad:hover .hd-pad-scr::after{opacity:1;animation:hdSheen calc(1.1s*var(--ak,1)) ease-out}}
+.hd-pad:has(#games-badge[style*="flex"]) .hd-pad-scr::after{opacity:1;animation:hdSheen calc(3.2s*var(--ak,1)) ease-in-out infinite}
+@keyframes hdSheen{0%{transform:translateX(-120%)}60%,100%{transform:translateX(220%)}}
 
 /* --- значки-счётчики --- */
 .hd-badge{position:absolute;top:-6px;right:-6px;z-index:3;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:9px;display:none;align-items:center;justify-content:center;
@@ -14053,8 +14062,11 @@ body:has(#god-dlg.on) #radio-btn,body:has(.gd-menu) #radio-btn{opacity:0;pointer
 @media (hover:hover){#news-tab-btn.hd-news:hover{width:44px;color:#ecfeff;box-shadow:-6px 0 22px rgba(0,0,0,.45),-2px 0 22px rgba(34,211,238,.3),inset 1px 1px 0 rgba(255,255,255,.1)}}
 #news-tab-btn.hd-news:hover .hd-w2{opacity:1}
 #news-tab-btn.hd-news:has(.ntb-badge[style*="flex"]){color:#ecfeff;border-color:rgba(103,232,249,.7)}
-#news-tab-btn.hd-news:has(.ntb-badge[style*="flex"]) .hd-w1{animation:hdWave 1.6s ease-in-out infinite}
-#news-tab-btn.hd-news:has(.ntb-badge[style*="flex"]) .hd-w2{animation:hdWave 1.6s ease-in-out .25s infinite}
+#news-tab-btn.hd-news:has(.ntb-badge[style*="flex"]) .hd-w2{opacity:1}
+.hd-ping{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;border:2px solid rgba(103,232,249,.75);opacity:0;pointer-events:none;box-sizing:border-box}
+#news-tab-btn.hd-news:has(.ntb-badge[style*="flex"]) .hd-ping{animation:hdPing calc(1.8s*var(--ak,1)) ease-out infinite}
+html.god-theme .hd-ping{border-color:#fff}
+@keyframes hdPing{0%{transform:scale(.55);opacity:.95}100%{transform:scale(1.5);opacity:0}}
 @keyframes hdWave{0%,100%{opacity:.25}40%{opacity:1}}
 #news-tab-btn.hd-news .ntb-badge{position:absolute;top:-6px;left:-6px;right:auto;width:auto;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:9px;
   font:800 10px/1 system-ui,sans-serif;color:#fff;background:linear-gradient(135deg,#fb7185,#e11d48);box-shadow:0 0 0 2px #070a1a,0 0 10px rgba(244,63,94,.6);writing-mode:horizontal-tb}
@@ -14076,11 +14088,11 @@ body:has(#god-dlg.on) #radio-btn,body:has(.gd-menu) #radio-btn{opacity:0;pointer
   #user-badge .ub-t{position:absolute;right:-5px;bottom:-5px;z-index:2}
   #user-badge .ub-l{font-size:8px;line-height:1;padding:2px 4px;border-radius:7px;color:#fff;background:linear-gradient(135deg,#0891b2,#6366f1);box-shadow:0 0 0 1.5px #0b1030}
   #topbar-right .ticket-badge{top:-6px;right:-5px;min-width:15px;height:15px;font-size:8.5px}
-  .hd-gold{animation:hdCta 4.5s ease-in-out infinite}
+  .hd-gold::after{content:'';position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(251,191,36,.95),0 0 14px rgba(251,191,36,.6);opacity:0;animation:hdCta calc(4.5s*var(--ak,1)) ease-in-out infinite}
   #bottom-left{left:16px;bottom:22px}
   #bottom-right{right:16px}
 }
-@keyframes hdCta{0%,70%,100%{box-shadow:inset 0 0 0 1px rgba(251,191,36,.5)}82%{box-shadow:inset 0 0 0 1px rgba(251,191,36,.9),0 0 14px rgba(251,191,36,.55)}}
+@keyframes hdCta{0%,70%,100%{opacity:0}82%{opacity:1}}
 @media (max-width:380px){
   #topbar{padding:7px 6px 7px 8px;gap:5px}
   #logo{font-size:12px;padding-left:23px}
@@ -14095,8 +14107,8 @@ body:has(#god-dlg.on) #radio-btn,body:has(.gd-menu) #radio-btn{opacity:0;pointer
 }
 html:not(.lg-on) #settings-popup.open{transform-origin:calc(100% - 20px) -10px;animation:hdDrop .3s cubic-bezier(.2,.9,.3,1.15)}
 @keyframes hdDrop{from{opacity:0;transform:translateY(-8px) scale(.94)}to{opacity:1;transform:none}}
-#settings-popup{width:236px;top:62px;right:12px;bottom:auto;left:auto;max-height:calc(100dvh - 80px);overflow-y:auto;overscroll-behavior:contain}
-@media (prefers-reduced-motion:reduce){.hd-ic,#bottom-left .hd-orb,#bottom-left .hd-orb::before,.hd-pad,.hd-pad-ic,.hd-chip,#news-tab-btn.hd-news{transition:none!important}.hd-pad-scr::after,#news-tab-btn.hd-news .hd-w1,#news-tab-btn.hd-news .hd-w2,.hd-eq i,.hd-gold{animation:none!important}}
+#settings-popup{width:252px;top:62px;right:12px;bottom:auto;left:auto;max-height:calc(100dvh - 80px);overflow-y:auto;overscroll-behavior:contain}
+@media (prefers-reduced-motion:reduce){.hd-ic,#bottom-left .hd-orb,#bottom-left .hd-orb::before,.hd-pad,.hd-pad-ic,.hd-chip,#news-tab-btn.hd-news{transition:none!important}.hd-pad-scr::after,#news-tab-btn.hd-news .hd-w1,#news-tab-btn.hd-news .hd-w2,.hd-eq i,.hd-gold::after,.hd-ping,#topbar-right .sk-btn::after{animation:none!important}}
 
 /* ===== прорыв бога ===== */
 html.god-theme #logo{padding-left:0}
@@ -14139,110 +14151,151 @@ html.god-theme.gev-on #topbar-right{box-shadow:0 0 0 1px rgba(255,77,121,.6),0 0
 html.god-theme.gev-on #bottom-left .hd-orb,html.god-theme.gev-on .hd-pad{box-shadow:0 0 0 1.5px #ff4d79,0 0 18px rgba(255,40,90,.45),inset 0 0 12px rgba(255,77,121,.18)}
 </style>
 <style id="glass-css">
-/* ===== 💧 Liquid Glass (включается в настройках, во время прорыва бога не действует) ===== */
-/* кнопки: прозрачное стекло с бликом, который следует за пальцем/курсором */
-html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,#news-tab-btn.hd-news,#topbar-right,#comm-btn .lk-orb){
-  background:radial-gradient(60px 42px at var(--mx,30%) var(--my,4%),rgba(255,255,255,.3),rgba(255,255,255,0) 72%),
-    linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.03) 36%,rgba(255,255,255,.01) 64%,rgba(255,255,255,.09));
-  -webkit-backdrop-filter:blur(12px) saturate(200%) brightness(1.12)!important;backdrop-filter:blur(12px) saturate(200%) brightness(1.12)!important;
-  border:1px solid rgba(255,255,255,.12);
-  box-shadow:inset 1.5px 1.5px 0 -.5px rgba(255,255,255,.75),inset -1.5px -1.5px 0 -.5px rgba(255,255,255,.35),inset 0 0 0 .5px rgba(255,255,255,.15),inset 4px 4px 9px rgba(165,243,252,.12),inset -4px -4px 9px rgba(244,114,182,.1),0 10px 26px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.25)}
+/* ===== 💧 Liquid Glass v3: толстое стекло с объёмом. Всё отрисовано один раз — двигается только через transform/opacity ===== */
+html{--lg-t:.55;--ak:1}
+html.lg-on{--lg-ca:calc(.32 - .3*var(--lg-t));--lg-wa:calc(.8 - .58*var(--lg-t))}
+/* --- кнопки: стекло живёт на отдельном слое ::before — анимации внутри кнопки больше не заставляют пересчитывать размытие --- */
+html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,#news-tab-btn.hd-news,#topbar-right){background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,#news-tab-btn.hd-news,#topbar-right)::before,html.lg-on:not(.god-theme) #comm-btn .lk-orb{
+  content:'';position:absolute;inset:0;width:auto;height:auto;margin:0;z-index:-1;border-radius:inherit;pointer-events:none;padding:0;opacity:1;transform:none;animation:none;-webkit-mask:none;mask:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.1) 26%,rgba(255,255,255,0) 46%,rgba(255,255,255,0) 64%,rgba(255,255,255,.12) 86%,rgba(255,255,255,.24) 100%),
+    radial-gradient(120% 70% at 50% 120%,rgba(255,255,255,.2),rgba(255,255,255,0) 60%),
+    rgba(30,40,80,var(--lg-ca));
+  -webkit-backdrop-filter:blur(7px) saturate(210%) brightness(1.12)!important;backdrop-filter:blur(7px) saturate(210%) brightness(1.12)!important;
+  border:none;
+  box-shadow:inset 1.5px 1.5px 0 -.5px rgba(255,255,255,.95),inset -1.5px -1.5px 0 -.5px rgba(255,255,255,.55),inset 0 0 0 1px rgba(255,255,255,.16),
+    inset 0 0 10px 1px rgba(255,255,255,.16),inset 0 10px 14px -12px rgba(255,255,255,.7),inset 0 -8px 12px -10px rgba(0,0,30,.4),
+    inset 5px 0 8px -6px rgba(125,240,255,.55),inset -5px 0 8px -6px rgba(255,130,215,.5),
+    0 1px 2px rgba(0,0,0,.25),0 10px 24px -8px rgba(0,0,0,.5)}
+html.lg-on:not(.god-theme) .hd-pad::before{inset:-1.5px}
+html.lg-on:not(.god-theme) #news-tab-btn.hd-news::before{border-right:none}
+html.lg-on:not(.god-theme) #comm-btn .lk-orb{position:absolute;inset:0;z-index:auto;border-radius:50%}
+html.lg-on:not(.god-theme) #comm-btn .lk-orb::before{animation:none;opacity:.5}
 html.lg-on:not(.god-theme) #news-tab-btn.hd-news{border-right:none;color:#fff}
-html.lg-on:not(.god-theme) #bottom-left .hd-orb::before{opacity:0}
 html.lg-on:not(.god-theme) #bottom-left .hd-orb{color:#fff}
-html.lg-on:not(.god-theme) #bottom-left .hd-add{background-color:rgba(139,92,246,.32)}
-html.lg-on:not(.god-theme) #bottom-left .hd-orb .hd-ic,html.lg-on:not(.god-theme) #news-tab-btn.hd-news .hd-ic{filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
-html.lg-on:not(.god-theme) body:has(#settings-popup.open) .hd-set{color:#fff;background-color:rgba(255,255,255,.2);box-shadow:inset 1.5px 1.5px 0 -.5px rgba(255,255,255,.75),inset -1px -1px 0 -.5px rgba(255,255,255,.3),0 0 16px rgba(165,243,252,.35)}
-html.lg-on:not(.god-theme) #games-btn.hd-pad{background-color:rgba(255,255,255,.05)}
-html.lg-on:not(.god-theme) .hd-pad-scr{background:linear-gradient(170deg,rgba(6,12,32,.5),rgba(6,10,26,.35));box-shadow:inset 0 0 0 1px rgba(255,255,255,.22),inset 0 1px 6px rgba(0,0,0,.35)}
+html.lg-on:not(.god-theme) #bottom-left .hd-add::before{background-color:rgba(139,92,246,calc(var(--lg-ca) + .12))}
+html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,#news-tab-btn.hd-news) .hd-ic{filter:drop-shadow(0 1.5px 1.5px rgba(0,0,30,.45))}
+/* блик-«искра» на поверхности стекла (статичный, двигается только при наклоне) */
+html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,#news-tab-btn.hd-news)::after,html.lg-on:not(.god-theme) #comm-btn .lk-orb::after{content:'';position:absolute;z-index:3;pointer-events:none;
+  left:12%;top:5%;width:50%;height:32%;border-radius:50%;opacity:1;background:radial-gradient(closest-side,rgba(255,255,255,.8),rgba(255,255,255,.25) 55%,rgba(255,255,255,0));
+  translate:var(--gx,0px) var(--gy,0px);transition:translate calc(.35s*var(--ak)) ease-out}
+html.lg-on:not(.god-theme) #topbar-right::after{content:'';position:absolute;pointer-events:none;left:4%;right:4%;top:1px;height:46%;border-radius:999px 999px 50% 50%;background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,0))}
+html.lg-on:not(.god-theme) #topbar-right{position:relative}
+/* полосы-сканлайны экрана планшета и все анимации внутри — над стеклом, а не в нём */
+html.lg-on:not(.god-theme) #comm-btn .lk-orb{background-color:rgba(99,102,241,calc(var(--lg-ca) + .08))}
+html.lg-on:not(.god-theme) body:has(#settings-popup.open) .hd-set{color:#fff;background-color:rgba(255,255,255,.2);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.7),inset 0 -1px 0 rgba(255,255,255,.2),0 0 16px rgba(165,243,252,.35)}
+html.lg-on:not(.god-theme) .hd-pad-scr{background:linear-gradient(170deg,rgba(6,12,32,.55),rgba(6,10,26,.38));box-shadow:inset 0 0 0 1px rgba(255,255,255,.2),inset 0 2px 7px rgba(0,0,20,.5)}
 html.lg-on:not(.god-theme) .hd-pad-scr::before{opacity:.25}
 html.lg-on:not(.god-theme) .hd-pad-cam,html.lg-on:not(.god-theme) .hd-pad-home{background:rgba(255,255,255,.65);box-shadow:0 0 4px rgba(255,255,255,.6)}
-html.lg-on:not(.god-theme) #comm-btn .lk-orb{background-color:rgba(99,102,241,.24)}
-html.lg-on:not(.god-theme) #comm-btn .lk-orb::after{opacity:.35}
-html.lg-on:not(.god-theme) #comm-btn .lk-orb::before{opacity:.6}
+/* 3D: на ПК кнопки наклоняются к курсору (только transform — без перерисовки) */
+html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,#comm-btn){transform:perspective(360px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform calc(.45s*var(--ak)) var(--hd-spring),scale calc(.6s*var(--ak)) var(--hd-spring)}
+html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,#comm-btn).lg-tilt{transition:transform .08s linear,scale calc(.6s*var(--ak)) var(--hd-spring)}
+@media (hover:hover){html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,#comm-btn):hover{scale:1.07}}
 /* шапка */
 html.lg-on:not(.god-theme) #topbar{background:linear-gradient(180deg,rgba(3,5,15,.5),transparent)}
-html.lg-on:not(.god-theme) #topbar-right :is(.sk-btn,#user-badge.user-badge-btn){background:rgba(255,255,255,.07)}
+html.lg-on:not(.god-theme) #topbar-right :is(.sk-btn,#user-badge.user-badge-btn){background:rgba(255,255,255,.07);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
 html.lg-on:not(.god-theme) #topbar-right :is(.sk-btn,#user-badge.user-badge-btn,.hd-chip):hover{background-color:rgba(255,255,255,.16)}
-html.lg-on:not(.god-theme) .hd-go{background:linear-gradient(135deg,rgba(34,211,238,.78),rgba(99,102,241,.72) 58%,rgba(168,85,247,.72));box-shadow:inset 0 1px 1px rgba(255,255,255,.75),inset 0 -1px 1px rgba(255,255,255,.2),0 4px 14px rgba(99,102,241,.35)}
-html.lg-on:not(.god-theme) .hd-gold{background:rgba(251,191,36,.16);box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 0 0 1px rgba(251,191,36,.45)}
+html.lg-on:not(.god-theme) .hd-go{background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0) 55%),linear-gradient(135deg,rgba(34,211,238,.8),rgba(99,102,241,.74) 58%,rgba(168,85,247,.74));box-shadow:inset 0 1.5px 0 rgba(255,255,255,.75),inset 0 -1px 0 rgba(255,255,255,.2),inset 0 -6px 10px -6px rgba(0,0,40,.4),0 4px 14px rgba(99,102,241,.35)}
+html.lg-on:not(.god-theme) .hd-gold{background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 55%),rgba(251,191,36,.16);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.55),inset 0 0 0 1px rgba(251,191,36,.45)}
 html.lg-on:not(.god-theme) .ub-l{color:#cffafe}
 html.lg-on:not(.god-theme) #topbar-right .ticket-badge,html.lg-on:not(.god-theme) .hd-badge,html.lg-on:not(.god-theme) #news-tab-btn.hd-news .ntb-badge{box-shadow:0 0 0 1.5px rgba(255,255,255,.7),0 2px 8px rgba(225,29,72,.5)}
 
-/* окна: матовое стекло */
+/* --- окна: толстое матовое стекло с внутренней кромкой --- */
 html.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,#radio-win .rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell){
-  background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.04) 26%,rgba(255,255,255,.02) 70%,rgba(255,255,255,.08)),rgba(12,16,40,.56)!important;
-  -webkit-backdrop-filter:blur(26px) saturate(170%)!important;backdrop-filter:blur(26px) saturate(170%)!important;
-  border:1px solid rgba(255,255,255,.22)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(255,255,255,.08),inset 0 0 40px rgba(255,255,255,.03),0 30px 70px rgba(0,0,0,.45)!important}
-html.lg-on:not(.god-theme) #news-panel{background:linear-gradient(200deg,rgba(255,255,255,.12),rgba(255,255,255,.03) 30%,rgba(255,255,255,.02) 75%,rgba(255,255,255,.06)),rgba(10,14,36,.6)!important;
-  -webkit-backdrop-filter:blur(26px) saturate(170%)!important;backdrop-filter:blur(26px) saturate(170%)!important;border-left:1px solid rgba(255,255,255,.24)!important;
-  box-shadow:inset 1px 0 0 rgba(255,255,255,.35),-20px 0 60px rgba(0,0,0,.45)!important;transition:transform .55s cubic-bezier(.2,.9,.25,1)}
+  background:linear-gradient(125deg,rgba(255,255,255,.2) 0%,rgba(255,255,255,.05) 18%,rgba(255,255,255,0) 32%,rgba(255,255,255,0) 70%,rgba(255,255,255,.06) 88%,rgba(255,255,255,.12) 100%),radial-gradient(140% 50% at 50% 112%,rgba(255,255,255,.08),rgba(255,255,255,0) 62%),rgba(16,22,52,var(--lg-wa))!important;
+  -webkit-backdrop-filter:blur(18px) saturate(200%) brightness(1.08)!important;backdrop-filter:blur(18px) saturate(200%) brightness(1.08)!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+  box-shadow:inset 1.5px 1.5px 0 -.5px rgba(255,255,255,.8),inset -1.5px -1.5px 0 -.5px rgba(255,255,255,.35),inset 0 0 22px rgba(255,255,255,.07),
+    inset 0 18px 30px -26px rgba(255,255,255,.45),inset 6px 0 14px -10px rgba(125,240,255,.45),inset -6px 0 14px -10px rgba(255,130,215,.38),0 30px 70px -12px rgba(0,0,0,.55)!important}
+html.lg-on:not(.god-theme) #news-panel{background:linear-gradient(200deg,rgba(255,255,255,.16),rgba(255,255,255,.03) 30%,rgba(255,255,255,0) 70%),rgba(14,20,48,var(--lg-wa))!important;
+  -webkit-backdrop-filter:blur(18px) saturate(200%) brightness(1.08)!important;backdrop-filter:blur(18px) saturate(200%) brightness(1.08)!important;border-left:1px solid rgba(255,255,255,.2)!important;
+  box-shadow:inset 1.5px 0 0 rgba(255,255,255,.35),inset 6px 0 14px -10px rgba(125,240,255,.3),-20px 0 60px rgba(0,0,0,.45)!important;transition:transform calc(.5s*var(--ak)) cubic-bezier(.2,.9,.25,1)}
 html.lg-on:not(.god-theme) #news-panel .np-header{background:rgba(255,255,255,.04)!important}
 html.lg-on:not(.god-theme) .tablet-shell::before{opacity:.15}
-html.lg-on:not(.god-theme) :is(#toast,#news-notify){background:linear-gradient(150deg,rgba(255,255,255,.2),rgba(255,255,255,.06)),rgba(12,16,40,.5)!important;
-  -webkit-backdrop-filter:blur(18px) saturate(180%)!important;backdrop-filter:blur(18px) saturate(180%)!important;
-  border:1px solid rgba(255,255,255,.3)!important;color:#fff!important;box-shadow:inset 0 1px 1px rgba(255,255,255,.7),0 10px 28px rgba(0,0,0,.35)!important;border-radius:999px}
-/* затемнение за окнами — светлее, чтобы стекло было видно */
+html.lg-on:not(.god-theme) :is(#toast,#news-notify){background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.04) 60%),rgba(12,16,40,calc(var(--lg-wa) - .1))!important;
+  -webkit-backdrop-filter:blur(16px) saturate(170%)!important;backdrop-filter:blur(16px) saturate(170%)!important;
+  border:1px solid rgba(255,255,255,.2)!important;color:#fff!important;box-shadow:inset 0 1.5px 0 rgba(255,255,255,.7),inset 0 -1px 0 rgba(255,255,255,.15),0 10px 28px rgba(0,0,0,.35)!important;border-radius:999px}
 html.lg-on:not(.god-theme) :is(.modal-overlay,.ml-shade,.sk-shade,#radio-win .rd-shade){background:rgba(4,6,18,.4)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-html.lg-on:not(.god-theme) #games-tablet-overlay{background:rgba(2,4,12,.42)!important;-webkit-backdrop-filter:blur(8px)!important;backdrop-filter:blur(8px)!important}
+html.lg-on:not(.god-theme) #games-tablet-overlay{background:rgba(2,4,12,.45)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+/* телефоны: размытие слабее — в разы легче для видеокарты */
+html.rf-lite.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,#news-tab-btn.hd-news,#topbar-right)::before,html.rf-lite.lg-on:not(.god-theme) #comm-btn .lk-orb{-webkit-backdrop-filter:blur(5px) saturate(190%) brightness(1.1)!important;backdrop-filter:blur(5px) saturate(190%) brightness(1.1)!important}
+html.rf-lite.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,#radio-win .rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,#news-panel,#admin-panel,#toast,#news-notify){-webkit-backdrop-filter:blur(12px) saturate(180%)!important;backdrop-filter:blur(12px) saturate(180%)!important}
+/* пока окно летит — без размытия: пересчёт размытия каждый кадр и давал лаги. Иней появляется, когда окно встало */
+html.lg-on.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,#radio-win .rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,#news-panel,#admin-panel).lg-fly{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background-color:rgba(14,18,46,calc(var(--lg-wa) + .25))!important}
 
-/* настройки: переключатель вида */
+/* --- настройки вида --- */
 #ui-style{display:flex;flex-direction:column;gap:6px}
 .us-h{font-size:10px;color:var(--text-dim,#94a3b8)}
 .us-seg{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:3px;border-radius:12px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.us-seg.us4{grid-template-columns:repeat(4,1fr)}
 .us-seg button{all:unset;position:relative;z-index:1;padding:8px 2px;border-radius:9px;text-align:center;cursor:pointer;font:600 11px/1.1 system-ui,'Segoe UI',sans-serif;color:#94a3b8;white-space:nowrap;transition:color .25s;-webkit-tap-highlight-color:transparent}
+.us-seg.us4 button{font-size:10.5px;padding:7px 1px}
 .us-seg button:focus-visible{outline:2px solid #67e8f9;outline-offset:1px}
 .us-th{position:absolute;z-index:0;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:9px;
   background:linear-gradient(135deg,rgba(34,211,238,.35),rgba(99,102,241,.4));box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 2px 10px rgba(34,211,238,.25);
-  transition:translate .55s var(--hd-spring)}
-#ui-style[data-v="cosmos"] .us-seg button[data-v="cosmos"],#ui-style[data-v="glass"] .us-seg button[data-v="glass"]{color:#fff}
-#ui-style[data-v="glass"] .us-th{translate:100% 0;background:linear-gradient(150deg,rgba(255,255,255,.4),rgba(255,255,255,.12));box-shadow:inset 0 1px 1px rgba(255,255,255,.85),inset 0 -1px 1px rgba(255,255,255,.2),0 2px 10px rgba(0,0,0,.25)}
-.us-th.go{animation:usSquish .55s ease-out}
+  transition:translate calc(.55s*var(--ak)) var(--hd-spring)}
+.us4 .us-th{width:calc(25% - 1.5px)}
+#ui-style[data-v="cosmos"] #us-v button[data-v="cosmos"],#ui-style[data-v="glass"] #us-v button[data-v="glass"]{color:#fff}
+#ui-style[data-v="glass"] #us-v .us-th{translate:100% 0}
+html.lg-on #ui-style .us-th{background:linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,.12));box-shadow:inset 0 1.5px 0 rgba(255,255,255,.85),inset 0 -1px 0 rgba(255,255,255,.2),0 2px 10px rgba(0,0,0,.25)}
+#ui-style[data-ak="slow"] #us-ak button[data-a="slow"],#ui-style[data-ak="norm"] #us-ak button[data-a="norm"],#ui-style[data-ak="fast"] #us-ak button[data-a="fast"],#ui-style[data-ak="off"] #us-ak button[data-a="off"]{color:#fff}
+#ui-style[data-ak="norm"] #us-ak .us-th{translate:100% 0}
+#ui-style[data-ak="fast"] #us-ak .us-th{translate:200% 0}
+#ui-style[data-ak="off"] #us-ak .us-th{translate:300% 0}
+.us-th.go{animation:usSquish calc(.55s*var(--ak)) ease-out}
 @keyframes usSquish{35%{scale:1.16 .84}70%{scale:.97 1.04}100%{scale:1}}
+/* стекло: ползунок на время перехода превращается в прозрачную каплю-линзу, как в iOS 26 */
+html.lg-on:not(.god-theme) .us-th::after{content:'';position:absolute;inset:-3px -2px;border-radius:12px;opacity:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 30% 10%,rgba(255,255,255,.5),rgba(255,255,255,.08) 55%,rgba(255,255,255,.18));
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.4),inset 4px 0 6px -4px rgba(125,240,255,.7),inset -4px 0 6px -4px rgba(255,130,215,.6),0 6px 14px rgba(0,0,30,.35)}
+html.lg-on:not(.god-theme) .us-th.go{animation:usLens calc(.62s*var(--ak)) ease-out}
+html.lg-on:not(.god-theme) .us-th.go::after{animation:usLensA calc(.62s*var(--ak)) ease-out}
+@keyframes usLens{30%{scale:1.22 1.32}62%{scale:.96 1.04}100%{scale:1}}
+@keyframes usLensA{0%{opacity:0}18%{opacity:1}60%{opacity:1}100%{opacity:0}}
+html.god-theme .us-th.go{animation:usSoft calc(.6s*var(--ak)) ease-out}
+@keyframes usSoft{40%{scale:1.04;opacity:.75}100%{scale:1;opacity:1}}
+.us-glass{display:none}
+#ui-style[data-v="glass"] .us-glass{display:flex}
+.us-row{align-items:center;justify-content:space-between;gap:8px;font-size:10px;color:var(--text-dim,#94a3b8)}
+.us-row b{font-size:11px;color:#a5f3fc}
+#ui-style input.us-rng{width:100%;margin:0;accent-color:#67e8f9}
 .us-note,.us-god{display:none;font-size:10px;line-height:1.4;color:var(--text-dim,#94a3b8)}
 #ui-style[data-v="glass"] .us-note{display:block}
 html.god-theme .us-god{display:block;color:#e8e6ff}
 html.god-theme .us-seg{background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
-html.god-theme .us-th,html.god-theme #ui-style[data-v="glass"] .us-th{background:#fff;box-shadow:0 0 12px rgba(255,255,255,.5)}
+html.god-theme #ui-style .us-th{background:#fff;box-shadow:0 0 12px rgba(255,255,255,.5)}
 html.god-theme #ui-style .us-seg button{color:#a7a4c0;font-family:'Pixelify Sans',system-ui,sans-serif}
-html.god-theme #ui-style[data-v="cosmos"] .us-seg button[data-v="cosmos"],html.god-theme #ui-style[data-v="glass"] .us-seg button[data-v="glass"]{color:#000}
+html.god-theme #ui-style[data-v="cosmos"] #us-v button[data-v="cosmos"],html.god-theme #ui-style[data-v="glass"] #us-v button[data-v="glass"],
+html.god-theme #ui-style[data-ak="slow"] #us-ak button[data-a="slow"],html.god-theme #ui-style[data-ak="norm"] #us-ak button[data-a="norm"],html.god-theme #ui-style[data-ak="fast"] #us-ak button[data-a="fast"],html.god-theme #ui-style[data-ak="off"] #us-ak button[data-a="off"]{color:#000}
+html.god-theme #ui-style input.us-rng{accent-color:#fff}
 
-/* живые анимации стекла: пружинный отклик на нажатие и появление окон */
-html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,.hd-chip,#user-badge.user-badge-btn,#topbar-right .sk-btn):is(:hover,:active){transform:none}
-html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,.hd-chip,#user-badge.user-badge-btn,#topbar-right .sk-btn,#news-tab-btn.hd-news,#comm-btn){transition:scale .6s var(--hd-spring),width .45s var(--hd-spring),background-color .25s,box-shadow .25s,color .2s}
-@media (hover:hover){html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,#comm-btn):hover{scale:1.08}html.lg-on:not(.god-theme) :is(.hd-chip,#user-badge.user-badge-btn,#topbar-right .sk-btn):hover{scale:1.05}}
-html.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,.hd-chip,#user-badge.user-badge-btn,#topbar-right .sk-btn,#news-tab-btn.hd-news,#comm-btn):active{scale:.88;transition-duration:.12s}
-html.lg-on:not(.god-theme) .lg-j{animation:lgJelly .75s linear}
-@keyframes lgJelly{0%{scale:.88}22%{scale:1.12 .9}42%{scale:.95 1.06}62%{scale:1.03 .98}82%{scale:.99 1.01}100%{scale:1}}
-/* окна вытекают из кнопок (ведёт liquid.js): содержимое проявляется, когда стекло уже разлилось */
-.lg-mi>*{animation:lgKid .42s ease .22s both}
-/* телефоны: размытие слабее — так же красиво, но в разы легче для видеокарты */
-html.rf-lite.lg-on:not(.god-theme) :is(#bottom-left .hd-orb,.hd-pad,#news-tab-btn.hd-news,#topbar-right,#comm-btn .lk-orb){-webkit-backdrop-filter:blur(8px) saturate(190%)!important;backdrop-filter:blur(8px) saturate(190%)!important}
-html.rf-lite.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,#radio-win .rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,#news-panel,#admin-panel,#toast,#news-notify){-webkit-backdrop-filter:blur(16px) saturate(160%)!important;backdrop-filter:blur(16px) saturate(160%)!important}
-html.rf-lite.lg-on:not(.god-theme) #games-tablet-overlay{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:rgba(2,4,12,.6)!important}
-/* телефоны: пока окно летит — без размытия (его пересчёт каждый кадр и давал лаги), иней появляется, когда окно встало */
-html.lg-on.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,#radio-win .rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,#news-panel,#admin-panel).lg-fly{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background-color:rgba(14,18,46,.9)!important}
+/* --- окна вытекают из кнопок (ведёт liquid.js): содержимое проявляется, когда окно уже раскрылось --- */
+.lg-mi>*{animation:lgKid calc(.36s*var(--ak)) ease calc(.2s*var(--ak)) both}
 @keyframes lgKid{from{opacity:0}to{opacity:1}}
 html body .lg-ghost{position:fixed;z-index:100002;pointer-events:none;box-sizing:border-box;margin:0;
-  background:radial-gradient(70% 40% at 30% 0%,rgba(255,255,255,.2),transparent 70%),linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.04) 30%,rgba(255,255,255,.02) 70%,rgba(255,255,255,.08)),rgba(14,18,44,.62);
-  border:1px solid rgba(255,255,255,.24);box-shadow:inset 1.5px 1.5px 0 -.5px rgba(255,255,255,.7),inset -1.5px -1.5px 0 -.5px rgba(255,255,255,.3),0 20px 50px rgba(0,0,0,.35)}
-/* у каждой кнопки свой жест, когда из неё вытекает окно */
-.lg-src.hd-set .hd-ic{animation:lgSpin .75s var(--hd-spring)}
+  background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.03) 30%,rgba(255,255,255,0) 60%),rgba(14,18,44,.66);
+  border:1px solid rgba(255,255,255,.18);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.6),inset 0 -1px 0 rgba(255,255,255,.15),0 20px 50px rgba(0,0,0,.35)}
+html body .lg-ghost.c{background:radial-gradient(120% 60% at 0 0,rgba(34,211,238,.14),transparent 60%),linear-gradient(170deg,#0d142a,#060814);border-color:rgba(103,232,249,.35);box-shadow:0 0 30px rgba(34,211,238,.2),0 20px 50px rgba(0,0,0,.5)}
+html body .lg-ghost.d{background:#000;border-color:rgba(255,255,255,.7);box-shadow:0 0 30px rgba(255,255,255,.35)}
+html body .lg-flash{position:fixed;z-index:100003;pointer-events:none;background:#fff;box-shadow:0 0 40px #fff,0 0 90px rgba(255,255,255,.5)}
+html.god-theme.gev-on body .lg-flash{background:#ffd6e0;box-shadow:0 0 40px #ff4d79}
+/* у каждой кнопки свой жест, когда из неё раскрывается окно */
+.lg-src.hd-set .hd-ic{animation:lgSpin calc(.75s*var(--ak)) var(--hd-spring)}
 @keyframes lgSpin{from{rotate:-200deg}to{rotate:0deg}}
-#comm-btn.lg-src .lk-ico,.hd-pad.lg-src .hd-pad-ic,#user-badge.lg-src .avatar-circle,#streak-btn.lg-src .sk-flame,.hd-gold.lg-src .hd-star,.hd-go.lg-src .hd-ic{animation:lgPopI .6s ease-out}
+#comm-btn.lg-src .lk-ico,.hd-pad.lg-src .hd-pad-ic,#user-badge.lg-src .avatar-circle,#streak-btn.lg-src .sk-flame,.hd-gold.lg-src .hd-star,.hd-go.lg-src .hd-ic,.hd-radio.lg-src .hd-ic{animation:lgPopI calc(.6s*var(--ak)) ease-out}
 @keyframes lgPopI{30%{scale:1.32}60%{scale:.9}100%{scale:1}}
-.hd-pad.lg-src .hd-pad-scr::after{opacity:1;animation:hdSheen .7s ease-out}
-#news-tab-btn.lg-src .hd-w1,#news-tab-btn.lg-src .hd-w2{animation:hdWave .45s ease-in-out 2}
-.hd-adm.lg-src .hd-ic{animation:lgFlip .7s ease}
+.hd-pad.lg-src .hd-pad-scr::after{opacity:1;animation:hdSheen calc(.7s*var(--ak)) ease-out}
+.hd-adm.lg-src .hd-ic{animation:lgFlip calc(.7s*var(--ak)) ease}
 @keyframes lgFlip{from{rotate:y 0deg}to{rotate:y 360deg}}
-#bottom-left .hd-add.lg-src .hd-ic{animation:lgSpin .7s var(--hd-spring)}
+#bottom-left .hd-add.lg-src .hd-ic{animation:lgSpin calc(.7s*var(--ak)) var(--hd-spring)}
 /* волна при включении стекла */
 .lg-wave{position:fixed;z-index:100000;left:0;top:0;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;pointer-events:none;
   background:radial-gradient(circle,rgba(255,255,255,0) 55%,rgba(165,243,252,.22) 68%,rgba(255,255,255,.55) 72%,rgba(232,121,249,.18) 76%,rgba(255,255,255,0) 82%);
   animation:lgWave .9s cubic-bezier(.2,.7,.3,1) forwards}
 @keyframes lgWave{0%{transform:scale(0);opacity:1}70%{opacity:.85}100%{transform:scale(var(--ws,60));opacity:0}}
-@media (prefers-reduced-motion:reduce){.lg-mi>*,.lg-src *,.lg-j,.us-th.go{animation:none!important}.lg-wave,.lg-ghost{display:none}}
+html.fx-off :is(.lg-mi>*,.lg-src *,.us-th.go),html.fx-off .lg-src::after{animation:none!important}
+html.fx-off .lg-wave,html.fx-off .lg-ghost{display:none}
+@media (prefers-reduced-motion:reduce){.lg-mi>*,.lg-src *,.us-th.go{animation:none!important}.lg-wave,.lg-ghost{display:none}}
 </style>
 <style id="adm3-css">
 /* ===== админка: обновлённое оформление ===== */
@@ -14293,9 +14346,9 @@ html.god-theme #admin-panel .admin-section-title{color:#fff;font-family:'Pixelif
 html.god-theme #admin-panel .admin-section-title::after{background:linear-gradient(90deg,rgba(255,255,255,.5),rgba(255,255,255,0))}
 html.god-theme #admin-panel :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),select,textarea){background-color:#000;border-color:rgba(255,255,255,.3)}
 /* 💧 стекло */
-html.lg-on:not(.god-theme) #admin-panel{background:radial-gradient(120% 30% at 100% 0%,rgba(129,140,248,.16),transparent 60%),linear-gradient(200deg,rgba(255,255,255,.12),rgba(255,255,255,.03) 28%,rgba(255,255,255,.02) 75%,rgba(255,255,255,.06)),rgba(10,14,36,.58)!important;
-  -webkit-backdrop-filter:blur(28px) saturate(170%)!important;backdrop-filter:blur(28px) saturate(170%)!important;
-  border-left:1px solid rgba(255,255,255,.24);box-shadow:inset 1px 0 0 rgba(255,255,255,.3),-20px 0 60px rgba(0,0,0,.45)}
+html.lg-on:not(.god-theme) #admin-panel{background:radial-gradient(120% 30% at 100% 0%,rgba(129,140,248,.16),transparent 60%),linear-gradient(200deg,rgba(255,255,255,.12),rgba(255,255,255,.03) 28%,rgba(255,255,255,.02) 75%,rgba(255,255,255,.06)),rgba(14,20,48,calc(var(--lg-wa,.58) + .08))!important;
+  -webkit-backdrop-filter:blur(22px) saturate(200%) brightness(1.06)!important;backdrop-filter:blur(22px) saturate(200%) brightness(1.06)!important;
+  border-left:1px solid rgba(255,255,255,.28);box-shadow:inset 1.5px 0 0 rgba(255,255,255,.45),inset 8px 0 16px -12px rgba(125,240,255,.4),-20px 0 60px rgba(0,0,0,.45)}
 html.lg-on:not(.god-theme) #admin-panel .adm-hd{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.01));border-bottom-color:rgba(255,255,255,.14)}
 html.lg-on:not(.god-theme) #admin-panel .adm-hb{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
 html.lg-on:not(.god-theme) #admin-panel .admin-tabs{border-bottom-color:rgba(255,255,255,.14)}
@@ -14305,16 +14358,512 @@ html.lg-on:not(.god-theme) #admin-panel .admin-tab.active{color:#fff;border-colo
   box-shadow:inset 1.5px 1.5px 0 -.5px rgba(255,255,255,.75),inset -1.5px -1.5px 0 -.5px rgba(255,255,255,.3),0 6px 18px rgba(0,0,0,.25)}
 html.lg-on:not(.god-theme) #admin-panel :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),select,textarea){background-color:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18)}
 </style>
+<style id="fx-css">
+/* ===== ✨ эффекты нажатия ===== */
+#fx-layer{position:fixed;left:0;top:0;width:0;height:0;z-index:2147483000;pointer-events:none}
+.fx-clip,.fx-free{position:fixed;pointer-events:none}
+.fx-clip{overflow:hidden;contain:layout paint}
+.fx-n{position:absolute;display:block;pointer-events:none;font-style:normal;will-change:transform,opacity}
+.fx-orb{width:0;height:0}
+/* ===== 🌌 Космос: туманность, кометы, мерцающие звёзды ===== */
+.fx-rip{border-radius:50%;background:radial-gradient(circle,rgba(165,243,252,.6) 0,rgba(103,232,249,.4) 28%,rgba(139,92,246,.3) 50%,rgba(139,92,246,0) 70%)}
+.fx-rip.soft{background:radial-gradient(circle,rgba(165,243,252,.38),rgba(165,243,252,0) 68%)}
+.fx-ring{box-sizing:border-box;border:2px solid rgba(165,243,252,.95);box-shadow:0 0 14px rgba(34,211,238,.75),0 0 4px #fff,inset 0 0 10px rgba(139,92,246,.55)}
+.fx-glow{box-sizing:border-box;box-shadow:0 0 0 1.5px rgba(165,243,252,.85),0 0 18px rgba(34,211,238,.6),inset 0 0 14px rgba(139,92,246,.35)}
+.fx-shine{background:linear-gradient(90deg,rgba(255,255,255,0),rgba(224,242,254,.8),rgba(255,255,255,0))}
+.fx-comet{border-radius:2px;background:linear-gradient(90deg,rgba(103,232,249,0),rgba(165,243,252,.9) 65%,#fff);box-shadow:0 0 6px rgba(34,211,238,.9)}
+.fx-comet:nth-child(3n){background:linear-gradient(90deg,rgba(167,139,250,0),rgba(196,181,253,.9) 65%,#fff);box-shadow:0 0 6px rgba(139,92,246,.9)}
+.fx-star{background:#f0f9ff;clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%)}
+.fx-star:nth-child(2n){background:#c4b5fd}
+.fx-sat{border-radius:50%;background:#a5f3fc;box-shadow:0 0 6px #22d3ee,0 0 12px rgba(34,211,238,.6)}
+.fx-em{font-size:22px;line-height:1;white-space:nowrap;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
+.fx-ring.red{border-color:rgba(251,113,133,.9);box-shadow:0 0 12px rgba(244,63,94,.55)}
+.fx-rip.red{background:radial-gradient(circle,rgba(251,113,133,.42),rgba(244,63,94,0) 68%)}
+html:not(#_):not(#__) .fx-tgt.fx-tgt{background:transparent!important;box-shadow:none!important;border-color:transparent!important;transition:none!important}
+html:not(#_):not(#__) .fx-tgt.fx-tgt::before,html:not(#_):not(#__) .fx-tgt.fx-tgt::after{opacity:0!important;transition:none!important}
+html.god-theme:not(#_):not(#__) .fx-tgt.fx-tgt{color:#a7a4c0!important}
+/* жидкий переключатель — космос: плазменная комета с хвостом */
+.fx-tabi{box-sizing:border-box;pointer-events:none;transform-origin:50% 50%}
+.fx-tabi.c{background:linear-gradient(135deg,rgba(34,211,238,.55),rgba(99,102,241,.5) 55%,rgba(168,85,247,.55));box-shadow:0 0 16px rgba(34,211,238,.6),0 0 32px rgba(139,92,246,.4),inset 0 1px 0 rgba(255,255,255,.45)}
+.fx-tabi.c.tail{box-shadow:0 0 14px rgba(139,92,246,.5)}
+/* ===== 💧 Стекло: кольца на воде, прозрачные капли, линза ===== */
+html.lg-on:not(.god-theme) .fx-rip{background:radial-gradient(circle,rgba(255,255,255,.08) 0,rgba(255,255,255,0) 52%,rgba(255,255,255,.6) 60%,rgba(165,243,252,.32) 64%,rgba(255,170,230,.2) 68%,rgba(255,255,255,0) 74%)}
+html.lg-on:not(.god-theme) .fx-rip.soft{background:radial-gradient(circle,rgba(255,255,255,0) 58%,rgba(255,255,255,.45) 64%,rgba(255,255,255,0) 70%)}
+html.lg-on:not(.god-theme) .fx-ring{border:1.5px solid rgba(255,255,255,.9);box-shadow:0 0 0 1px rgba(165,243,252,.35),inset 0 0 10px rgba(255,255,255,.35),0 0 14px rgba(255,255,255,.25)}
+html.lg-on:not(.god-theme) .fx-glow{box-shadow:0 0 0 1px rgba(255,255,255,.8),inset 0 0 12px rgba(255,255,255,.45),0 0 16px rgba(255,255,255,.3)}
+html.lg-on:not(.god-theme) .fx-shine{width:56px!important;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.55),rgba(255,255,255,0))}
+.fx-drop{border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0,rgba(255,255,255,.8) 22%,rgba(190,240,255,.35) 55%,rgba(255,255,255,.08) 75%);box-shadow:0 0 0 .5px rgba(255,255,255,.7),0 2px 4px rgba(0,0,30,.35)}
+.fx-lens{border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.55),rgba(255,255,255,.1) 45%,rgba(255,255,255,.04) 62%,rgba(255,255,255,.32) 72%,rgba(255,255,255,0) 77%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.6),inset 0 0 10px rgba(255,255,255,.35),0 4px 10px rgba(0,0,30,.25)}
+html:not(.rf-lite) .fx-lens{-webkit-backdrop-filter:blur(1px) saturate(1.8) brightness(1.2);backdrop-filter:blur(1px) saturate(1.8) brightness(1.2)}
+html.lg-on:not(.god-theme) .fx-ring.red{border-color:rgba(255,190,205,.95);box-shadow:0 0 14px rgba(244,63,94,.45)}
+/* жидкий переключатель — стекло: прозрачная капля-линза */
+.fx-tabi.g{background:radial-gradient(120% 90% at 30% 8%,rgba(255,255,255,.42),rgba(255,255,255,.1) 55%,rgba(255,255,255,.16));
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.35),inset 0 0 14px rgba(255,255,255,.25),inset 4px 0 7px -4px rgba(125,240,255,.65),inset -4px 0 7px -4px rgba(255,130,215,.55),0 6px 16px rgba(0,0,30,.35)}
+.fx-tabi.g:not(.lite){-webkit-backdrop-filter:blur(1.5px) saturate(1.8) brightness(1.15);backdrop-filter:blur(1.5px) saturate(1.8) brightness(1.15)}
+/* ===== ◉ Бог: мягкий нимб, лучи света, перья — без резких вспышек ===== */
+.fx-halo{box-sizing:border-box;border:1px solid rgba(255,255,255,.7);box-shadow:0 0 14px rgba(255,255,255,.45),0 0 34px rgba(220,215,255,.25),inset 0 0 12px rgba(255,255,255,.25)}
+.fx-rays{width:0;height:0}
+.fx-ray{border-radius:2px;background:linear-gradient(to top,rgba(255,255,255,0),rgba(255,255,255,.9));box-shadow:0 0 4px rgba(255,255,255,.7)}
+.fx-feather{border-radius:50% 50% 50% 50%/70% 70% 30% 30%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.95) 50%,rgba(255,255,255,0));box-shadow:0 0 5px rgba(255,255,255,.6)}
+.fx-rip.bloom{background:radial-gradient(circle,rgba(255,255,255,.3) 0,rgba(230,225,255,.14) 40%,rgba(255,255,255,0) 70%)}
+html.god-theme .fx-shine{background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.6),rgba(255,255,255,0))}
+html.god-theme.gev-on .fx-halo{border-color:rgba(255,160,185,.8);box-shadow:0 0 14px rgba(255,77,121,.45),0 0 34px rgba(255,77,121,.2)}
+html.god-theme.gev-on .fx-ray,html.god-theme.gev-on .fx-feather{background:linear-gradient(to top,rgba(255,77,121,0),rgba(255,190,205,.95))}
+/* жидкий переключатель — бог: луч света с послесвечением */
+.fx-tabi.d{background:rgba(255,255,255,.2);box-shadow:0 0 0 1px rgba(255,255,255,.85),0 0 18px rgba(255,255,255,.5),0 0 40px rgba(220,215,255,.28)}
+.fx-tabi.d.tail{background:rgba(255,255,255,.1);box-shadow:0 0 14px rgba(255,255,255,.35)}
+html.god-theme.gev-on .fx-tabi.d{box-shadow:0 0 0 1px rgba(255,160,185,.85),0 0 18px rgba(255,77,121,.5)}
+/* пока открыто большое окно, декоративные анимации кнопок за ним стоят на паузе — браузеру не нужно перерисовывать кадры */
+html.rf-paused :is(#topbar-right,#bottom-right,#bottom-left,#news-tab-btn,#status-bar) *,html.rf-paused :is(#topbar-right,#bottom-right,#bottom-left,#news-tab-btn,#status-bar) *::before,html.rf-paused :is(#topbar-right,#bottom-right,#bottom-left,#news-tab-btn,#status-bar) *::after{animation-play-state:paused!important}
+/* лампочки новостей мигали даже когда шторка закрыта — из-за этого браузер рисовал кадры без остановки */
+#news-panel:not(.open) .np-light{animation-play-state:paused}
+/* окно сворачивается в кнопку: держим его видимым, пока идёт анимация */
+:is(#settings-popup,#ml-win,#admin-panel,.modal-overlay,#sk-win,#sk-rw,#radio-win,#games-tablet-overlay).lg-closing{display:flex!important;pointer-events:none!important}
+#planet-dialog.lg-closing{display:block!important;pointer-events:none!important}
+#news-panel.lg-closing{transform:none!important;pointer-events:none!important}
+#games-tablet-overlay.lg-closing{opacity:1!important;background:transparent!important}
+#games-tablet-overlay.lg-closing .tablet-shell{transform:none!important;opacity:1!important}
+.modal-overlay.lg-closing{background:transparent!important}
+/* украшения открытия окон */
+.lg-warp,.lg-halo{position:fixed;z-index:100001;pointer-events:none;border-radius:22px;box-sizing:border-box}
+.lg-scan{position:fixed;z-index:100003;height:2px;margin-top:-1px;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(165,243,252,.95) 15%,#fff 50%,rgba(196,181,253,.95) 85%,transparent);box-shadow:0 0 12px 2px rgba(34,211,238,.7),0 -14px 26px -6px rgba(34,211,238,.25)}
+.lg-hudc{position:fixed;z-index:100003;pointer-events:none;box-sizing:border-box;
+  background:linear-gradient(#67e8f9,#67e8f9) left top/22px 2px no-repeat,linear-gradient(#67e8f9,#67e8f9) left top/2px 22px no-repeat,linear-gradient(#67e8f9,#67e8f9) right top/22px 2px no-repeat,linear-gradient(#67e8f9,#67e8f9) right top/2px 22px no-repeat,
+    linear-gradient(#67e8f9,#67e8f9) left bottom/22px 2px no-repeat,linear-gradient(#67e8f9,#67e8f9) left bottom/2px 22px no-repeat,linear-gradient(#67e8f9,#67e8f9) right bottom/22px 2px no-repeat,linear-gradient(#67e8f9,#67e8f9) right bottom/2px 22px no-repeat;
+  filter:drop-shadow(0 0 4px #22d3ee)}
+.lg-crt{position:fixed;z-index:100003;height:2px;pointer-events:none;border-radius:2px;background:linear-gradient(90deg,transparent,#a5f3fc 12%,#fff 50%,#c4b5fd 88%,transparent);box-shadow:0 0 14px 3px rgba(34,211,238,.75),0 0 30px 6px rgba(139,92,246,.35)}
+html.fx-off :is(.lg-scan,.lg-hudc,.lg-crt){display:none}
+.lg-warp{box-shadow:0 0 0 2px rgba(103,232,249,.75),0 0 30px rgba(34,211,238,.45),0 0 60px rgba(139,92,246,.35),inset 0 0 30px rgba(139,92,246,.25)}
+.lg-halo{box-shadow:0 0 0 1px rgba(255,255,255,.55),0 0 40px rgba(255,255,255,.28),0 0 90px rgba(200,190,255,.18)}
+html.god-theme.gev-on .lg-halo{box-shadow:0 0 0 1px rgba(255,140,170,.6),0 0 40px rgba(255,77,121,.3)}
+</style>
+<style id="skin-css">
+/* ======================================================================
+   Оформление всех окон и меню.  🌌 Космос — футуристичный HUD (основная тема)
+   💧 Liquid Glass — как iOS 26 · ◉ Бог — белый свет на чёрном
+   ====================================================================== */
+html{--ios-f:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI Variable Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --cx-f:"Exo 2",system-ui,"Segoe UI",Roboto,sans-serif;--gd-f:'Pixelify Sans',system-ui,sans-serif;--gd-t:'Cormorant SC',Georgia,serif}
+/* ползунки: заполненная часть (значение ставит skin.js в --p) */
+:is(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel,.lk-msheet) input[type=range]{--p:50%}
+
+/* ############################ 🌌 КОСМОС ############################ */
+/* ---- окна: тёмное стекло кабины с неоновой рамкой, уголками-скобками и сеткой ---- */
+html:not(.lg-on):not(.god-theme) :is(.modal,.ml-box,.sk-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,.npm-inner,.lv-card,.lk-msheet){
+  background:
+    linear-gradient(#22d3ee,#22d3ee) left top/16px 2px no-repeat,linear-gradient(#22d3ee,#22d3ee) left top/2px 16px no-repeat,
+    linear-gradient(#a78bfa,#a78bfa) right top/16px 2px no-repeat,linear-gradient(#a78bfa,#a78bfa) right top/2px 16px no-repeat,
+    linear-gradient(#a78bfa,#a78bfa) left bottom/16px 2px no-repeat,linear-gradient(#a78bfa,#a78bfa) left bottom/2px 16px no-repeat,
+    linear-gradient(#22d3ee,#22d3ee) right bottom/16px 2px no-repeat,linear-gradient(#22d3ee,#22d3ee) right bottom/2px 16px no-repeat,
+    linear-gradient(90deg,transparent,rgba(103,232,249,.9) 30%,rgba(196,181,253,.9) 70%,transparent) 50% 0/70% 1px no-repeat,
+    radial-gradient(120% 50% at 50% 0%,rgba(34,211,238,.1),transparent 60%),
+    repeating-linear-gradient(0deg,rgba(103,232,249,.035) 0 1px,transparent 1px 28px),
+    repeating-linear-gradient(90deg,rgba(103,232,249,.035) 0 1px,transparent 1px 28px),
+    linear-gradient(165deg,#0b1430 0%,#070c1f 45%,#040714 100%)!important;
+  border:1px solid rgba(103,232,249,.26)!important;border-radius:14px!important;
+  box-shadow:0 0 0 1px rgba(2,6,23,.85),0 0 34px -6px rgba(34,211,238,.32),0 30px 80px rgba(0,0,0,.65),inset 0 1px 0 rgba(165,243,252,.14),inset 0 0 40px rgba(34,211,238,.05)!important}
+html:not(.lg-on):not(.god-theme) .tablet-shell::before{opacity:.35}
+html:not(.lg-on):not(.god-theme) #radio-win .rd-box{border-radius:14px}
+html:not(.lg-on):not(.god-theme) :is(#news-panel,#admin-panel){
+  background:linear-gradient(180deg,rgba(103,232,249,.9),rgba(167,139,250,.6) 50%,rgba(103,232,249,.1)) left 0/2px 100% no-repeat,
+    repeating-linear-gradient(0deg,rgba(103,232,249,.03) 0 1px,transparent 1px 28px),repeating-linear-gradient(90deg,rgba(103,232,249,.03) 0 1px,transparent 1px 28px),
+    linear-gradient(180deg,#081028,#050a1c 50%,#030612)!important;border-left:1px solid rgba(103,232,249,.3)!important;
+  box-shadow:-10px 0 50px rgba(0,0,0,.7),-2px 0 30px -6px rgba(34,211,238,.35)!important}
+html:not(.lg-on):not(.god-theme) :is(.modal-overlay,.ml-shade,.sk-shade,#radio-win .rd-shade){background:radial-gradient(ellipse at 50% 45%,rgba(4,10,30,.6),rgba(1,3,10,.88))!important}
+/* ---- заголовки: Exo 2, неоновый градиент ---- */
+html:not(.lg-on):not(.god-theme) .modal h2,html:not(.lg-on):not(.god-theme) .npm-title,html:not(.lg-on):not(.god-theme) .np-title,html:not(.lg-on):not(.god-theme) #settings-popup h4,html:not(.lg-on):not(.god-theme) .ml-hd b,html:not(.lg-on):not(.god-theme) .adm-hd b>span{font-family:var(--cx-f);font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+html:not(.lg-on):not(.god-theme) .modal h2{font-size:17px;background:linear-gradient(90deg,#a5f3fc,#67e8f9 35%,#c4b5fd 75%,#f0abfc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 8px rgba(34,211,238,.35))}
+html:not(.lg-on):not(.god-theme) .modal-sub{font-size:11px;letter-spacing:.04em;color:#7dd3fc;opacity:.8}
+html:not(.lg-on):not(.god-theme) #settings-popup h4{font-size:12px;color:#67e8f9;letter-spacing:.2em;text-shadow:0 0 10px rgba(34,211,238,.6)}
+html:not(.lg-on):not(.god-theme) :is(.admin-section-title,.form-group label,.param-card-title,.tablet-installed-title,.nc-label){font-family:var(--cx-f);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#67e8f9}
+html:not(.lg-on):not(.god-theme) .admin-section-title{border-bottom-color:rgba(103,232,249,.18)}
+html:not(.lg-on):not(.god-theme) .form-group label{font-size:9.5px;color:#7dd3fc}
+/* ---- кнопки: неоновые пластины ---- */
+html:not(.lg-on):not(.god-theme) :is(.btn,.lv-btn,.store-act-btn,.tablet-back,.ph-b,.np-post-edit,.np-add-emoji-btn,.npm-photo-label,.rd-file,.lk-older){font-family:var(--cx-f);font-weight:700;letter-spacing:.03em;border-radius:8px;
+  background:linear-gradient(180deg,rgba(103,232,249,.12),rgba(103,232,249,.03));border:1px solid rgba(103,232,249,.38);color:#cffafe;box-shadow:inset 0 1px 0 rgba(165,243,252,.16);transition:border-color .2s,box-shadow .2s,background .2s,color .2s}
+html:not(.lg-on):not(.god-theme) :is(.btn,.lv-btn,.store-act-btn,.tablet-back,.ph-b,.np-post-edit,.npm-photo-label,.rd-file):hover{border-color:#67e8f9;color:#fff;box-shadow:inset 0 1px 0 rgba(165,243,252,.25),0 0 14px rgba(34,211,238,.35)}
+html:not(.lg-on):not(.god-theme) :is(.btn.primary,.ml-btn:not(.gray):not(.gold),.npm-publish,.rd-add,.sk-b:not(.gray):not(.ice),#login-btn,.lv-btn.big:not(.gold):not(.red):not(.pink):not(.on)){font-family:var(--cx-f);font-weight:800;letter-spacing:.05em;border-radius:8px;color:#fff;border:1px solid rgba(165,243,252,.55);
+  background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,0) 50%),linear-gradient(90deg,#0891b2,#4f46e5 55%,#9333ea)!important;
+  box-shadow:0 0 0 1px rgba(2,6,23,.6),0 0 18px rgba(34,211,238,.35),0 0 30px -8px rgba(147,51,234,.6),inset 0 1px 0 rgba(255,255,255,.35)!important;text-shadow:0 0 8px rgba(165,243,252,.6)}
+html:not(.lg-on):not(.god-theme) :is(.btn.primary,.ml-btn:not(.gray):not(.gold),.npm-publish,.rd-add,#login-btn):hover{filter:brightness(1.12)}
+html:not(.lg-on):not(.god-theme) :is(.btn.danger,.lv-btn.red){background:linear-gradient(180deg,rgba(244,63,94,.16),rgba(244,63,94,.04));border-color:rgba(251,113,133,.6);color:#fecdd3;box-shadow:inset 0 1px 0 rgba(254,205,211,.15)}
+html:not(.lg-on):not(.god-theme) :is(.btn.danger,.lv-btn.red):hover{border-color:#fb7185;box-shadow:0 0 14px rgba(244,63,94,.4)}
+html:not(.lg-on):not(.god-theme) .btn.success,html:not(.lg-on):not(.god-theme) .lv-btn.on{background:linear-gradient(180deg,rgba(52,211,153,.16),rgba(52,211,153,.04));border-color:rgba(52,211,153,.6);color:#a7f3d0}
+html:not(.lg-on):not(.god-theme) :is(.btn.warn,.lv-btn.gold,.store-act-btn.gold,.ml-btn.gold){background:linear-gradient(180deg,rgba(251,191,36,.16),rgba(251,191,36,.04));border-color:rgba(251,191,36,.6);color:#fde68a}
+html:not(.lg-on):not(.god-theme) .lv-btn.pink{background:linear-gradient(180deg,rgba(232,121,249,.16),rgba(232,121,249,.04));border-color:rgba(232,121,249,.6);color:#f5d0fe}
+html:not(.lg-on):not(.god-theme) .btn.small{border-radius:7px}
+/* ---- закрыть: квадратная кнопка с неоновой рамкой, крестик поворачивается ---- */
+html:not(.lg-on):not(.god-theme) :is(.modal-close,.ml-x,.sk-x,.rd-x,.np-close,.pd-close,.npm-close,.lv-x,.tablet-close,.adm-hb:not(.adm-wide)){border-radius:8px!important;border:1px solid rgba(103,232,249,.32)!important;background:rgba(103,232,249,.06)!important;color:#a5f3fc!important;
+  width:30px;height:30px;min-width:30px;padding:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important;font-size:15px!important;line-height:1!important;transition:transform .35s cubic-bezier(.3,1.5,.5,1),box-shadow .2s,border-color .2s}
+html:not(.lg-on):not(.god-theme) :is(.modal-close,.ml-x,.sk-x,.rd-x,.np-close,.pd-close,.npm-close,.lv-x,.tablet-close,.adm-hb:not(.adm-wide)):hover{transform:rotate(90deg);border-color:#67e8f9!important;box-shadow:0 0 14px rgba(34,211,238,.45);color:#fff!important}
+html:not(.lg-on):not(.god-theme) .modal-close{top:14px;right:14px}
+html:not(.lg-on):not(.god-theme) .pd-close{top:10px;right:10px;width:26px;height:26px;min-width:26px;font-size:13px!important}
+/* ---- поля ввода: тёмные панели, подсветка при фокусе ---- */
+html:not(.lg-on):not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel) :is(input:not([type]),input[type=text],input[type=email],input[type=password],input[type=number],input[type=search],input[type=url],input[type=tel],input[type=date],input[type=time],input[type=datetime-local],select,textarea){background-color:rgba(2,8,26,.72);border:1px solid rgba(103,232,249,.22);border-radius:8px;color:#e0f2fe;
+  box-shadow:inset 0 1px 6px rgba(0,0,0,.4);transition:border-color .2s,box-shadow .2s;color-scheme:dark}
+html:not(.lg-on):not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel) :is(input:not([type]),input[type=text],input[type=email],input[type=password],input[type=number],input[type=search],input[type=url],input[type=tel],input[type=date],input[type=time],input[type=datetime-local],select,textarea):focus{border-color:#67e8f9;outline:none;box-shadow:inset 0 1px 6px rgba(0,0,0,.4),0 0 0 3px rgba(34,211,238,.14),0 0 16px rgba(34,211,238,.25)}
+html:not(.lg-on):not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel) :is(input:not([type]),input[type=text],input[type=email],input[type=password],input[type=number],input[type=search],input[type=url],input[type=tel],input[type=date],input[type=time],input[type=datetime-local],select,textarea)::placeholder{color:rgba(125,211,252,.4)}
+html:not(.lg-on):not(.god-theme) .upload-area{border:1px dashed rgba(103,232,249,.35);border-radius:10px;background:repeating-linear-gradient(135deg,rgba(103,232,249,.03) 0 8px,transparent 8px 16px);color:#7dd3fc}
+/* ---- вкладки: светящаяся пластина + полоса снизу ---- */
+html:not(.lg-on):not(.god-theme) :is(.modal-tab,.stars-tab,.lv-tab,.bg-type-tab,.visit-per,.am-tabs button,.cz-btns button){font-family:var(--cx-f);font-weight:700;letter-spacing:.04em}
+html:not(.lg-on):not(.god-theme) .modal-tabs{border:1px solid rgba(103,232,249,.25);border-radius:9px;background:rgba(2,8,26,.6);padding:3px;gap:3px}
+html:not(.lg-on):not(.god-theme) .modal-tab{border-radius:6px}
+html:not(.lg-on):not(.god-theme) :is(.modal-tab.active,.bg-type-tab.active){background:linear-gradient(90deg,rgba(8,145,178,.85),rgba(79,70,229,.85))!important;color:#fff!important;box-shadow:0 0 14px rgba(34,211,238,.35),inset 0 1px 0 rgba(255,255,255,.3);text-shadow:0 0 8px rgba(165,243,252,.7)}
+html:not(.lg-on):not(.god-theme) :is(.stars-tab,.lv-tab,.visit-per,.am-tabs button){border-radius:7px;background:rgba(2,8,26,.55);border:1px solid rgba(103,232,249,.2);color:#94a3b8}
+html:not(.lg-on):not(.god-theme) :is(.stars-tab.active,.lv-tab.active,.visit-per.active,.am-tabs button.on){color:#ecfeff!important;border-color:#67e8f9!important;background:linear-gradient(180deg,rgba(34,211,238,.22),rgba(99,102,241,.14))!important;box-shadow:0 0 12px rgba(34,211,238,.3),inset 0 -2px 0 #22d3ee}
+html:not(.lg-on):not(.god-theme) .admin-tab{border-radius:9px;border:1px solid rgba(103,232,249,.1);background:linear-gradient(180deg,rgba(103,232,249,.05),rgba(2,8,26,.4))}
+html:not(.lg-on):not(.god-theme) .admin-tab.active{color:#ecfeff!important;border-color:rgba(103,232,249,.7)!important;background:linear-gradient(180deg,rgba(34,211,238,.25),rgba(79,70,229,.18))!important;box-shadow:0 0 14px rgba(34,211,238,.35),inset 0 -2px 0 #22d3ee}
+/* ---- строки и карточки: тонкая неоновая кромка слева ---- */
+html:not(.lg-on):not(.god-theme) :is(.ml-row,.store-row,.stars-row,.user-item,.ticket-item,.rd-row,.param-card,.tig-row,.np-post,.ml-vb){border-radius:10px;border:1px solid rgba(103,232,249,.12);background:linear-gradient(90deg,rgba(34,211,238,.06),rgba(139,92,246,.03) 60%,rgba(2,8,26,.2));box-shadow:inset 2px 0 0 rgba(34,211,238,.45)}
+html:not(.lg-on):not(.god-theme) :is(.ml-row,.store-row,.user-item,.rd-row):hover{border-color:rgba(103,232,249,.35);box-shadow:inset 2px 0 0 #22d3ee,0 0 16px -4px rgba(34,211,238,.35)}
+/* ---- переключатели-галочки: неоновый тумблер ---- */
+html:not(.lg-on):not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=checkbox]{-webkit-appearance:none;appearance:none;width:38px!important;height:20px!important;min-width:38px;margin:0;flex:0 0 auto;position:relative;cursor:pointer;vertical-align:middle;
+  border-radius:4px;border:1px solid rgba(103,232,249,.4);background:rgba(2,8,26,.8);box-shadow:inset 0 0 8px rgba(0,0,0,.6);transition:background .25s,border-color .25s,box-shadow .25s}
+html:not(.lg-on):not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=checkbox]::before{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:2px;background:#475569;transition:transform .3s cubic-bezier(.3,1.4,.5,1),background .25s,box-shadow .25s}
+html:not(.lg-on):not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=checkbox]:checked{border-color:#67e8f9;background:linear-gradient(90deg,rgba(8,145,178,.6),rgba(79,70,229,.6));box-shadow:0 0 12px rgba(34,211,238,.4)}
+html:not(.lg-on):not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=checkbox]:checked::before{transform:translateX(18px);background:#ecfeff;box-shadow:0 0 8px #67e8f9}
+html:not(.lg-on):not(.god-theme) .toggle-btn{border-radius:4px;border:1px solid rgba(103,232,249,.4)}
+html:not(.lg-on):not(.god-theme) .toggle-btn::after{border-radius:2px}
+html:not(.lg-on):not(.god-theme) .toggle-btn.on{background:linear-gradient(90deg,#0891b2,#4f46e5);box-shadow:0 0 12px rgba(34,211,238,.4)}
+/* ---- ползунки: светящаяся шкала ---- */
+html:not(.lg-on):not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]{-webkit-appearance:none;appearance:none;height:22px;background:transparent;cursor:pointer;padding:0;border:none;box-shadow:none}
+html:not(.lg-on):not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(90deg,#22d3ee,#8b5cf6 var(--p),rgba(148,163,184,.18) var(--p));box-shadow:0 0 8px rgba(34,211,238,.35)}
+html:not(.lg-on):not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;margin-top:-6px;border-radius:50%;background:#020617;border:2px solid #67e8f9;box-shadow:0 0 10px #22d3ee,inset 0 0 4px #22d3ee;transition:transform .2s}
+html:not(.lg-on):not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]:active::-webkit-slider-thumb{transform:scale(1.3)}
+html:not(.lg-on):not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:rgba(148,163,184,.18)}
+html:not(.lg-on):not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:linear-gradient(90deg,#22d3ee,#8b5cf6)}
+html:not(.lg-on):not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#020617;border:2px solid #67e8f9;box-shadow:0 0 10px #22d3ee}
+/* ---- значки, прогресс, полосы прокрутки ---- */
+html:not(.lg-on):not(.god-theme) :is(.level-badge,.pd-level,.lv-chip){font-family:var(--cx-f);border-radius:6px;letter-spacing:.04em}
+html:not(.lg-on):not(.god-theme) .level-bar-outer{border-radius:3px;border-color:rgba(103,232,249,.25);background:repeating-linear-gradient(90deg,rgba(103,232,249,.08) 0 6px,transparent 6px 8px)}
+html:not(.lg-on):not(.god-theme) .level-bar-inner{border-radius:2px;box-shadow:0 0 10px rgba(34,211,238,.6)}
+html:not(.lg-on):not(.god-theme) :is(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel,.lk-msheet) ::-webkit-scrollbar{width:6px;height:6px}
+html:not(.lg-on):not(.god-theme) :is(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel,.lk-msheet) ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#22d3ee,#8b5cf6);border-radius:3px}
+html:not(.lg-on):not(.god-theme) :is(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel,.lk-msheet) ::-webkit-scrollbar-track{background:rgba(2,8,26,.5)}
+html:not(.lg-on):not(.god-theme) .tablet-topbar,html:not(.lg-on):not(.god-theme) .np-header,html:not(.lg-on):not(.god-theme) .npm-header{border-bottom-color:rgba(103,232,249,.22)}
+html:not(.lg-on):not(.god-theme) .tablet-app-icon{border-radius:18px;box-shadow:0 0 0 1px rgba(255,255,255,.15),0 10px 24px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.35)}
+html:not(.lg-on):not(.god-theme) .lk-bar{background:linear-gradient(180deg,rgba(6,12,32,.95),rgba(3,6,18,.98));border-top-color:rgba(103,232,249,.2)}
+
+/* ############################ 💧 LIQUID GLASS (iOS 26) ############################ */
+html.lg-on:not(.god-theme){--glow-cyan:#409cff;--nebula-purple:#0a84ff;--nebula-blue:#0a6cff;--star-gold:#ffd60a;--text-main:#fff;--text-dim:rgba(235,235,245,.62);
+  --glass-bg:rgba(118,118,128,.2);--glass-border:rgba(255,255,255,.1);--danger:#ff453a;--success:#30d158;--dev-color:#bf5af2;
+  --ios-blue:#0a84ff;--ios-fill:rgba(118,118,128,.24);--ios-fill2:rgba(120,120,128,.36);--ios-l2:rgba(235,235,245,.62);--ios-l3:rgba(235,235,245,.32);--ios-sep:rgba(84,84,88,.6)}
+/* ---- окна: светлое жидкое стекло, большие скругления как у листов iOS ---- */
+html.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,.npm-inner,.lv-card,.lk-msheet,#news-panel,#admin-panel,#radio-win .rd-box){font-family:var(--ios-f);color:#fff;
+  background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.04) 18%,rgba(255,255,255,0) 40%),rgba(30,30,36,var(--lg-wa))!important;
+  border:1px solid rgba(255,255,255,.12)!important}
+html.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,.tablet-shell,.lv-card,#radio-win .rd-box){border-radius:34px!important}
+html.lg-on:not(.god-theme) :is(#settings-popup,.planet-dialog-inner,.item-float-panel,.npm-inner,.lk-msheet){border-radius:28px!important}
+html.lg-on:not(.god-theme) :is(.npm-inner,.lv-card,.lk-msheet){-webkit-backdrop-filter:blur(24px) saturate(190%);backdrop-filter:blur(24px) saturate(190%);
+  box-shadow:inset 1.5px 1.5px 0 -.5px rgba(255,255,255,.75),inset -1.5px -1.5px 0 -.5px rgba(255,255,255,.3),0 20px 50px rgba(0,0,0,.5)!important}
+html.lg-on:not(.god-theme) .lv-card{background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0) 40%),rgba(36,36,42,.9)!important;-webkit-backdrop-filter:none;backdrop-filter:none}
+html.lg-on:not(.god-theme) .tablet-shell::before{display:none}
+html.lg-on:not(.god-theme) .modal{padding:24px 20px 20px}
+html.lg-on:not(.god-theme) .modal-sub{color:var(--ios-l2);font-size:13px}
+html.lg-on:not(.god-theme) .modal h2{font:700 22px/1.2 var(--ios-f);letter-spacing:-.02em;color:#fff;background:none;-webkit-text-fill-color:#fff;filter:none}
+html.lg-on:not(.god-theme) #settings-popup h4{font:700 15px var(--ios-f);color:#fff;text-transform:none;letter-spacing:-.01em}
+html.lg-on:not(.god-theme) :is(.npm-title,.np-title){font:700 17px var(--ios-f);color:#fff;text-transform:none;letter-spacing:-.01em}
+html.lg-on:not(.god-theme) .np-subtitle{letter-spacing:.02em;text-transform:none;font-size:11px;color:var(--ios-l2)}
+html.lg-on:not(.god-theme) .np-lights{display:none}
+html.lg-on:not(.god-theme) :is(.np-header,.npm-header,.tablet-topbar,.tablet-level-row){background:transparent!important;border-bottom:.5px solid var(--ios-sep)!important;-webkit-backdrop-filter:none;backdrop-filter:none}
+html.lg-on:not(.god-theme) .lk-top{background:linear-gradient(180deg,rgba(32,32,38,.97) 75%,rgba(32,32,38,.85))!important;border-bottom:.5px solid var(--ios-sep)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html.lg-on:not(.god-theme) #news-panel::before{display:none}
+/* панели админа и новостей — плавающие боковые листы iPad */
+@media (min-width:701px){
+  html.lg-on:not(.god-theme) :is(#news-panel,#admin-panel){top:10px!important;bottom:10px!important;right:10px!important;height:auto!important;border-radius:30px!important;border:1px solid rgba(255,255,255,.14)!important}
+  html.lg-on:not(.god-theme) #news-panel:not(.open){transform:translateX(calc(100% + 24px))}
+}
+/* подписи разделов — как заголовки групп в «Настройках» iPhone */
+html.lg-on:not(.god-theme) :is(.admin-section-title,.form-group label,.param-card-title,.tablet-installed-title,.nc-label,.us-h,.sp-row label,.np-subtitle){font-family:var(--ios-f);text-transform:none;letter-spacing:0;color:var(--ios-l2)!important;font-weight:600}
+html.lg-on:not(.god-theme) :is(.admin-section-title,.param-card-title,.tablet-installed-title,.nc-label){font-size:13px;border-bottom:none}
+html.lg-on:not(.god-theme) .form-group label{font-size:12.5px;margin:0 0 6px 4px}
+html.lg-on:not(.god-theme) .admin-section-title::after{display:none}
+/* ---- кнопки: капсулы из стекла ---- */
+html.lg-on:not(.god-theme) :is(.btn,.lv-btn,.store-act-btn,.tablet-back,.ph-b,.np-post-edit,.np-post-del,.np-add-emoji-btn,.np-add-reaction,.npm-photo-label,.rd-file,.lk-older,.ml-btn.gray,.sk-b.gray,.lk-mcancel){
+  font-family:var(--ios-f);font-weight:600;letter-spacing:-.01em;border-radius:999px!important;border:none!important;color:#fff;
+  background:var(--ios-fill)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.2),inset 0 0 0 .5px rgba(255,255,255,.1)!important;text-shadow:none;transition:background .2s,transform .2s}
+html.lg-on:not(.god-theme) :is(.btn,.lv-btn,.store-act-btn,.tablet-back,.ph-b,.np-post-edit,.npm-photo-label,.rd-file):hover{background:var(--ios-fill2)!important;color:#fff}
+html.lg-on:not(.god-theme) .btn{padding:9px 16px;font-size:13px}
+html.lg-on:not(.god-theme) .btn.small{padding:6px 12px;font-size:12px}
+html.lg-on:not(.god-theme) :is(.btn.primary,.ml-btn:not(.gray):not(.gold),.npm-publish,.rd-add,.sk-b:not(.gray):not(.ice),#login-btn,.lv-btn.big:not(.gold):not(.red):not(.pink):not(.on),.lk-new){font-family:var(--ios-f);font-weight:600;border:none!important;border-radius:999px!important;color:#fff!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,0) 55%),#0a84ff!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.15),0 6px 18px -4px rgba(10,132,255,.55)!important;text-shadow:none!important;filter:none}
+html.lg-on:not(.god-theme) .store-act-btn{color:#409cff!important;font-weight:700}
+html.lg-on:not(.god-theme) :is(.btn.danger,.lv-btn.red,.np-post-del){background:rgba(255,69,58,.2)!important;color:#ff6961!important}
+html.lg-on:not(.god-theme) :is(.btn.success,.lv-btn.on){background:rgba(48,209,88,.2)!important;color:#30d158!important}
+html.lg-on:not(.god-theme) :is(.btn.warn,.lv-btn.gold,.store-act-btn.gold,.ml-btn.gold){background:rgba(255,214,10,.18)!important;color:#ffd60a!important}
+html.lg-on:not(.god-theme) .lv-btn.pink{background:rgba(255,55,95,.2)!important;color:#ff6482!important}
+html.lg-on:not(.god-theme) .sk-b.ice{background:linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,0) 55%),#64d2ff!important;color:#001a2c!important;border-radius:999px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.6)!important}
+html.lg-on:not(.god-theme) .sk-b:not(.gray):not(.ice){background:linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,0) 55%),#ff9f0a!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 18px -4px rgba(255,159,10,.5)!important}
+/* ---- «закрыть»: круглая стеклянная кнопка с крестиком ---- */
+html.lg-on:not(.god-theme) :is(.modal-close,.ml-x,.sk-x,.rd-x,.np-close,.pd-close,.npm-close,.lv-x,.tablet-close,.adm-hb:not(.adm-wide)){width:30px!important;height:30px!important;min-width:30px;padding:0!important;border-radius:50%!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important;
+  font:700 14px/1 var(--ios-f)!important;color:rgba(235,235,245,.8)!important;background:var(--ios-fill2)!important;border:none!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),inset 0 0 0 .5px rgba(255,255,255,.12)!important;transition:transform .3s var(--hd-spring,ease),background .2s}
+html.lg-on:not(.god-theme) :is(.modal-close,.ml-x,.sk-x,.rd-x,.np-close,.pd-close,.npm-close,.lv-x,.tablet-close,.adm-hb:not(.adm-wide)):hover{background:rgba(120,120,128,.5)!important;color:#fff!important}
+html.lg-on:not(.god-theme) .modal-close{top:16px;right:16px}
+html.lg-on:not(.god-theme) .pd-close{top:12px;right:12px;width:26px!important;height:26px!important;min-width:26px;font-size:12px!important}
+/* ---- поля ввода: заливка без рамки, синий ободок при фокусе ---- */
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel) :is(input:not([type]),input[type=text],input[type=email],input[type=password],input[type=number],input[type=search],input[type=url],input[type=tel],input[type=date],input[type=time],input[type=datetime-local],select,textarea){background-color:var(--ios-fill)!important;border:1px solid transparent!important;border-radius:12px!important;color:#fff!important;
+  font-family:var(--ios-f);box-shadow:none!important;transition:box-shadow .2s;color-scheme:dark}
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel) :is(input:not([type]),input[type=text],input[type=email],input[type=password],input[type=number],input[type=search],input[type=url],input[type=tel],input[type=date],input[type=time],input[type=datetime-local],select,textarea):focus{outline:none;box-shadow:0 0 0 3px rgba(10,132,255,.55)!important}
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel) :is(input:not([type]),input[type=text],input[type=email],input[type=password],input[type=number],input[type=search],input[type=url],input[type=tel],input[type=date],input[type=time],input[type=datetime-local],select,textarea)::placeholder{color:var(--ios-l3)}
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.tablet-shell,.lv-card,#admin-panel) select{-webkit-appearance:none;appearance:none;padding-right:32px!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5l3 3 3-3' fill='none' stroke='%23ebebf5' stroke-opacity='.6' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:right 12px center!important}
+html.lg-on:not(.god-theme) .upload-area{border:1.5px dashed rgba(235,235,245,.25);border-radius:18px;background:rgba(118,118,128,.12);color:var(--ios-l2)}
+html.lg-on:not(.god-theme) .upload-area:hover{border-color:#0a84ff;color:#409cff;background:rgba(10,132,255,.08)}
+/* ---- вкладки: сегменты-капсулы, выбранная — стеклянная линза ---- */
+html.lg-on:not(.god-theme) :is(.modal-tabs,.bg-type-tabs,.rd-modes){background:var(--ios-fill)!important;border:none!important;border-radius:999px!important;padding:3px!important;gap:2px!important;overflow:visible!important}
+html.lg-on:not(.god-theme) :is(.modal-tab,.bg-type-tab,.rd-modes button){border:none!important;border-radius:999px!important;background:transparent!important;color:var(--ios-l2)!important;font:600 12.5px var(--ios-f)!important;transition:color .25s}
+html.lg-on:not(.god-theme) :is(.modal-tab.active,.bg-type-tab.active,.rd-modes button.on){background:linear-gradient(180deg,rgba(255,255,255,.32),rgba(255,255,255,.12))!important;color:#fff!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),inset 0 -1px 0 rgba(255,255,255,.15),0 3px 10px rgba(0,0,0,.3)!important}
+html.lg-on:not(.god-theme) :is(.stars-tab,.lv-tab,.visit-per,.am-tabs button,.cz-btns button,.ml-tabs button){font-family:var(--ios-f);font-weight:600;border:none!important;border-radius:999px!important;background:var(--ios-fill)!important;color:#fff!important;box-shadow:inset 0 .5px 0 rgba(255,255,255,.15)!important}
+html.lg-on:not(.god-theme) :is(.stars-tab.active,.lv-tab.active,.visit-per.active,.am-tabs button.on,.cz-btns button.on,.ml-tabs button.on){background:rgba(255,255,255,.92)!important;color:#000!important;box-shadow:0 4px 12px rgba(0,0,0,.3)!important}
+html.lg-on:not(.god-theme) .am-tabs button.on b,html.lg-on:not(.god-theme) .lv-tab.active b{color:#fff}
+html.lg-on:not(.god-theme) .admin-tabs{border-bottom:.5px solid var(--ios-sep)!important;gap:6px!important}
+html.lg-on:not(.god-theme) .admin-tab{border-radius:18px!important;border:none!important;background:var(--ios-fill)!important;color:var(--ios-l2)!important;font-family:var(--ios-f);box-shadow:inset 0 .5px 0 rgba(255,255,255,.15)!important}
+html.lg-on:not(.god-theme) .admin-tab.active{color:#fff!important;background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.1))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),inset 0 -1px 0 rgba(255,255,255,.15),0 4px 12px rgba(0,0,0,.3)!important}
+html.lg-on:not(.god-theme) .admin-tab .adm-tb,html.lg-on:not(.god-theme) .on>b#am-n-in{background:#ff453a!important;box-shadow:none!important}
+/* ---- строки и карточки: сгруппированные плашки ---- */
+html.lg-on:not(.god-theme) :is(.ml-row,.store-row,.stars-row,.user-item,.ticket-item,.rd-row,.param-card,.tig-row,.np-post,.ml-vb,.pd-comment,.lk-pinbar,.gsa-st,.sk-frz,.ml-hint,.ml-re){border:none!important;border-radius:18px!important;background:rgba(255,255,255,.07)!important;box-shadow:inset 0 .5px 0 rgba(255,255,255,.12)!important}
+html.lg-on:not(.god-theme) :is(.ml-row,.store-row,.user-item,.rd-row):hover{background:rgba(255,255,255,.11)!important}
+html.lg-on:not(.god-theme) .rd-row.cur{background:rgba(10,132,255,.22)!important}
+html.lg-on:not(.god-theme) .lv-slot{border-radius:22px;border:none!important;background:rgba(255,255,255,.07);box-shadow:inset 0 .5px 0 rgba(255,255,255,.14)}
+html.lg-on:not(.god-theme) .lv-slot.locked{background:repeating-linear-gradient(135deg,rgba(255,255,255,.03) 0 10px,rgba(255,255,255,.06) 10px 20px)}
+html.lg-on:not(.god-theme) .lv-slot.pet{background:radial-gradient(circle at 50% 35%,rgba(255,214,10,.2),rgba(255,255,255,.06) 65%)}
+html.lg-on:not(.god-theme) .lv-chip{border:none!important;background:var(--ios-fill)!important;font-family:var(--ios-f)}
+html.lg-on:not(.god-theme) .lv-chip.gold{color:#ffd60a}
+html.lg-on:not(.god-theme) .lv-title{background:none!important;-webkit-text-fill-color:#fff!important;color:#fff;font-family:var(--ios-f);letter-spacing:-.02em}
+/* ---- переключатели iOS: зелёная капсула, ручка превращается в линзу при нажатии ---- */
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=checkbox]{-webkit-appearance:none;appearance:none;width:46px!important;height:28px!important;min-width:46px;margin:0;flex:0 0 auto;position:relative;cursor:pointer;vertical-align:middle;
+  border-radius:999px;background:var(--ios-fill2);transition:background .3s;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.08)}
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=checkbox]::before{content:'';position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:999px;background:#fff;
+  box-shadow:0 3px 8px rgba(0,0,0,.25),0 0 0 .5px rgba(0,0,0,.05);transition:transform .45s var(--hd-spring,cubic-bezier(.3,1.4,.5,1)),width .25s,background .25s,box-shadow .25s}
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=checkbox]:checked{background:#30d158}
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=checkbox]:checked::before{transform:translateX(18px)}
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=checkbox]:active::before{width:32px;background:rgba(255,255,255,.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.55),0 4px 12px rgba(0,0,0,.3);transform:scale(1.15)}
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=checkbox]:checked:active::before{transform:translateX(10px) scale(1.15)}
+html.lg-on:not(.god-theme) .toggle-btn{width:46px!important;height:28px!important;border-radius:999px!important}
+html.lg-on:not(.god-theme) .toggle-btn.on{background:#30d158!important}
+html.lg-on:not(.god-theme) .toggle-btn.off{background:var(--ios-fill2)!important}
+html.lg-on:not(.god-theme) .toggle-btn::after{width:24px!important;height:24px!important;top:2px!important;box-shadow:0 3px 8px rgba(0,0,0,.25);transition:left .4s var(--hd-spring,ease)!important}
+html.lg-on:not(.god-theme) .toggle-btn.on::after{left:20px!important}
+/* ---- ползунки iOS 26: тонкая шкала и белая капсула, при перетаскивании — линза ---- */
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]{-webkit-appearance:none;appearance:none;height:28px;background:transparent;cursor:pointer;padding:0;border:none;box-shadow:none;accent-color:#0a84ff}
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:linear-gradient(90deg,#0a84ff var(--p),var(--ios-fill2) var(--p))}
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:22px;margin-top:-8px;border-radius:999px;background:#fff;border:none;
+  box-shadow:0 3px 8px rgba(0,0,0,.3),0 0 0 .5px rgba(0,0,0,.06);transition:transform .35s var(--hd-spring,ease),background .2s,box-shadow .2s}
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]:active::-webkit-slider-thumb{transform:scale(1.35,1.45);background:rgba(255,255,255,.3);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.6),inset 3px 0 5px -3px rgba(125,240,255,.8),inset -3px 0 5px -3px rgba(255,130,215,.7),0 6px 16px rgba(0,0,0,.35)}
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:var(--ios-fill2)}
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]::-moz-range-progress{height:6px;border-radius:999px;background:#0a84ff}
+html.lg-on:not(.god-theme) :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]::-moz-range-thumb{width:30px;height:20px;border-radius:999px;background:#fff;border:none;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+/* ---- значки, текст, прогресс ---- */
+html.lg-on:not(.god-theme) :is(.level-badge,.pd-level){border:none!important;background:rgba(10,132,255,.22)!important;color:#409cff!important;border-radius:999px;font-family:var(--ios-f)}
+html.lg-on:not(.god-theme) .role-badge{border:none!important;border-radius:999px}
+html.lg-on:not(.god-theme) .level-bar-outer{height:8px;border:none!important;background:var(--ios-fill2)!important;border-radius:999px}
+html.lg-on:not(.god-theme) .level-bar-inner{background:#0a84ff!important;border-radius:999px;box-shadow:none!important;animation:none!important}
+html.lg-on:not(.god-theme) .sk-bar,html.lg-on:not(.god-theme) #sk-bar{background:#ff9f0a!important;box-shadow:none!important}
+html.lg-on:not(.god-theme) :is(.profile-nick,#profile-nick-text,.pd-username,#pd-username-text,.ifp-title){color:#fff!important;font-family:var(--ios-f)}
+html.lg-on:not(.god-theme) :is(.volume-val,.sp-val,#cz-val,#us-tv,.ca-name,.lv-sub b,.t-user){color:#409cff!important}
+html.lg-on:not(.god-theme) :is(.store-rating,.stars-guest-tag){color:var(--ios-l2)!important}
+html.lg-on:not(.god-theme) .lk-pinbar b,html.lg-on:not(.god-theme) div>b:has(+.lk-pin){color:#ffd60a}
+html.lg-on:not(.god-theme) :is(.ml-tag.st-open){color:#ff6961!important;background:rgba(255,69,58,.18)!important}
+html.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel,.lk-msheet) ::-webkit-scrollbar{width:5px;height:5px}
+html.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel,.lk-msheet) ::-webkit-scrollbar-thumb{background:rgba(235,235,245,.28);border-radius:999px}
+html.lg-on:not(.god-theme) :is(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel,.lk-msheet) ::-webkit-scrollbar-track{background:transparent}
+/* ---- игровой планшет: иконки как на iPhone ---- */
+html.lg-on:not(.god-theme) .tablet-app-icon{border-radius:24px!important;box-shadow:inset 0 1.5px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.15),inset 0 0 0 .5px rgba(255,255,255,.25),0 8px 20px rgba(0,0,0,.35)!important}
+html.lg-on:not(.god-theme) .tablet-app-icon .tai-name{font-family:var(--ios-f);font-weight:600}
+html.lg-on:not(.god-theme) .tablet-close{border-radius:50%!important}
+/* ---- чат: пузыри как в iMessage, поле ввода — капсула ---- */
+html.lg-on:not(.god-theme) .lk-bar{background:transparent!important;border-top:.5px solid var(--ios-sep)!important}
+html.lg-on:not(.god-theme) .lk-send{background:#0a84ff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 4px 12px rgba(10,132,255,.45)!important}
+html.lg-on:not(.god-theme) .lk-gav,html.lg-on:not(.god-theme) .lk-logo{filter:saturate(.9)}
+html.lg-on:not(.god-theme) .lk-q{background:rgba(0,0,0,.2);border-left-color:rgba(255,255,255,.5)}
+/* ---- радио в стекле: шрифт системы, дисплей — тёмное стекло ---- */
+html.lg-on:not(.god-theme) #radio-win .rd-brand{font-family:var(--ios-f);letter-spacing:.02em;text-transform:none;font-weight:700;font-size:13px;color:#fff}
+html.lg-on:not(.god-theme) #radio-win .rd-brand b{color:#409cff}
+html.lg-on:not(.god-theme) #radio-win .rd-lcd{background:rgba(0,0,0,.35)!important;border:none!important;border-radius:20px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 0 20px rgba(0,0,0,.3)!important}
+html.lg-on:not(.god-theme) #radio-win .rd-spk,html.lg-on:not(.god-theme) #radio-win .rd-scale{border-radius:20px;border-color:rgba(255,255,255,.12)}
+html.lg-on:not(.god-theme) #radio-win .rd-b{border:none!important;background:var(--ios-fill)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.2)!important}
+html.lg-on:not(.god-theme) #radio-win .rd-big{background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,0) 55%),#0a84ff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 18px rgba(10,132,255,.5)!important}
+html.lg-on:not(.god-theme) #radio-win .rd-adm-h{color:var(--ios-l2)!important}
+html.lg-on:not(.god-theme) .gsa .admin-section-title{color:var(--ios-l2)!important}
+/* ---- уведомления: капсула сверху ---- */
+html.lg-on:not(.god-theme) .item-float-panel{padding:10px 14px;gap:8px}
+
+/* ############################ ◉ БОГ ############################ */
+/* ---- окна: чёрный провал, белая тонкая рамка, свет сверху ---- */
+html.god-theme :is(.modal,.ml-box,.sk-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,.npm-inner,.lv-card,.lk-msheet){
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent) 50% 0/60% 1px no-repeat,
+    radial-gradient(90% 40% at 50% 0%,rgba(255,255,255,.09),transparent 70%),
+    radial-gradient(60% 30% at 50% 100%,rgba(170,160,255,.05),transparent 70%),
+    linear-gradient(180deg,#07060d,#000 60%)!important;
+  border:1px solid rgba(255,255,255,.32)!important;border-radius:18px!important;color:#f7f6ff;
+  box-shadow:0 0 0 1px #000,0 0 30px rgba(255,255,255,.1),0 0 70px rgba(200,190,255,.06),0 24px 60px #000,inset 0 0 40px rgba(255,255,255,.03)!important}
+html.god-theme .tablet-shell::before{opacity:.12}
+html.god-theme :is(.modal-overlay,.ml-shade,.sk-shade){background:radial-gradient(ellipse at 50% 42%,rgba(0,0,0,.55),rgba(0,0,0,.92))!important}
+html.god-theme :is(#news-panel,#admin-panel){background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,.15) 60%,transparent) left 0/1px 100% no-repeat,radial-gradient(80% 30% at 50% 0,rgba(255,255,255,.07),transparent 70%),linear-gradient(180deg,#07060d,#000)!important;border-left:1px solid rgba(255,255,255,.25)!important}
+/* ---- заголовки: Cormorant SC, мягкое свечение ---- */
+html.god-theme :is(.modal h2,.npm-title,.np-title,#settings-popup h4,.ml-hd b,.adm-hd b>span,.lv-title,.tablet-installed-title){font-family:var(--gd-t)!important;font-weight:700;letter-spacing:.12em;color:#fff!important;background:none!important;-webkit-text-fill-color:#fff!important;text-shadow:0 0 10px rgba(255,255,255,.5)}
+html.god-theme #settings-popup h4{font-size:15px}
+html.god-theme :is(.admin-section-title,.form-group label,.param-card-title,.nc-label,.us-h){font-family:var(--gd-f);letter-spacing:.14em;color:#bdb8dc!important;text-transform:uppercase;border-bottom-color:rgba(255,255,255,.14)}
+html.god-theme .modal-sub{color:#a7a4c0;letter-spacing:.06em}
+/* ---- кнопки: чёрные с белой нитью, главная — белая ---- */
+html.god-theme :is(.btn,.lv-btn,.store-act-btn,.tablet-back,.ph-b,.np-post-edit,.np-add-emoji-btn,.npm-photo-label,.rd-file,.lk-older,.ml-btn.gray,.sk-b.gray){font-family:var(--gd-f);font-weight:600;letter-spacing:.05em;border-radius:10px;background:#000!important;border:1px solid rgba(255,255,255,.4)!important;color:#fff!important;box-shadow:none!important;text-shadow:0 0 6px rgba(255,255,255,.35);transition:box-shadow .3s,border-color .3s,background .3s,color .3s}
+html.god-theme :is(.btn,.lv-btn,.store-act-btn,.tablet-back,.ph-b,.np-post-edit,.npm-photo-label,.rd-file):hover{border-color:#fff!important;box-shadow:0 0 14px rgba(255,255,255,.4),inset 0 0 10px rgba(255,255,255,.1)!important}
+html.god-theme :is(.btn.primary,.ml-btn:not(.gray):not(.gold),.npm-publish,.rd-add,.sk-b:not(.gray):not(.ice),#login-btn,.lv-btn.big:not(.red):not(.pink),.lk-send,.lk-new){font-family:var(--gd-f);font-weight:600;letter-spacing:.06em;background:#fff!important;color:#000!important;border:1px solid #fff!important;text-shadow:none!important;
+  box-shadow:0 0 18px rgba(255,255,255,.45),0 0 40px rgba(220,215,255,.2)!important;border-radius:10px}
+html.god-theme .lk-send{border-radius:50%!important}
+html.god-theme :is(.btn.primary,.ml-btn:not(.gray):not(.gold),.npm-publish,.rd-add,#login-btn):hover{background:#000!important;color:#fff!important}
+html.god-theme :is(.btn.danger,.lv-btn.red,.np-post-del){border-color:rgba(255,150,175,.6)!important;color:#ffd1dc!important}
+html.god-theme :is(.btn.success,.btn.warn,.lv-btn.gold,.lv-btn.on,.lv-btn.pink,.store-act-btn.gold,.ml-btn.gold,.sk-b.ice){border-color:rgba(255,255,255,.6)!important;color:#fff!important;background:#000!important}
+/* ---- закрыть: круг с белым кольцом ---- */
+html.god-theme :is(.modal-close,.ml-x,.sk-x,.rd-x,.np-close,.pd-close,.npm-close,.lv-x,.tablet-close,.adm-hb:not(.adm-wide)){width:30px;height:30px;min-width:30px;padding:0!important;border-radius:50%!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important;background:#000!important;border:1px solid rgba(255,255,255,.55)!important;color:#fff!important;font-size:14px!important;line-height:1!important;box-shadow:0 0 10px rgba(255,255,255,.2)!important;transition:transform .6s ease,box-shadow .3s}
+html.god-theme :is(.modal-close,.ml-x,.sk-x,.rd-x,.np-close,.pd-close,.npm-close,.lv-x,.tablet-close,.adm-hb:not(.adm-wide)):hover{transform:rotate(90deg);box-shadow:0 0 16px rgba(255,255,255,.55)!important}
+html.god-theme .modal-close{top:14px;right:14px}
+html.god-theme .pd-close{width:24px;height:24px;min-width:24px;font-size:11px!important}
+/* ---- поля: чёрные, белая линия ---- */
+html.god-theme :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel) :is(input:not([type]),input[type=text],input[type=email],input[type=password],input[type=number],input[type=search],input[type=url],input[type=tel],input[type=date],input[type=time],input[type=datetime-local],select,textarea){background-color:#000!important;border:1px solid rgba(255,255,255,.22)!important;border-radius:10px!important;color:#fff!important;box-shadow:none!important;color-scheme:dark}
+html.god-theme :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel) :is(input:not([type]),input[type=text],input[type=email],input[type=password],input[type=number],input[type=search],input[type=url],input[type=tel],input[type=date],input[type=time],input[type=datetime-local],select,textarea):focus{border-color:#fff!important;outline:none;box-shadow:0 0 14px rgba(255,255,255,.3)!important}
+html.god-theme :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel) :is(input:not([type]),input[type=text],input[type=email],input[type=password],input[type=number],input[type=search],input[type=url],input[type=tel],input[type=date],input[type=time],input[type=datetime-local],select,textarea)::placeholder{color:#6f6c86}
+html.god-theme .upload-area{border:1px dashed rgba(255,255,255,.35);border-radius:12px;color:#a7a4c0;background:transparent}
+html.god-theme .upload-area:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,.04)}
+/* ---- вкладки: выбранная — белая ---- */
+html.god-theme :is(.modal-tabs,.bg-type-tabs){border:1px solid rgba(255,255,255,.3)!important;border-radius:10px;background:#000}
+html.god-theme :is(.modal-tab,.bg-type-tab,.stars-tab,.lv-tab,.visit-per,.am-tabs button,.cz-btns button,.admin-tab){font-family:var(--gd-f);letter-spacing:.04em;color:#a7a4c0!important;background:#000!important;border-color:rgba(255,255,255,.2)!important}
+html.god-theme :is(.modal-tab.active,.bg-type-tab.active,.stars-tab.active,.lv-tab.active,.visit-per.active,.am-tabs button.on,.cz-btns button.on,.admin-tab.active){background:#fff!important;color:#000!important;border-color:#fff!important;box-shadow:0 0 16px rgba(255,255,255,.45)!important;text-shadow:none!important}
+html.god-theme .admin-tab .adm-tb,html.god-theme .on>b#am-n-in{background:#fff!important;color:#000!important;box-shadow:0 0 0 2px #000!important}
+html.god-theme .admin-tab.active .adm-tb{background:#000!important;color:#fff!important}
+/* ---- строки ---- */
+html.god-theme :is(.ml-row,.store-row,.stars-row,.user-item,.ticket-item,.rd-row,.param-card,.tig-row,.np-post,.ml-vb,.pd-comment,.lk-pinbar,.gsa-st){background:rgba(255,255,255,.025)!important;border:1px solid rgba(255,255,255,.14)!important;border-radius:12px;box-shadow:none!important}
+html.god-theme :is(.ml-row,.store-row,.user-item,.rd-row):hover{border-color:rgba(255,255,255,.45)!important;box-shadow:0 0 14px rgba(255,255,255,.12)!important}
+html.god-theme .lv-slot{border-color:rgba(255,255,255,.2)!important;background:rgba(255,255,255,.02)!important}
+html.god-theme .lv-slot.pet,html.god-theme .lv-slot.set,html.god-theme .lv-slot.mega{border-color:rgba(255,255,255,.55)!important;background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.1),rgba(0,0,0,0) 65%)!important;box-shadow:0 0 16px rgba(255,255,255,.1)!important}
+html.god-theme :is(.lv-pet-name,.lk-pinbar b,.sk-adm>summary,.lv-chip,.tt-gold,.tt-ticket){color:#fff!important;border-color:rgba(255,255,255,.3)!important;background:transparent!important}
+html.god-theme .lv-soon{background:#fff!important;color:#000!important}
+html.god-theme :is(.level-badge,.pd-level,.role-badge){background:#000!important;color:#fff!important;border:1px solid rgba(255,255,255,.45)!important;font-family:var(--gd-f)}
+/* ---- переключатели и ползунки — белый свет ---- */
+html.god-theme :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=checkbox]{-webkit-appearance:none;appearance:none;width:40px!important;height:22px!important;min-width:40px;margin:0;flex:0 0 auto;position:relative;cursor:pointer;vertical-align:middle;border-radius:999px;background:#000;border:1px solid rgba(255,255,255,.4);transition:background .4s,box-shadow .4s}
+html.god-theme :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=checkbox]::before{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#6f6c86;transition:transform .5s cubic-bezier(.3,1.2,.5,1),background .4s,box-shadow .4s}
+html.god-theme :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=checkbox]:checked{border-color:#fff;box-shadow:0 0 12px rgba(255,255,255,.4)}
+html.god-theme :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=checkbox]:checked::before{transform:translateX(18px);background:#fff;box-shadow:0 0 10px #fff}
+html.god-theme .toggle-btn{border:1px solid rgba(255,255,255,.4)}
+html.god-theme .toggle-btn.on{background:#fff!important}
+html.god-theme .toggle-btn.on::after{background:#000}
+html.god-theme .toggle-btn.off{background:#000!important}
+html.god-theme :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]{-webkit-appearance:none;appearance:none;height:22px;background:transparent;cursor:pointer;padding:0;border:none;box-shadow:none}
+html.god-theme :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]::-webkit-slider-runnable-track{height:2px;background:linear-gradient(90deg,#fff var(--p),rgba(255,255,255,.2) var(--p));box-shadow:0 0 6px rgba(255,255,255,.4)}
+html.god-theme :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;margin-top:-6px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.12),0 0 12px #fff}
+html.god-theme :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]::-moz-range-progress{height:2px;background:#fff}
+html.god-theme :where(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.tablet-shell,.lv-card,#admin-panel,#news-panel) input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff;border:none;box-shadow:0 0 12px #fff}
+html.god-theme .level-bar-outer{border-color:rgba(255,255,255,.3)!important;background:#000!important}
+html.god-theme :is(.sk-bar,#sk-bar){background:linear-gradient(90deg,#8f86c9,#fff)!important;box-shadow:0 0 10px rgba(255,255,255,.6)!important}
+html.god-theme .sk-c.today{border-color:#fff!important;box-shadow:0 0 12px rgba(255,255,255,.5)!important}
+html.god-theme :is(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel,.lk-msheet) ::-webkit-scrollbar{width:5px;height:5px}
+html.god-theme :is(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel,.lk-msheet) ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.4);border-radius:3px}
+html.god-theme :is(.modal,.ml-box,.sk-box,.rd-box,#settings-popup,.planet-dialog-inner,.item-float-panel,.tablet-shell,.npm-inner,.lv-card,#news-panel,#admin-panel,.lk-msheet) ::-webkit-scrollbar-track{background:#000}
+/* ---- цветные картинки интерфейса уходят в чёрно-белое ---- */
+html.god-theme :is(.tablet-app-icon,.lv-hero,.lk-gav,.lk-logo,.store-icon){filter:grayscale(1) contrast(1.1)}
+html.god-theme .tablet-app-icon{border:1px solid rgba(255,255,255,.55);box-shadow:0 0 16px rgba(255,255,255,.2)!important}
+html.god-theme :is(.profile-nick,#profile-nick-text,.pd-username,#pd-username-text,.ifp-title,.volume-val,.sp-val,#cz-val,#us-tv,.ca-name,.lv-sub b,.store-rating,.t-user){color:#fff!important;text-shadow:0 0 8px rgba(255,255,255,.45)}
+html.god-theme .np-lights .np-light{background:#fff!important;box-shadow:0 0 6px #fff!important}
+
+/* ---- чат во всех темах: поле ввода и пузыри (после общих правил полей, чтобы перебить их) ---- */
+html:not(.lg-on):not(.god-theme) .lk-in textarea{border-radius:12px!important;background:rgba(2,8,26,.75)!important;border:1px solid rgba(103,232,249,.28)!important}
+html:not(.lg-on):not(.god-theme) .lk-in textarea:focus{border-color:#67e8f9!important;box-shadow:0 0 0 3px rgba(34,211,238,.14),0 0 16px rgba(34,211,238,.25)!important}
+html:not(.lg-on):not(.god-theme) .lk-m:not(.me):not(.big) .lk-bub{background:linear-gradient(90deg,rgba(34,211,238,.07),rgba(2,8,26,.35));border-color:rgba(103,232,249,.16)}
+html:not(.lg-on):not(.god-theme) .lk-m.me:not(.big) .lk-bub{background:linear-gradient(135deg,#0e7490,#4338ca 70%,#6d28d9);border-color:rgba(165,243,252,.35);box-shadow:0 0 14px -2px rgba(34,211,238,.35)}
+html:not(.lg-on):not(.god-theme) .lk-send{border-radius:12px!important;background:linear-gradient(135deg,#0891b2,#4f46e5 60%,#9333ea)!important;box-shadow:0 0 16px rgba(34,211,238,.45)!important}
+html.lg-on:not(.god-theme) .lk-in textarea{border-radius:22px!important;background:var(--ios-fill)!important;border:1px solid rgba(255,255,255,.08)!important;font-family:var(--ios-f)}
+html.lg-on:not(.god-theme) .lk-m:not(.me):not(.big) .lk-bub{background:rgba(118,118,128,.3);border-color:transparent;box-shadow:inset 0 .5px 0 rgba(255,255,255,.12)}
+html.lg-on:not(.god-theme) .lk-m.me:not(.big) .lk-bub{background:#0a84ff;border-color:transparent;box-shadow:inset 0 .5px 0 rgba(255,255,255,.3)}
+html.lg-on:not(.god-theme) .lk-bub{font-family:var(--ios-f)}
+html.god-theme .lk-in textarea{border-radius:22px!important}
+html.god-theme .lk-m:not(.me):not(.big) .lk-bub{background:#000;border-color:rgba(255,255,255,.25)}
+html.god-theme .lk-m.me:not(.big) .lk-bub{background:#fff;color:#000;border-color:#fff;box-shadow:0 0 14px rgba(255,255,255,.3)}
+html.god-theme .lk-m.me:not(.big) .lk-bub :is(.lk-tm,.lk-ed,a,b){color:#333!important}
+
+/* ---- уведомления (тост) ---- */
+html:not(.lg-on):not(.god-theme) #toast,html:not(.lg-on):not(.god-theme) #news-notify{font-family:var(--cx-f);font-weight:700;letter-spacing:.03em;border-radius:8px!important;border:1px solid rgba(103,232,249,.5)!important;color:#cffafe!important;
+  background:linear-gradient(90deg,rgba(34,211,238,.9),rgba(167,139,250,.9)) left 0/100% 1px no-repeat,linear-gradient(180deg,rgba(8,20,48,.97),rgba(4,8,22,.97))!important;box-shadow:0 0 22px rgba(34,211,238,.3),0 10px 30px rgba(0,0,0,.5)!important}
+html.lg-on:not(.god-theme) #toast,html.lg-on:not(.god-theme) #news-notify{font-family:var(--ios-f);font-weight:600;border-radius:999px!important}
+/* ---- огонёк: календарь как плитки ---- */
+html:not(.lg-on):not(.god-theme) .sk-c{border-radius:6px;border-color:rgba(103,232,249,.14);background:linear-gradient(180deg,rgba(103,232,249,.06),rgba(2,8,26,.4))}
+html:not(.lg-on):not(.god-theme) .sk-stats div{border-radius:8px;border:1px solid rgba(103,232,249,.14);background:linear-gradient(180deg,rgba(103,232,249,.07),rgba(2,8,26,.35))}
+html:not(.lg-on):not(.god-theme) .sk-stats b{font-family:var(--cx-f)}
+html.lg-on:not(.god-theme) .sk-c{border-radius:14px;border:none;background:rgba(118,118,128,.2)}
+html.lg-on:not(.god-theme) .sk-c.today{box-shadow:inset 0 0 0 2px #ff9f0a;border:none}
+html.lg-on:not(.god-theme) .sk-stats div{border-radius:16px;background:rgba(255,255,255,.07)}
+html.lg-on:not(.god-theme) .sk-box{color:#fff}
+html.god-theme .sk-c{border-radius:8px;background:#000;border-color:rgba(255,255,255,.18)}
+html.god-theme .sk-stats div{background:#000;border:1px solid rgba(255,255,255,.18)}
+html.god-theme .sk-stats b{font-family:var(--gd-t)}
+/* ---- вкладки почты ---- */
+html:not(.lg-on):not(.god-theme) .ml-tabs button{font-family:var(--cx-f);border-radius:8px;border:1px solid rgba(103,232,249,.16);background:rgba(2,8,26,.5)}
+html:not(.lg-on):not(.god-theme) .ml-tabs button.on{border-color:#67e8f9;background:linear-gradient(180deg,rgba(34,211,238,.22),rgba(99,102,241,.14));box-shadow:0 0 12px rgba(34,211,238,.3),inset 0 -2px 0 #22d3ee}
+html.god-theme .ml-tabs button{background:#000;border:1px solid rgba(255,255,255,.2);color:#a7a4c0;font-family:var(--gd-f)}
+html.god-theme .ml-tabs button.on{background:#fff;color:#000;border-color:#fff;box-shadow:0 0 14px rgba(255,255,255,.4)}
+/* ---- стекло на телефонах: размытие внутренних листов слабее ---- */
+html.rf-lite.lg-on:not(.god-theme) :is(.npm-inner,.lk-msheet){-webkit-backdrop-filter:blur(12px) saturate(170%);backdrop-filter:blur(12px) saturate(170%)}
+/* ---- бог: печать-глаз над каждым окном ---- */
+html.god-theme :is(.modal,.sk-box,#settings-popup,.planet-dialog-inner,.npm-inner,.lv-card){background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='14' viewBox='0 0 46 14'%3E%3Cpath d='M3 7Q23-4 43 7Q23 18 3 7Z' fill='none' stroke='%23fff' stroke-opacity='.75' stroke-width='1'/%3E%3Ccircle cx='23' cy='7' r='5.4' fill='none' stroke='%23fff' stroke-opacity='.45' stroke-width='.8'/%3E%3Ccircle cx='23' cy='7' r='2.8' fill='%23fff'/%3E%3Cpath d='M0 7h3M43 7h3' stroke='%23fff' stroke-opacity='.4'/%3E%3C/svg%3E") 50% 4px/46px 14px no-repeat,
+    linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent) 50% 0/60% 1px no-repeat,
+    radial-gradient(90% 40% at 50% 0%,rgba(255,255,255,.09),transparent 70%),
+    radial-gradient(60% 30% at 50% 100%,rgba(170,160,255,.05),transparent 70%),
+    linear-gradient(180deg,#07060d,#000 60%)!important}
+
+/* ---- новости: подпись реакций и кнопка «Написать пост» (у них стили прямо в разметке) ---- */
+html:not(.lg-on):not(.god-theme) #news-create-btn-wrap button{font-family:var(--cx-f)!important;font-weight:700!important;letter-spacing:.05em;border-radius:8px!important;border:1px solid rgba(103,232,249,.45)!important;background:linear-gradient(180deg,rgba(103,232,249,.12),rgba(103,232,249,.03))!important;color:#cffafe!important}
+html:not(.lg-on):not(.god-theme) #news-create-btn-wrap button:hover{box-shadow:0 0 14px rgba(34,211,238,.35)}
+html:not(.lg-on):not(.god-theme) .nc-label{font-family:var(--cx-f)!important}
+html.lg-on:not(.god-theme) #news-create-btn-wrap button{font:600 14px var(--ios-f)!important;border:none!important;border-radius:999px!important;padding:11px!important;color:#fff!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,0) 55%),#0a84ff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 18px -4px rgba(10,132,255,.55)!important}
+html.lg-on:not(.god-theme) .nc-label{font:600 13px var(--ios-f)!important;text-transform:none!important;letter-spacing:0!important;color:var(--ios-l2)!important}
+html.lg-on:not(.god-theme) #news-emoji-admin-panel{border-bottom:.5px solid var(--ios-sep)!important;background:transparent!important}
+html.god-theme #news-create-btn-wrap button{font-family:var(--gd-f)!important;letter-spacing:.06em;border-radius:10px!important;border:1px dashed rgba(255,255,255,.5)!important;background:#000!important;color:#fff!important}
+html.god-theme .nc-label{font-family:var(--gd-f)!important;color:#bdb8dc!important}
+
+/* ---- радио: крестик не налезает на скругление ---- */
+html.lg-on:not(.god-theme) #radio-win .rd-x{top:18px;right:18px}
+html:not(.lg-on):not(.god-theme) #radio-win .rd-x,html.god-theme #radio-win .rd-x{top:12px;right:12px}
+
+/* ---- логотип ---- */
+html:not(.lg-on):not(.god-theme) #logo{font-family:var(--cx-f);font-weight:800;letter-spacing:.04em;background:linear-gradient(90deg,#67e8f9,#a78bfa 62%,#f0abfc);-webkit-background-clip:text;background-clip:text}
+html.lg-on:not(.god-theme) #logo{font-family:var(--ios-f);font-weight:700;letter-spacing:-.01em;background:none;-webkit-text-fill-color:#fff;color:#fff}
+html.lg-on:not(.god-theme) #logo span{-webkit-text-fill-color:rgba(235,235,245,.6);letter-spacing:.06em}
+
+/* ---- стекло: ссылки, упоминания, «назад» — системный синий iOS ---- */
+html.lg-on:not(.god-theme) :is(.ml-back,.lk-link,.lk-at,.ml-link){color:#409cff!important}
+html.lg-on:not(.god-theme) #radio-win .rd-fq{color:#fff!important;text-shadow:none!important;font-family:var(--ios-f);font-weight:300;letter-spacing:-.02em}
+html.lg-on:not(.god-theme) #radio-win .rd-needle{background:#ff375f!important;box-shadow:0 0 6px rgba(255,55,95,.6)!important}
+
+/* ---- общие мелочи для всех тем ---- */
+/* вкладка новостей больше не торчит поверх открытых окон */
+body:has(.modal-overlay[style*="flex"],#ml-win.on,#sk-win.on,#radio-win.on,#settings-popup.open,#games-tablet-overlay.on) #news-tab-btn{opacity:0!important;pointer-events:none!important}
+#settings-popup.open~#news-tab-btn{opacity:0;pointer-events:none}
+</style>
 <script>
 /* ===== вид интерфейса: Космос / Liquid Glass ===== */
 window.HUD=(function(){
   const R=document.documentElement,KEY='ui_style';
-  const HL='#bottom-left .hd-orb,.hd-pad,#news-tab-btn,#topbar-right,#comm-btn';
-  const JELLY='#bottom-left .hd-orb,.hd-pad,.hd-chip,#user-badge,#streak-btn,#news-tab-btn,#comm-btn';
+  const TILT='#bottom-left .hd-orb,.hd-pad,#comm-btn';
   const on=()=>R.classList.contains('lg-on')&&!R.classList.contains('god-theme');
   const rm=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
   function cur(){return R.classList.contains('lg-on')?'glass':'cosmos';}
-  function sync(){const w=document.getElementById('ui-style');if(!w)return;const v=cur();w.dataset.v=v;w.querySelectorAll('.us-seg button').forEach(b=>b.setAttribute('aria-checked',b.dataset.v===v?'true':'false'));}
+  const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}};
+  const AKV={slow:1.6,norm:1,fast:.6,off:1};
+  function curA(){const a=ls('ui_anim');return AKV[a]?a:'norm';}
+  function curT(){const t=ls('ui_glass_t');return t===null?55:Math.max(0,Math.min(100,+t||0));}
+  function sync(){const w=document.getElementById('ui-style');if(!w)return;const v=cur(),a=curA(),t=curT();w.dataset.v=v;w.dataset.ak=a;
+    w.querySelectorAll('#us-v button').forEach(b=>b.setAttribute('aria-checked',b.dataset.v===v?'true':'false'));
+    w.querySelectorAll('#us-ak button').forEach(b=>b.setAttribute('aria-checked',b.dataset.a===a?'true':'false'));
+    const r=document.getElementById('us-t'),l=document.getElementById('us-tv');if(r&&+r.value!==t)r.value=t;if(l)l.textContent=t+'%';}
+  function squish(id){const th=document.querySelector('#'+id+' .us-th');if(th&&!rm()&&!R.classList.contains('fx-off')){th.classList.remove('go');void th.offsetWidth;th.classList.add('go');}}
+  /* прозрачность стекла: 0 — матовое, 100 — почти прозрачное */
+  function glassT(v){v=Math.max(0,Math.min(100,Math.round(+v||0)));ls('ui_glass_t',String(v));R.style.setProperty('--lg-t',(v/100).toFixed(2));const l=document.getElementById('us-tv');if(l)l.textContent=v+'%';}
+  /* скорость всех анимаций сайта (наших): плавно / обычно / быстро / выкл */
+  function anim(a){if(!AKV[a])a='norm';ls('ui_anim',a);R.style.setProperty('--ak',AKV[a]);R.classList.toggle('fx-off',a==='off');sync();squish('us-ak');}
   function wave(){
     if(rm()||R.classList.contains('god-theme'))return;
     const b=document.getElementById('settings-btn');const r=b?b.getBoundingClientRect():{left:24,top:innerHeight-46,width:44,height:44};
@@ -14326,22 +14875,22 @@ window.HUD=(function(){
     v=v==='glass'?'glass':'cosmos';if(v===cur()){sync();return;}
     try{localStorage.setItem(KEY,v);}catch(e){}
     R.classList.toggle('lg-on',v==='glass');sync();
-    const th=document.querySelector('#ui-style .us-th');if(th&&!rm()){th.classList.remove('go');void th.offsetWidth;th.classList.add('go');}
-    if(v==='glass')wave();
+    squish('us-v');
+    if(v==='glass'&&!R.classList.contains('fx-off'))wave();
   }
-  /* блик следует за пальцем/курсором */
-  let last=null,pend=null,raf=0;
-  function paint(){raf=0;const e=pend;pend=null;if(!e)return;
-    const el=on()&&e.target&&e.target.closest?e.target.closest(HL):null;
-    if(last&&last!==el){last.style.removeProperty('--mx');last.style.removeProperty('--my');}
-    last=el;if(!el)return;const r=el.getBoundingClientRect();
-    el.style.setProperty('--mx',Math.round(e.clientX-r.left)+'px');el.style.setProperty('--my',Math.round(e.clientY-r.top)+'px');}
-  function mv(e){pend=e;if(!raf)raf=requestAnimationFrame(paint);}
-  document.addEventListener('pointermove',mv,{passive:true});
-  document.addEventListener('pointerdown',mv,{passive:true});
-  /* «желе» после нажатия */
-  document.addEventListener('click',e=>{if(!on()||rm())return;const el=e.target&&e.target.closest?e.target.closest(JELLY):null;if(!el)return;
-    el.classList.remove('lg-j');void el.offsetWidth;el.classList.add('lg-j');clearTimeout(el._lgj);el._lgj=setTimeout(()=>el.classList.remove('lg-j'),800);},true);
+  /* 3D: на ПК стеклянные кнопки наклоняются к курсору, блик смещается (только transform — без перерисовки) */
+  let tl=null,pend=null,raf=0;
+  const fine=(()=>{try{return matchMedia('(hover:hover) and (pointer:fine)').matches;}catch(e){return false;}})();
+  function untilt(el){el.classList.remove('lg-tilt');['--rx','--ry','--gx','--gy'].forEach(p=>el.style.removeProperty(p));}
+  function tilt(){raf=0;const e=pend;pend=null;if(!e)return;
+    const el=on()&&!R.classList.contains('fx-off')&&e.target&&e.target.closest?e.target.closest(TILT):null;
+    if(tl&&tl!==el)untilt(tl);tl=el;if(!el)return;
+    const r=el.getBoundingClientRect(),nx=clamp((e.clientX-r.left)/r.width*2-1),ny=clamp((e.clientY-r.top)/r.height*2-1);
+    el.classList.add('lg-tilt');el.style.setProperty('--rx',(-ny*14).toFixed(1)+'deg');el.style.setProperty('--ry',(nx*14).toFixed(1)+'deg');
+    el.style.setProperty('--gx',(nx*r.width*.16).toFixed(1)+'px');el.style.setProperty('--gy',(ny*r.height*.12).toFixed(1)+'px');}
+  const clamp=v=>Math.max(-1,Math.min(1,v));
+  if(fine){document.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;pend=e;if(!raf)raf=requestAnimationFrame(tilt);},{passive:true});
+    document.addEventListener('pointerleave',()=>{if(tl){untilt(tl);tl=null;}},{passive:true});}
   /* настройки открываются прямо под шестерёнкой в шапке */
   function placeSet(){
     const p=document.getElementById('settings-popup'),b=document.getElementById('settings-btn');if(!p||!b||!p.classList.contains('open'))return;
@@ -14366,21 +14915,21 @@ window.HUD=(function(){
     let p=false;try{p=!!(typeof bgMusicAudio!=='undefined'&&bgMusicAudio&&!bgMusicAudio.paused);}catch(e){}
     if(b.classList.contains('play')!==p)b.classList.toggle('play',p);},1000);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();
-  return {style,sync,cur,placeSet,fit:refit};
+  return {style,sync,cur,placeSet,fit:refit,glassT,anim};
 })();
 </script>
 <script>
-/* ===== 💧 Liquid Glass: окна вытекают из кнопки и втягиваются обратно ===== */
+/* ===== окна раскрываются из кнопки, которая их открыла, и втягиваются обратно — само окно, вместе с содержимым =====
+   💧 стекло — капля разливается в окно; 🌌 космос — голограмма: луч разворачивается в окно, по нему бежит скан-линия,
+   закрытие — как выключение экрана; ◉ бог — мягкое нисхождение с нимбом.
+   Анимируются только transform/opacity — это считает видеокарта. */
 window.LIQ=(function(){
   const R=document.documentElement;
   const rm=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
-  const on=()=>R.classList.contains('lg-on')&&!R.classList.contains('god-theme')&&!rm()&&!!Element.prototype.animate;
-  let SPR='cubic-bezier(.3,1.35,.5,1)';
-  try{if(CSS.supports('transition-timing-function','linear(0,1)'))SPR='linear(0,.009,.035 2.1%,.141,.281 6.7%,.723 12.9%,.938 16.7%,1.017,1.077,1.121,1.149 24.3%,1.159,1.163,1.161,1.154 29.9%,1.129 32.8%,1.051 39.6%,1.017 43.1%,.991,.977 51%,.974 53.8%,.975 57.1%,.997 69.8%,1.003 76.9%,1.004 83.8%,1)';}catch(e){}
+  const on=()=>!R.classList.contains('fx-off')&&!rm()&&!!Element.prototype.animate;
+  const th=()=>R.classList.contains('god-theme')?'d':R.classList.contains('lg-on')?'g':'c';
+  const AK=()=>{const v=parseFloat(getComputedStyle(R).getPropertyValue('--ak'));return isFinite(v)&&v>0?v:1;};
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-  /* телефоны и слабые ПК: только transform/opacity (их считает видеокарта), без перерисовки углов и размытия во время полёта */
-  const lite=()=>R.classList.contains('rf-lite')||(typeof PERF!=='undefined'&&PERF.lite);
-  /* откуда открыли: последняя нажатая кнопка (или точка касания) */
   const CTRL='.hd-chip,.hd-orb,.hd-pad,#news-tab-btn,#comm-btn,#user-badge,#streak-btn,button,a,[onclick],[role=button],.ml-row,.lk-m';
   let tap=null;
   document.addEventListener('pointerdown',e=>{const el=e.target&&e.target.closest?e.target.closest(CTRL):null;tap={x:e.clientX,y:e.clientY,t:performance.now(),el};},{capture:true,passive:true});
@@ -14391,7 +14940,6 @@ window.LIQ=(function(){
     if(el&&el.isConnected){const o=rectOf(el);if(o&&o.w<=260&&o.h<=140)return o;}
     return {x:tap.x,y:tap.y,w:44,h:44,el:null};
   }
-  /* окна сайта: корень → видимая «коробка» */
   const vis=e=>e.style.display!=='none'&&getComputedStyle(e).display!=='none';
   const W=[
     ['#settings-popup',null,e=>e.classList.contains('open')],
@@ -14405,86 +14953,340 @@ window.LIQ=(function(){
     ['.modal-overlay','.modal',vis],
     ['#planet-dialog','.planet-dialog-inner',vis]
   ];
+  const BIG='#ml-win,#admin-panel,#news-panel,.modal-overlay,#sk-win,#radio-win,#games-tablet-overlay';
   const boxOf=el=>{const m=el.__liq;return m&&m.box?el.querySelector(m.box):el;};
   const mo=new MutationObserver(recs=>{const seen=new Set();for(const r of recs){if(seen.has(r.target))continue;seen.add(r.target);check(r.target);}});
-  const ro=window.ResizeObserver?new ResizeObserver(ents=>{for(const en of ents){const b=en.target,el=b.__liqRoot;if(el&&el.__liq&&el.__liq.shown&&!(b.getAnimations&&b.getAnimations().length))keep(el,b);}}):null;
   function attach(){
     for(const [sel,box,fn] of W){document.querySelectorAll(sel).forEach(el=>{if(el.__liq)return;el.__liq={box,fn,shown:false};try{el.__liq.shown=!!fn(el);}catch(e){}
       mo.observe(el,{attributes:true,attributeFilter:['class','style']});});}
   }
-  function keep(el,b){const m=el.__liq;const r=b.getBoundingClientRect();if(r.width&&r.height){m.rect={left:r.left,top:r.top,width:r.width,height:r.height};m.br=getComputedStyle(b).borderRadius||'18px';}}
   function check(el){const m=el.__liq;if(!m)return;let now=false;try{now=!!m.fn(el);}catch(e){}
     if(now===m.shown)return;m.shown=now;if(now)opened(el);else closed(el);}
-  /* ---- появление: капля из кнопки разливается в окно ---- */
+  /* ---------- открытие ---------- */
   function opened(el){
-    const m=el.__liq;m.org=origin();
+    const m=el.__liq;
+    if(m.cA){try{m.cA.cancel();}catch(e){}finish(el);}
+    m.org=origin();
     if(el.__liqT){el.style.transition=el.__liqT.t;el.__liqT=null;}
+    if(el.__liqV){el.style.visibility='';el.__liqV=0;}
     const b=boxOf(el);if(!b)return;
-    if(ro&&!b.__liqRoot){b.__liqRoot=el;ro.observe(b);}
-    if(!on()){keep(el,b);return;}
+    if(th()==='g'&&el.matches(BIG))R.classList.add('rf-paused');
+    if(!on())return;
     morphIn(el,b,m.org);
   }
-  function morphIn(el,b,o){
+  function geo(b,o){
     const pt=b.style.transition,ptf=b.style.transform;
     b.style.transition='none';b.style.transform='none';
-    const r=b.getBoundingClientRect();
-    b.style.transform=ptf;
-    if(!r.width||!r.height){b.style.transition=pt;return;}
-    const m=el.__liq;m.rect={left:r.left,top:r.top,width:r.width,height:r.height};
-    const brF=getComputedStyle(b).borderRadius||'18px';m.br=brF;
+    const r=b.getBoundingClientRect();b.style.transform=ptf;
     const cx=r.left+r.width/2,cy=r.top+r.height/2;
     const f=o||{x:cx,y:cy+30,w:Math.min(90,r.width*.25),h:Math.min(90,r.height*.25)};
-    const sx=clamp(f.w/r.width,.03,1),sy=clamp(f.h/r.height,.03,1);
-    const dx=f.x-cx,dy=f.y-cy,d=Math.hypot(dx,dy)||1,ux=Math.abs(dx)/d,uy=Math.abs(dy)/d;
-    const ms=.5,st=.2;
-    const msx=Math.max(sx,ms*(1+st*ux-st*.7*uy)),msy=Math.max(sy,ms*(1+st*uy-st*.7*ux));
+    const dx=f.x-cx,dy=f.y-cy,d=Math.hypot(dx,dy)||1;
+    return {pt,r,cx,cy,f,dx,dy,ux:dx/d,uy:dy/d,sx:clamp(f.w/Math.max(1,r.width),.03,1),sy:clamp(f.h/Math.max(1,r.height),.03,1)};
+  }
+  function morphIn(el,b,o){
+    const G=geo(b,o);if(!G.r.width||!G.r.height){b.style.transition=G.pt;return;}
+    const T=th(),k=AK(),{dx,dy,ux,uy,sx,sy}=G;
     const pto=b.style.transformOrigin;b.style.transformOrigin='50% 50%';
-    const L=lite(),dur=L?560:680;
-    b.classList.add('lg-mi');if(L)b.classList.add('lg-fly');
-    if(o&&o.el)pour(o.el);
-    /* полёт и разлив: только transform/opacity — анимация идёт в видеокарте и не зависит от загрузки страницы */
-    const a=b.animate([
-      {offset:0,transform:`translate(${dx}px,${dy}px) scale(${sx},${sy})`,opacity:L?.6:.75,easing:'cubic-bezier(.45,0,.3,1)'},
-      {offset:.34,transform:`translate(${dx*.3}px,${dy*.3}px) scale(${msx},${msy})`,opacity:1,easing:'cubic-bezier(.2,.7,.3,1)'},
-      {offset:.66,transform:'translate(0px,0px) scale(1.03,.975)',easing:'ease-in-out'},
-      {offset:.84,transform:'translate(0px,0px) scale(.993,1.012)',easing:'ease-out'},
-      {offset:1,transform:'translate(0px,0px) scale(1,1)',opacity:1}
-    ],{duration:dur});
-    /* форма капли — отдельной анимацией и только на ПК */
-    let a2=null;if(!L)a2=b.animate([{borderRadius:'50%'},{offset:.34,borderRadius:'44% 56% 52% 48% / 52% 44% 56% 48%'},{offset:.66,borderRadius:brF},{borderRadius:brF}],{duration:dur});
-    const done=()=>{b.style.transition=pt;b.style.transformOrigin=pto;b.classList.remove('lg-mi','lg-fly');if(a2)try{a2.cancel();}catch(e){}};
+    b.classList.add('lg-mi');if(T==='g')b.classList.add('lg-fly');
+    if(o&&o.el)mark(o.el);
+    let kf,dur;
+    if(T==='g'){
+      const st=.22,ms=.5,msx=Math.max(sx,ms*(1+st*Math.abs(ux)-st*.7*Math.abs(uy))),msy=Math.max(sy,ms*(1+st*Math.abs(uy)-st*.7*Math.abs(ux)));
+      const tx=(uy*10).toFixed(1),ty=(-ux*10).toFixed(1);
+      kf=[{offset:0,transform:`translate(${dx}px,${dy}px) perspective(900px) rotateX(${tx}deg) rotateY(${ty}deg) scale(${sx},${sy})`,opacity:.6,easing:'cubic-bezier(.45,0,.3,1)'},
+          {offset:.34,transform:`translate(${dx*.3}px,${dy*.3}px) perspective(900px) rotateX(${tx*.6}deg) rotateY(${ty*.6}deg) scale(${msx},${msy})`,opacity:1,easing:'cubic-bezier(.2,.7,.3,1)'},
+          {offset:.66,transform:'translate(0px,0px) perspective(900px) rotateX(0deg) rotateY(0deg) scale(1.035,.97)',easing:'ease-in-out'},
+          {offset:.84,transform:'translate(0px,0px) perspective(900px) rotateX(0deg) rotateY(0deg) scale(.992,1.012)',easing:'ease-out'},
+          {offset:1,transform:'translate(0px,0px) perspective(900px) rotateX(0deg) rotateY(0deg) scale(1,1)',opacity:1}];
+      dur=640;
+    }else if(T==='c'){
+      /* голограмма: из кнопки вылетает тонкий луч, разворачивается в линию на всю ширину, потом в окно; в конце — пара «мерцаний» */
+      kf=[{offset:0,transform:`translate(${(dx*.35).toFixed(1)}px,${(dy*.35).toFixed(1)}px) scale(.35,.012)`,opacity:0,easing:'cubic-bezier(.2,.8,.3,1)'},
+          {offset:.2,transform:'translate(0px,0px) scale(1.02,.012)',opacity:1,easing:'cubic-bezier(.3,0,.2,1)'},
+          {offset:.58,transform:'translate(0px,0px) scale(1,1.02)',opacity:1,easing:'ease-out'},
+          {offset:.66,transform:'translate(0px,0px) scale(1,1)',opacity:.55},
+          {offset:.72,transform:'translate(0px,0px) scale(1,1)',opacity:1},
+          {offset:.8,transform:'translate(0px,0px) scale(1,1)',opacity:.78},
+          {offset:.86,transform:'translate(0px,0px) scale(1,1)',opacity:1},
+          {offset:1,transform:'translate(0px,0px) scale(1,1)',opacity:1}];
+      dur=640;holo(G.r,k,dur);
+    }else{
+      kf=[{offset:0,transform:'translateY(-12px) scale(1.035)',opacity:0,easing:'cubic-bezier(.22,.8,.3,1)'},
+          {offset:1,transform:'translateY(0px) scale(1)',opacity:1}];
+      dur=700;halo(G.r,k);
+    }
+    const a=b.animate(kf,{duration:dur*k});
+    const done=()=>{b.style.transition=G.pt;b.style.transformOrigin=pto;b.classList.remove('lg-mi','lg-fly');};
     a.onfinish=done;a.oncancel=done;
   }
-  /* ---- закрытие: стекло втягивается обратно в кнопку ---- */
+  /* ---------- закрытие: окно остаётся видимым и втягивается в свою кнопку ---------- */
   function closed(el){
-    const m=el.__liq;if(!on()||!m.rect)return;
-    if(el.id==='news-panel'||el.id==='games-tablet-overlay'){el.__liqT={t:el.style.transition};el.style.transition='none';}
+    const m=el.__liq;if(!on())return;
+    const b0=boxOf(el);if(!b0)return;
     let t=null;if(m.org&&m.org.el&&m.org.el.isConnected)t=rectOf(m.org.el);if(!t&&m.org)t=m.org;
-    ghost(m.rect,m.br||'18px',t);
+    if(el.id==='news-panel'||el.id==='games-tablet-overlay'){el.__liqT={t:el.style.transition};el.style.transition='none';}
+    el.classList.add('lg-closing');
+    const b=boxOf(el);if(!b){finish(el);return;}
+    const G=geo(b,t);if(!G.r.width||!G.r.height){b.style.transition=G.pt;finish(el);return;}
+    const T=th(),k=AK(),{dx,dy,ux,uy,sx,sy}=G;
+    const pto=b.style.transformOrigin;b.style.transformOrigin='50% 50%';
+    if(T==='g')b.classList.add('lg-fly');
+    let kf,dur;
+    if(T==='g'){
+      const tx=(uy*12).toFixed(1),ty=(-ux*12).toFixed(1);
+      kf=[{offset:0,transform:'translate(0px,0px) perspective(900px) rotateX(0deg) rotateY(0deg) scale(1,1)',opacity:1,easing:'ease-out'},
+          {offset:.22,transform:'translate(0px,0px) perspective(900px) rotateX(0deg) rotateY(0deg) scale(1.025,.97)',opacity:1,easing:'cubic-bezier(.5,0,.75,0)'},
+          {offset:1,transform:`translate(${dx}px,${dy}px) perspective(900px) rotateX(${tx}deg) rotateY(${ty}deg) scale(${sx},${sy})`,opacity:.15}];
+      dur=460;
+    }else if(T==='c'){
+      /* выключение экрана: окно схлопывается в светящуюся линию, линия — в точку и улетает к кнопке */
+      kf=[{offset:0,transform:'translate(0px,0px) scale(1,1)',opacity:1,easing:'cubic-bezier(.6,0,.9,.5)'},
+          {offset:.45,transform:'translate(0px,0px) scale(1.03,.012)',opacity:1,easing:'cubic-bezier(.4,0,.6,1)'},
+          {offset:1,transform:`translate(${(dx*.4).toFixed(1)}px,${(dy*.4).toFixed(1)}px) scale(0,.012)`,opacity:0}];
+      dur=400;crt(G.r,k,dur,dx*.4,dy*.4);
+    }else{
+      kf=[{offset:0,transform:'translateY(0px) scale(1)',opacity:1,easing:'cubic-bezier(.4,0,.7,.4)'},
+          {offset:1,transform:'translateY(-16px) scale(1.04)',opacity:0}];
+      dur=420;
+    }
+    const sh=el.querySelector(':scope>.ml-shade,:scope>.sk-shade,:scope>.rd-shade');
+    let sa=null;if(sh){try{sa=sh.animate([{opacity:1},{opacity:0}],{duration:dur*k*.9,fill:'forwards'});}catch(e){}}
+    const a=b.animate(kf,{duration:dur*k,fill:'forwards'});
+    m.cA=a;m.cB=b;m.cS=sa;m.cP={pt:G.pt,pto};
+    a.onfinish=()=>{if(m.cA===a){finish(el);if(t&&t.el)gulp(t.el,k);}};
   }
-  function ghost(r,br,t){
-    const g=document.createElement('div');g.className='lg-ghost';
-    g.style.cssText='left:'+r.left+'px;top:'+r.top+'px;width:'+r.width+'px;height:'+r.height+'px;border-radius:'+br;
-    document.body.appendChild(g);
-    const cx=r.left+r.width/2,cy=r.top+r.height/2;
-    const T=t||{x:cx,y:cy,w:30,h:30};
-    const sx=clamp(T.w/r.width,.03,1),sy=clamp(T.h/r.height,.03,1),dx=T.x-cx,dy=T.y-cy;
-    const L=lite(),dur=L?400:460;
-    const a=g.animate([
-      {offset:0,transform:'translate(0px,0px) scale(1,1)',opacity:.95},
-      {offset:.3,transform:`translate(${dx*.06}px,${dy*.06}px) scale(.94,.97)`,opacity:.95},
-      {offset:1,transform:`translate(${dx}px,${dy}px) scale(${sx},${sy})`,opacity:.2}
-    ],{duration:dur,easing:'cubic-bezier(.55,0,.8,.25)'});
-    if(!L)g.animate([{borderRadius:br},{offset:.3,borderRadius:'46% 54% 50% 50% / 54% 46% 54% 46%'},{borderRadius:'50%'}],{duration:dur,easing:'cubic-bezier(.55,0,.8,.25)'});
-    const end=()=>{g.remove();if(t&&t.el)gulp(t.el);};a.onfinish=end;a.oncancel=end;
+  function finish(el){
+    const m=el.__liq;const a=m.cA,b=m.cB;m.cA=null;
+    if(b){b.classList.remove('lg-fly');if(m.cP){b.style.transition=m.cP.pt;b.style.transformOrigin=m.cP.pto;}}
+    if(!m.shown){el.style.visibility='hidden';el.__liqV=1;}
+    el.classList.remove('lg-closing');
+    if(a)try{a.cancel();}catch(e){}
+    if(m.cS)try{m.cS.cancel();}catch(e){}
+    m.cS=null;m.cB=null;
+    if(el.__liqV)requestAnimationFrame(()=>requestAnimationFrame(()=>{if(el.__liqV&&!m.shown){el.style.visibility='';el.__liqV=0;}}));
   }
-  /* ---- кнопки тоже живые ---- */
-  function pour(el){try{el.classList.remove('lg-src');void el.offsetWidth;el.classList.add('lg-src');clearTimeout(el.__lgs);el.__lgs=setTimeout(()=>el.classList.remove('lg-src'),900);
-    el.animate([{scale:'1'},{scale:'.8 1.16',offset:.22},{scale:'1.14 .9',offset:.5},{scale:'.97 1.03',offset:.75},{scale:'1'}],{duration:620,easing:'ease-out'});}catch(e){}}
-  function gulp(el){try{el.animate([{scale:'1'},{scale:'1.22 .84',offset:.3},{scale:'.92 1.08',offset:.6},{scale:'1'}],{duration:480,easing:'ease-out'});}catch(e){}}
+  /* ---------- украшения открытия ---------- */
+  function fxBox(cls,r,k,kf,dur){const f=document.createElement('div');f.className=cls;f.style.cssText='left:'+r.left+'px;top:'+r.top+'px;width:'+r.width+'px;height:'+r.height+'px';
+    document.body.appendChild(f);try{const a=f.animate(kf,{duration:dur*k,easing:'cubic-bezier(.2,.7,.3,1)',fill:'forwards'});a.onfinish=()=>f.remove();a.oncancel=()=>f.remove();}catch(e){f.remove();}}
+  /* космос: скан-линия бежит сверху вниз по раскрывающемуся окну, уголки «прицела» защёлкиваются на рамке */
+  function holo(r,k,dur){
+    const s=document.createElement('div');s.className='lg-scan';s.style.cssText='left:'+r.left+'px;top:'+r.top+'px;width:'+r.width+'px';document.body.appendChild(s);
+    try{const a=s.animate([{transform:'translateY(0px)',opacity:0},{transform:'translateY(0px)',opacity:1,offset:.08},{transform:'translateY('+r.height+'px)',opacity:.9,offset:.9},{transform:'translateY('+r.height+'px)',opacity:0}],{duration:dur*.5*k,delay:dur*.2*k,easing:'cubic-bezier(.4,0,.3,1)',fill:'both'});a.onfinish=()=>s.remove();a.oncancel=()=>s.remove();}catch(e){s.remove();}
+    fxBox('lg-hudc',r,k,[{transform:'scale(1.12)',opacity:0},{transform:'scale(1.12)',opacity:0,offset:.45},{transform:'scale(1)',opacity:1,offset:.75},{transform:'scale(1)',opacity:0}],dur*1.25);}
+  function crt(r,k,dur,dx,dy){
+    const s=document.createElement('div');s.className='lg-crt';s.style.cssText='left:'+r.left+'px;top:'+(r.top+r.height/2-1)+'px;width:'+r.width+'px';document.body.appendChild(s);
+    try{const a=s.animate([{transform:'translate(0px,0px) scaleX(1.03)',opacity:0},{transform:'translate(0px,0px) scaleX(1.03)',opacity:0,offset:.38},{transform:'translate(0px,0px) scaleX(1.03)',opacity:1,offset:.46},{transform:'translate('+dx.toFixed(1)+'px,'+dy.toFixed(1)+'px) scaleX(0)',opacity:.2}],{duration:dur*k,easing:'cubic-bezier(.4,0,.6,1)',fill:'forwards'});a.onfinish=()=>s.remove();a.oncancel=()=>s.remove();}catch(e){s.remove();}}
+  /* бог: мягкий нимб вокруг окна — без резкой белой вспышки */
+  function halo(r,k){fxBox('lg-halo',r,k,[{transform:'scale(.96)',opacity:0},{transform:'scale(1)',opacity:.75,offset:.35},{transform:'scale(1.06)',opacity:0}],900);}
+  function mark(el){try{el.classList.remove('lg-src');void el.offsetWidth;el.classList.add('lg-src');clearTimeout(el.__lgs);el.__lgs=setTimeout(()=>el.classList.remove('lg-src'),900);}catch(e){}}
+  function gulp(el,k){try{el.animate([{scale:'1'},{scale:'1.16 .88',offset:.3},{scale:'.95 1.05',offset:.6},{scale:'1'}],{duration:420*k,easing:'ease-out'});}catch(e){}}
   attach();setInterval(attach,2500);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attach);
-  return {attach,ghost,_W:W};
+  return {attach,_W:W};
+})();
+</script>
+<script>
+/* ===== ✨ анимации нажатия и переключения =====
+   🌌 Космос — кометы, мерцающие звёзды, туманность;  💧 Стекло — капли, кольца на воде, линза;  ◉ Бог — мягкий нимб, лучи, перья.
+   Двигается только transform/opacity — это делает видеокарта, страница не тормозит. */
+window.FX=(function(){
+  const R=document.documentElement;
+  const rm=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
+  const off=()=>R.classList.contains('fx-off')||rm()||!Element.prototype.animate;
+  let AK=1;const syncAk=()=>{const v=parseFloat(getComputedStyle(R).getPropertyValue('--ak'));AK=isFinite(v)&&v>0?v:1;};
+  const theme=()=>R.classList.contains('god-theme')?'d':R.classList.contains('lg-on')?'g':'c';
+  const lite=()=>R.classList.contains('rf-lite');
+  let ADD=false;try{const t=document.createElement('div');const a=t.animate([{transform:'none'},{transform:'none'}],{duration:1,composite:'add'});ADD=a.effect&&a.effect.composite==='add';a.cancel();}catch(e){}
+  let L=null;
+  function layer(){if(L&&L.isConnected)return L;L=document.createElement('div');L.id='fx-layer';L.setAttribute('aria-hidden','true');document.body.appendChild(L);return L;}
+  const HIT='button,a[href],[onclick],[role=button],[role=tab],.ml-row,.lk-bub,.tablet-app-icon,.admin-tab,.store-row,.user-item,.ticket-item,.am-item,.gs-c,.np-reaction-btn,.sk-c,summary,label.toggle,input[type=checkbox],input[type=radio]';
+  const SKIP='#planets-layer,#space-canvas,#rift-layer,#god-layer,#pg-frame,input[type=text],input[type=email],input[type=password],input[type=number],input[type=search],input[type=range],input[type=file],textarea,select,[contenteditable],[data-nofx],.lk-input-row';
+  const SHADE='.ml-shade,.sk-shade,.rd-shade,.modal-overlay,.lk-mshade,#games-tablet-overlay,.gd-shade,#god-dlg,.side-panel,#admin-panel,#news-panel,.modal,.ml-box,.tablet-shell';
+  function target(t){if(!t||!t.closest)return null;if(t.closest(SKIP))return null;const el=t.closest(HIT);if(!el||el===document.body)return null;
+    if(el.matches(SHADE)||el.disabled||el.getAttribute('aria-disabled')==='true')return null;
+    const r=el.getBoundingClientRect();if(r.width*r.height>innerWidth*innerHeight*.45)return null;return el;}
+  const txt=el=>(el.textContent||'').trim();
+  const TABS='.admin-tab,.ml-tabs button,.stars-tab,.modal-tab,.bg-type-tab,.cz-btns button,.am-tabs button,.ml-seg button,.gs-tabs button,[role=tab],.visit-per,.panel-tabs button,.lk-tabs button,.tt-tab';
+  function kind(el){
+    if(el.matches('input[type=checkbox],input[type=radio],label.toggle,.toggle-btn'))return 'toggle';
+    if(el.matches('.modal-close,.pd-close,.np-close,.sk-x,.ml-x,.lk-mcancel,.adm-hb:not(.adm-wide),[aria-label="Закрыть"],[title="Закрыть"]')||/^[✕×✖]$/.test(txt(el)))return 'spin';
+    if(el.matches('.lk-mrx button,.lk-rx,.lk-emo button,.np-reaction-btn,.ach-emo'))return 'emoji';
+    if(el.matches(TABS)||el.matches('.us-seg button'))return 'tab';
+    if(el.matches('.btn.danger,.hd-out,.danger,.ml-btn.red,.lk-mi.red'))return 'shock';
+    if(el.matches('#comm-btn,.hd-orb,.hd-pad,.lk-fab,#mvol-fab,.lk-send,.lk-ebtn,.lk-hb'))return 'orbit';
+    if(el.matches('.btn.primary,.hd-go,.hd-gold,.ml-btn.gold,.sk-b,.npm-publish,.ml-btn:not(.gray),.btn.success,.btn.warn,#radio-open-btn,.gd-opt'))return 'burst';
+    if(el.matches('.hd-chip,.sk-btn,#user-badge,.lk-mi,.btn.small,.ml-chip,.tt-profile'))return 'chip';
+    const r=el.getBoundingClientRect();
+    if(r.width>150&&r.height>40&&!el.matches('button.btn'))return 'row';
+    if(Math.abs(r.width-r.height)<6&&r.width<=64)return 'orbit';
+    return 'pulse';
+  }
+  /* ---------- нажатие: у каждого оформления свой характер ---------- */
+  function press(el,x,y){
+    const r=el.getBoundingClientRect(),big=r.width>150||r.height>70,th=theme();
+    const s=big?.985:th==='g'?.9:th==='d'?.96:.93;
+    let a=null,t=null;
+    try{a=el.animate([{scale:'1'},{scale:th==='g'&&!big?(s+.03)+' '+(s-.03):String(s)}],{duration:(th==='d'?160:110)*AK,easing:'cubic-bezier(.3,0,.4,1)',fill:'forwards'});}catch(e){}
+    if(ADD&&!big&&r.width<260&&th!=='d'){const dx=(x-(r.left+r.width/2))/(r.width/2),dy=(y-(r.top+r.height/2))/(r.height/2),m=th==='g'?10:5;
+      try{t=el.animate([{transform:'perspective(400px)'},{transform:`perspective(400px) rotateX(${(dy*-m).toFixed(1)}deg) rotateY(${(dx*m).toFixed(1)}deg)`}],{duration:110*AK,fill:'forwards',composite:'add'});}catch(e){}}
+    return {a,t,s};
+  }
+  function release(p,el,k){
+    const th=theme();if(p.a){try{p.a.cancel();}catch(e){}}if(p.t){try{p.t.cancel();}catch(e){}}
+    const s=p.s;let kf,dur;
+    if(th==='g'){kf=[{scale:s+''},{scale:'1.09 .92',offset:.28},{scale:'.96 1.05',offset:.52},{scale:'1.02 .985',offset:.76},{scale:'1'}];dur=640;}
+    else if(th==='d'){kf=[{scale:s+''},{scale:'1.025',offset:.45},{scale:'1'}];dur=620;}
+    else{kf=[{scale:s+''},{scale:'1.06',offset:.38},{scale:'.985',offset:.7},{scale:'1'}];dur=420;}
+    if(k==='spin'){try{el.animate([{rotate:'0deg'},{rotate:th==='d'?'45deg':'90deg',offset:.6},{rotate:'0deg'}],{duration:(th==='d'?700:520)*AK,easing:'cubic-bezier(.3,1.4,.5,1)'});}catch(e){}}
+    if(k==='shock'){try{el.animate([{translate:'0 0'},{translate:'-4px 0',offset:.2},{translate:'4px 0',offset:.4},{translate:'-2px 0',offset:.6},{translate:'2px 0',offset:.8},{translate:'0 0'}],{duration:380*AK,easing:'linear'});}catch(e){}}
+    if(k==='tab'&&th!=='d'){try{el.animate([{translate:'0 0'},{translate:'0 -3px',offset:.35},{translate:'0 0'}],{duration:420*AK,easing:'cubic-bezier(.3,1.5,.5,1)'});}catch(e){}}
+    if(k==='emoji')kf=[{scale:s+''},{scale:'1.35',offset:.35},{scale:'.92',offset:.65},{scale:'1'}];
+    try{el.animate(kf,{duration:dur*AK,easing:'ease-out'});}catch(e){}
+  }
+  /* ---------- узлы эффектов ---------- */
+  const N=(cls,css)=>{const n=document.createElement('i');n.className='fx-n '+cls;if(css)n.style.cssText=css;return n;};
+  function box(r,br,clip){const b=document.createElement('div');b.className=clip?'fx-clip':'fx-free';
+    b.style.cssText='left:'+r.left+'px;top:'+r.top+'px;width:'+r.width+'px;height:'+r.height+'px;'+(clip?'border-radius:'+br+';':'');layer().appendChild(b);return b;}
+  const go=(n,kf,o)=>{try{return n.animate(kf,Object.assign({fill:'forwards'},o,{duration:(o.duration||500)*AK,delay:(o.delay||0)*AK}));}catch(e){return null;}};
+  const rnd=(a,b)=>a+Math.random()*(b-a);
+  function fx(el,k,x,y){
+    const th=theme(),r=el.getBoundingClientRect();if(!r.width||!r.height)return;
+    let br='12px';try{br=getComputedStyle(el).borderRadius||'12px';}catch(e){}
+    const lx=x-r.left,ly=y-r.top,far=Math.hypot(Math.max(lx,r.width-lx),Math.max(ly,r.height-ly))*2+4;
+    const clip=box(r,br,true),free=box(r,br,false);
+    const cx=r.width/2,cy=r.height/2,rad=Math.max(r.width,r.height)/2,round=Math.abs(r.width-r.height)<8;
+    const put=(par,cls,w,h,px,py,extra)=>{const n=N(cls,'width:'+w+'px;height:'+h+'px;margin:'+(-h/2)+'px 0 0 '+(-w/2)+'px;left:'+px+'px;top:'+py+'px;'+(extra||''));par.appendChild(n);return n;};
+    /* общие кусочки */
+    const ripple=(px,py,size,dur,cls,delay)=>go(put(clip,'fx-rip '+(cls||''),size,size,px,py),[{transform:'scale(.06)',opacity:1},{transform:'scale(1)',opacity:0}],{duration:dur,delay,easing:'cubic-bezier(.2,.7,.3,1)'});
+    /* кольцо/нимб повторяют форму кнопки и расходятся на одинаковое число пикселей со всех сторон */
+    const grow=(to,w,h)=>{const px=(to-1)*Math.min(w,h);return 'scale('+(1+px/w).toFixed(3)+','+(1+px/h).toFixed(3)+')';};
+    const ring=(to,dur,cls,delay)=>{const w=(round?rad*2:r.width)+6,h=(round?rad*2:r.height)+6;go(put(free,'fx-ring '+(cls||''),w,h,cx,cy,'border-radius:'+(round?'50%':br)),[{transform:'scale(.96)',opacity:1},{transform:grow(to,w,h),opacity:0}],{duration:dur,delay,easing:'cubic-bezier(.15,.7,.3,1)'});};
+    const glow=dur=>go(put(free,'fx-glow',r.width,r.height,cx,cy,'border-radius:'+br),[{transform:'scale(1)',opacity:1},{transform:'scale('+(1+12/Math.max(r.width,r.height)).toFixed(3)+')',opacity:0}],{duration:dur,easing:'cubic-bezier(.2,.7,.3,1)'});
+    const sweep=dur=>go(put(clip,'fx-shine',44,r.height*2,0,cy),[{transform:'translateX('+(-r.height*1.4)+'px) rotate(20deg)'},{transform:'translateX('+(r.width+r.height)+'px) rotate(20deg)'}],{duration:dur,easing:'cubic-bezier(.4,0,.2,1)'});
+    const emo=()=>{const t=txt(el);if(!t||t.length>4)return;const n=put(free,'fx-em',10,10,cx,cy);n.textContent=t;
+      go(n,[{transform:'translate(-25%,-25%) scale(.8)',opacity:1},{transform:'translate(-25%,-320%) scale(1.6)',opacity:0}],{duration:760,easing:'cubic-bezier(.2,.7,.3,1)'});};
+    /* 🌌 космос */
+    const comets=(n,dist,dur)=>{for(let i=0;i<n;i++){const a=(i/n)*360+rnd(-14,14),d=dist*rnd(.75,1.2);const c=put(free,'fx-comet',18,2,cx,cy,'transform-origin:0 50%;margin:-1px 0 0 0');
+      go(c,[{transform:`rotate(${a}deg) translateX(${rad*.5}px) scaleX(.2)`,opacity:1},{transform:`rotate(${a}deg) translateX(${d}px) scaleX(1)`,opacity:0}],{duration:dur*rnd(.85,1.15),easing:'cubic-bezier(.1,.7,.3,1)'});}};
+    const twinkle=(n,inside)=>{for(let i=0;i<n;i++){const px=inside?rnd(.15,.85)*r.width:cx+Math.cos(i*2.4)*(rad+rnd(6,16)),py=inside?rnd(.2,.8)*r.height:cy+Math.sin(i*2.4)*(rad+rnd(6,16));
+      go(put(free,'fx-star',10,10,px,py),[{transform:'scale(0) rotate(0deg)',opacity:1},{transform:'scale(1.15) rotate(45deg)',opacity:1,offset:.45},{transform:'scale(0) rotate(90deg)',opacity:0}],{duration:620,delay:i*60,easing:'ease-out'});}};
+    const orbitSat=dur=>{const o=put(free,'fx-orb',0,0,cx,cy);const d=rad+8;for(let i=0;i<2;i++)put(o,'fx-sat',5,5,i?-d:d,0);
+      go(o,[{transform:'rotate(0deg) scale(.7)',opacity:1},{transform:'rotate(240deg) scale(1.12)',opacity:0}],{duration:dur,easing:'cubic-bezier(.2,.6,.3,1)'});};
+    /* 💧 стекло */
+    const drops=(n,h)=>{for(let i=0;i<n;i++){const s=rnd(5,9),sx=rnd(-1,1)*(rad*.9+10),up=rnd(.5,1)*h;
+      go(put(free,'fx-drop',s,s,cx+rnd(-rad*.3,rad*.3),cy),[{transform:'translate(0px,0px) scale(.4)',opacity:0},{transform:`translate(${sx*.55}px,${-up}px) scale(1)`,opacity:1,offset:.38,easing:'cubic-bezier(.3,0,.7,1)'},{transform:`translate(${sx}px,${up*.35}px) scale(.85)`,opacity:0}],{duration:700*rnd(.9,1.1),delay:i*25,easing:'cubic-bezier(.2,.6,.4,1)'});}};
+    const lens=()=>{const s=Math.min(46,Math.max(26,Math.min(r.width,r.height)*.9));go(put(free,'fx-lens',s,s,lx,ly),[{transform:'scale(.4)',opacity:0},{transform:'scale(1)',opacity:1,offset:.35},{transform:'scale(1.35)',opacity:0}],{duration:560,easing:'cubic-bezier(.2,.7,.3,1)'});};
+    /* ◉ бог */
+    const halo=(to,dur)=>{const w=(round?rad*2:r.width)+10,h=(round?rad*2:r.height)+10;go(put(free,'fx-halo',w,h,cx,cy,'border-radius:'+(round?'50%':br)),[{transform:grow(.9,w,h),opacity:0},{transform:'scale(1)',opacity:.9,offset:.25},{transform:grow(to,w,h),opacity:0}],{duration:dur,easing:'cubic-bezier(.2,.6,.3,1)'});};
+    const rays=n=>{const o=put(free,'fx-rays',0,0,cx,cy);const len=Math.min(26,rad*.8+8);
+      for(let i=0;i<n;i++)put(o,'fx-ray',2,len,0,0,'transform-origin:50% 100%;margin:'+(-len)+'px 0 0 -1px;transform:rotate('+(i*360/n)+'deg) translateY('+(-rad-4)+'px)');
+      go(o,[{transform:'rotate(-10deg) scale(.8)',opacity:0},{transform:'rotate(0deg) scale(1)',opacity:1,offset:.3},{transform:'rotate(14deg) scale(1.15)',opacity:0}],{duration:900,easing:'cubic-bezier(.2,.6,.3,1)'});};
+    const feathers=n=>{for(let i=0;i<n;i++){const sx=rnd(-1,1)*(rad+14);
+      go(put(free,'fx-feather',5,14,cx+rnd(-rad*.4,rad*.4),cy-rad*.2),[{transform:'translate(0px,0px) rotate(-20deg)',opacity:0},{transform:`translate(${sx*.4}px,${-rad*.6}px) rotate(15deg)`,opacity:.95,offset:.3},{transform:`translate(${sx}px,${rad*.9+12}px) rotate(-35deg)`,opacity:0}],{duration:1150*rnd(.9,1.1),delay:i*90,easing:'cubic-bezier(.3,.2,.4,1)'});}};
+    const bloom=()=>ripple(lx,ly,far*1.1,820,'bloom');
+    if(th==='c'){
+      switch(k){
+        case 'row':ripple(lx,ly,far,620);twinkle(2,true);break;
+        case 'pulse':ripple(lx,ly,far,540);glow(480);twinkle(2,false);break;
+        case 'chip':glow(520);sweep(560);twinkle(2,false);break;
+        case 'tab':ripple(r.width/2,r.height,far*1.1,560);twinkle(3,false);break;
+        case 'orbit':ring(1.8,620);orbitSat(680);comets(7,rad+30,560);twinkle(2,false);break;
+        case 'burst':ring(1.6,560);glow(560);sweep(560);comets(10,rad+40,600);twinkle(3,false);break;
+        case 'shock':ring(1.5,460,'red');ripple(lx,ly,far,460,'red');comets(5,rad+22,420);break;
+        case 'spin':ring(1.7,460);twinkle(3,false);break;
+        case 'emoji':emo();twinkle(4,false);break;
+        case 'toggle':ring(1.7,420);glow(380);break;
+      }
+    }else if(th==='g'){
+      switch(k){
+        case 'row':ripple(lx,ly,far,640);ripple(lx,ly,far*.7,640,'soft',110);break;
+        case 'pulse':ripple(lx,ly,far,560);ripple(lx,ly,far*.6,560,'soft',100);lens();break;
+        case 'chip':lens();ripple(lx,ly,far,560);glow(520);break;
+        case 'tab':ripple(lx,ly,far,560);ripple(lx,ly,far*.65,560,'soft',100);break;
+        case 'orbit':ring(1.6,600);ring(1.35,600,'',120);drops(lite()?4:6,rad+16);break;
+        case 'burst':ring(1.55,580);lens();drops(lite()?5:8,rad+22);sweep(600);break;
+        case 'shock':ring(1.45,460,'red');ripple(lx,ly,far,460,'red');drops(3,rad+10);break;
+        case 'spin':ring(1.6,480);drops(3,rad+10);break;
+        case 'emoji':emo();drops(4,rad+12);break;
+        case 'toggle':ring(1.6,440);lens();break;
+      }
+    }else{
+      switch(k){
+        case 'row':bloom();break;
+        case 'pulse':bloom();halo(1.3,820);break;
+        case 'chip':halo(1.35,860);bloom();break;
+        case 'tab':bloom();halo(1.2,760);break;
+        case 'orbit':halo(1.6,900);rays(10);feathers(2);break;
+        case 'burst':halo(1.5,900);rays(12);feathers(3);bloom();break;
+        case 'shock':halo(1.4,700);bloom();break;
+        case 'spin':halo(1.5,760);rays(6);break;
+        case 'emoji':emo();halo(1.4,760);break;
+        case 'toggle':halo(1.5,700);break;
+      }
+    }
+    setTimeout(()=>{clip.remove();free.remove();},1300*AK+80);
+  }
+  /* ---------- жидкий переключатель: капля перетекает со старой вкладки на новую ---------- */
+  const ACT=e=>e.classList.contains('active')||e.classList.contains('on')||e.classList.contains('sel')||e.classList.contains('selected')||e.classList.contains('cur')||e.getAttribute('aria-selected')==='true'||e.getAttribute('aria-checked')==='true';
+  function group(el){const p=el.parentElement;if(!p||p.querySelector(':scope>.us-th'))return null;const tag=el.tagName,cls=el.classList[0];
+    const g=[...p.children].filter(c=>c.tagName===tag&&(!cls||c.classList.contains(cls))&&c.offsetParent!==null);return g.length>=2?g:null;}
+  function switchFx(fromR,fromBr,to){
+    const th=theme();const t=to.getBoundingClientRect();if(!t.width||!fromR.width)return;
+    const fx0=fromR.left+fromR.width/2,fy0=fromR.top+fromR.height/2,tx=t.left+t.width/2,ty=t.top+t.height/2,dx=tx-fx0,dy=ty-fy0;
+    if(Math.hypot(dx,dy)<4)return;
+    const sw=t.width/fromR.width,sh=t.height/fromR.height,hor=Math.abs(dx)>=Math.abs(dy);
+    const mx=(Math.abs(dx)+(fromR.width+t.width)/2)/fromR.width*.86,my=(Math.abs(dy)+(fromR.height+t.height)/2)/fromR.height*.86;
+    /* в пути капля вытягивается (стекло ещё и «приподнимается» линзой), но не больше чем в 1.6–2.6 раза */
+    const cap=th==='g'?1.9:th==='d'?1.6:2.6,lift=th==='g'?1.14:th==='d'?.94:.78;
+    const midSx=hor?Math.min(cap,Math.max(1.15,mx)):lift,midSy=hor?lift:Math.min(cap,Math.max(1.15,my));
+    const dur=th==='d'?560:th==='g'?620:480;
+    const mk=(cls,delay,op)=>{const n=document.createElement('i');n.className='fx-n fx-tabi '+cls;n.style.cssText='left:'+fromR.left+'px;top:'+fromR.top+'px;width:'+fromR.width+'px;height:'+fromR.height+'px;border-radius:'+fromBr;layer().appendChild(n);
+      const kf=[{transform:'translate(0px,0px) scale(1,1)',opacity:op,easing:'cubic-bezier(.5,0,.5,1)'},
+        {transform:`translate(${dx/2}px,${dy/2}px) scale(${midSx.toFixed(3)},${midSy.toFixed(3)})`,opacity:op,offset:.45,easing:'cubic-bezier(.3,.7,.3,1)'},
+        {transform:`translate(${dx}px,${dy}px) scale(${(sw*(th==='d'?1:1.07)).toFixed(3)},${(sh*(th==='d'?1:.9)).toFixed(3)})`,opacity:op,offset:.74,easing:'ease-out'},
+        {transform:`translate(${dx}px,${dy}px) scale(${(sw*.985).toFixed(3)},${(sh*1.03).toFixed(3)})`,opacity:op,offset:.88},
+        {transform:`translate(${dx}px,${dy}px) scale(${sw.toFixed(3)},${sh.toFixed(3)})`,opacity:0}];
+      const a=go(n,kf,{duration:dur,delay});if(a){a.onfinish=()=>n.remove();a.oncancel=()=>n.remove();}else n.remove();};
+    /* настоящая подсветка новой вкладки проявляется, только когда капля до неё дотекла */
+    to.classList.add('fx-tgt');clearTimeout(to.__fxT);to.__fxT=setTimeout(()=>to.classList.remove('fx-tgt'),dur*.74*AK);
+    if(th==='c'){mk('c',0,1);mk('c tail',50,.45);mk('c tail',100,.2);}
+    else if(th==='g'){mk('g'+(lite()?' lite':''),0,1);}
+    else{mk('d',0,1);mk('d tail',70,.35);mk('d tail',140,.15);}
+  }
+  /* ---------- события ---------- */
+  let P=null,lastFx=0;
+  document.addEventListener('pointerdown',e=>{
+    if(e.button>0||off())return;const el=target(e.target);if(!el)return;syncAk();
+    const k=kind(el);let from=null;
+    if(k==='tab'||el.matches('[role=radio]')){const g=group(el);if(g){const a=g.find(ACT);if(a&&a!==el){const r=a.getBoundingClientRect();let br='12px';try{br=getComputedStyle(a).borderRadius;}catch(_){}from={r,br,g};}}}
+    P={el,k,x:e.clientX,y:e.clientY,id:e.pointerId,p:press(el,e.clientX,e.clientY),from};
+  },{capture:true,passive:true});
+  document.addEventListener('pointermove',e=>{if(!P||e.pointerId!==P.id)return;if(Math.hypot(e.clientX-P.x,e.clientY-P.y)>12){release(P.p,P.el,'');P=null;}},{capture:true,passive:true});
+  const up=(e,ok)=>{if(!P||e.pointerId!==P.id)return;const p=P;P=null;release(p.p,p.el,ok?p.k:'');lastFx=performance.now();
+    if(!ok||!p.el.isConnected)return;fx(p.el,p.k,p.x,p.y);
+    if(p.from){const fr=p.from;setTimeout(()=>{const g=p.el.isConnected?group(p.el):null;const now=(g||fr.g).find(c=>c.isConnected&&ACT(c));if(now)switchFx(fr.r,fr.br,now);},40);}};
+  document.addEventListener('pointerup',e=>up(e,true),{capture:true,passive:true});
+  document.addEventListener('pointercancel',e=>up(e,false),{capture:true,passive:true});
+  document.addEventListener('click',e=>{if(off()||performance.now()-lastFx<600||e.detail>0)return;const el=target(e.target);if(!el)return;syncAk();const r=el.getBoundingClientRect(),k=kind(el);
+    const p=press(el,r.left+r.width/2,r.top+r.height/2);setTimeout(()=>{release(p,el,k);fx(el,k,r.left+r.width/2,r.top+r.height/2);},90*AK);},true);
+  return {fx,kind,switchFx};
+})();
+</script>
+<script>
+/* ===== оформление: заполненная часть ползунков (--p) — чтобы шкала красилась до ручки во всех темах ===== */
+window.SKIN=(function(){
+  function set(el){const mn=el.min===''?0:+el.min,mx=el.max===''?100:+el.max,v=+el.value;const p=mx>mn?((v-mn)/(mx-mn))*100:0;el.style.setProperty('--p',Math.max(0,Math.min(100,p)).toFixed(1)+'%');}
+  const isR=el=>el&&el.tagName==='INPUT'&&el.type==='range';
+  document.addEventListener('input',e=>{if(isR(e.target))set(e.target);},true);
+  document.addEventListener('change',e=>{if(isR(e.target))set(e.target);},true);
+  /* значение, поставленное из кода (el.value=…), тоже двигает заливку */
+  try{const d=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');
+    Object.defineProperty(HTMLInputElement.prototype,'value',{configurable:true,enumerable:d.enumerable,get(){return d.get.call(this);},set(v){d.set.call(this,v);if(this.type==='range')set(this);}});}catch(e){}
+  function all(root){try{(root||document).querySelectorAll('input[type=range]').forEach(set);}catch(e){}}
+  /* новые ползунки, которые появились в окнах (innerHTML) */
+  try{new MutationObserver(rs=>{for(const r of rs)for(const n of r.addedNodes){if(n.nodeType!==1)continue;if(isR(n))set(n);else if(n.firstElementChild&&n.querySelector('input[type=range]'))all(n);}}).observe(document.body,{childList:true,subtree:true});}catch(e){}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>all());else all();
+  return {all,set};
 })();
 </script>
 </body>
