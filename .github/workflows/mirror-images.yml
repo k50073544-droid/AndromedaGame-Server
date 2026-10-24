@@ -1,0 +1,25 @@
+name: Зеркало картинок
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: mirror-images
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node mirror.mjs
+      - run: |
+          git config user.name "mirror-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p st && touch st/.keep
+          git add -A st
+          if git diff --cached --quiet; then echo "новых картинок нет"; else git commit -m "Зеркало картинок" && git push; fi
