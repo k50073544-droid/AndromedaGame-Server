@@ -1302,6 +1302,7 @@ html.god-theme #god-quest,#god-quest{background:linear-gradient(160deg,rgba(10,9
 html.rf-covered #rift-layer,html.rf-covered #rift-eyes,html.rf-covered #god-layer,html.rf-covered #god-amb,html.rf-covered #planets-layer{visibility:hidden}
 html.rf-paused #rift-layer *,html.rf-paused #rift-eyes *,html.rf-paused #god-layer *,html.rf-paused #god-amb *,html.rf-paused #planets-layer *{animation-play-state:paused!important}
 html.rf-covered #bg-video{visibility:hidden}
+html.rf-tabcov :is(#video-overlay,#bg-image,#space-canvas,#topbar,#bottom-left,#bottom-right,#status-bar,#news-tab-btn,#news-panel){visibility:hidden!important}
 /* телефоны: меньше слоёв и эффектов, без размытия фона */
 html.rf-lite *,html.rf-lite *::before,html.rf-lite *::after{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 html.rf-lite .gd-ring2,html.rf-lite .gd-waves i:nth-child(n+2),html.rf-lite .gd-sparks i:nth-child(n+5),html.rf-lite .gd-feathers i:nth-child(n+4){display:none}
@@ -7662,7 +7663,7 @@ async function questTalk(d){
   return ok;
 }
 function belowChip(y){if(innerWidth<700){const c=$('gev-chip');if(c&&c.classList.contains('on')){const b=c.getBoundingClientRect().bottom;if(b>0)y=Math.max(y,Math.round(b)+6);}}return y;}
-function questTop(){let y=belowChip(godHudTop());const t=$('god-timer');if(t&&t.classList.contains('on'))y=Math.max(y,Math.round(t.getBoundingClientRect().bottom)+6);return y;}
+function questTop(){let y=belowChip(godHudTop());const t=$('god-timer');if(t&&t.classList.contains('on'))y=Math.max(y,Math.round(t.getBoundingClientRect().bottom)+6);const gv=$('god-vessel');if(gv&&gv.classList.contains('on')&&gv.classList.contains('below'))y=Math.max(y,Math.round(gv.getBoundingClientRect().bottom)+6);return y;}
 function questShow(){
   let el=$('god-quest');
   const qs=gqState();
@@ -8128,7 +8129,7 @@ if(PERF.lite)document.documentElement.classList.add('rf-lite');
 /* карта ничем не видна: планшет игр, открытая игра, на телефоне — новости/чат/панель админа */
 function mapCovered(){
   if(document.getElementById('pg-frame'))return 2;/* игра на весь экран — карту можно не рисовать совсем */
-  const t=$('games-tablet-overlay');if(t&&t.classList.contains('on'))return 1;
+  const t=$('games-tablet-overlay');if(t&&t.classList.contains('on')){const H=document.documentElement;if(!t.classList.contains('lg-closing')&&!(H.classList.contains('lg-on')&&!H.classList.contains('god-theme'))&&getComputedStyle(t).opacity==='1')return 3;return 1;}
   if(document.querySelector('.lg-closing'))return 1;/* окно сворачивается — космос проснётся, когда анимация закончится */
   if(document.documentElement.classList.contains('lg-on')&&!document.documentElement.classList.contains('god-theme')&&document.querySelector('#ml-win.on,#admin-panel.open,#news-panel.open,.modal-overlay[style*="flex"],#sk-win.on,#radio-win.on'))return 1;/* стекло: пока открыто окно, космос за ним замирает — размытие не пересчитывается каждый кадр */
   if(innerWidth<700){
@@ -8140,11 +8141,13 @@ function mapCovered(){
   return 0;
 }
 function perfTick(){
-  const lv=mapCovered(),cv=lv===2,pz=lv>=1,H=document.documentElement;
+  const lv=mapCovered(),cv=lv>=2,pz=lv>=1,H=document.documentElement;
+  if(H.classList.contains('rf-tabcov')!==(lv===3))H.classList.toggle('rf-tabcov',lv===3);
   if(pz!==PERF.paused){PERF.paused=pz;H.classList.toggle('rf-paused',pz);if(!pz&&!PERF.covered){R.lastT=0;try{kick();}catch(e){}}}
   if(cv!==PERF.covered){PERF.covered=cv;H.classList.toggle('rf-covered',cv);if(!cv){R.lastT=0;const rt=$('rf-root');if(rt)rt._tf='';if(G.el)G.el._tf='';kick();}}
 }
 setInterval(perfTick,250);
+(function tcObs(){const o=document.getElementById('games-tablet-overlay');if(!o){document.addEventListener('DOMContentLoaded',tcObs,{once:true});return;}try{new MutationObserver(()=>{try{perfTick();}catch(e){}}).observe(o,{attributes:true,attributeFilter:['class','style']});}catch(e){}})();
 /* фон космоса перерисовывается только когда двигается карта (раньше — каждый кадр) */
 (function(){try{
   if(typeof drawSpace!=='function')return;const od=drawSpace;let lk='';
@@ -8290,7 +8293,7 @@ function planetOpts(sel){
   return '<option value="">— без планеты (просто точка в космосе) —</option>'+ps.map(p=>'<option value="'+p.id+'" '+(p.id===sel?'selected':'')+'>'+esc(p.username)+' · '+p.size+'px'+(p.comment?' · '+esc(String(p.comment).slice(0,22)):'')+'</option>').join('');
 }
 /* ---------- вкладка 👁: всё управление по разделам ---------- */
-const CATS=[['home','📊','Обзор'],['plan','📅','Расписание'],['look','🎨','Вид'],['dlg','💬','Диалоги'],['quest','✧','Задания'],['rep','⚖','Репутация'],['scare','😱','Скримеры'],['rift','🌀','Разлом'],['event','⚔','Ивент'],['marks','🧿','Метки'],['ach','🏆','Ачивки']];
+const CATS=[['home','📊','Обзор'],['plan','📅','Расписание'],['look','🎨','Вид'],['dlg','💬','Диалоги'],['quest','✧','Задания'],['rep','⚖','Репутация'],['scare','😱','Скримеры'],['prank','🃏','Пранки'],['rift','🌀','Разлом'],['event','⚔','Ивент'],['marks','🧿','Метки'],['ach','🏆','Ачивки']];
 function catCur(){let c=R.cat||lsGet('rfa_cat')||'home';if(c==='timer')c='plan';if(!CATS.some(x=>x[0]===c))c='home';return R.cat=c;}
 function catBar(cur){return '<div class="rfa-cbw" id="rfa-cbw"><button class="rfa-ca l" title="Назад" aria-label="Назад">‹</button><div class="rfa-cats" id="rfa-cats">'+CATS.map(c=>'<button class="rfa-cat-b'+(c[0]===cur?' on':'')+'" onclick="RIFT.a.cat(\''+c[0]+'\')"><i>'+c[1]+'</i><span>'+c[2]+'</span></button>').join('')
   +'<button class="rfa-cat-b rfa-cat-t'+(TM.on?' on':'')+'" onclick="RIFT.test.open()"><i>🧪</i><span>Тест</span></button></div><button class="rfa-ca r" title="Дальше" aria-label="Дальше">›</button></div>';}
@@ -8326,7 +8329,7 @@ function admRender(){
   if(['home','event','rift'].includes(cur))planLoad();
   requestAnimationFrame(()=>{p.querySelectorAll('textarea.ph-t,textarea.ed-ta').forEach(autoH);const on=p.querySelector('.rfa-cat-b.on');const bar=$('rfa-cats');if(on&&bar){const r=on.offsetLeft-bar.clientWidth/2+on.offsetWidth/2;bar.scrollLeft=Math.max(0,r);}catBarBind();});
 }
-const CAT_R={home:catHome,plan:catPlan,look:catLook,dlg:catDlg,quest:catQuest,rep:catRep,scare:catScare,rift:catRift,event:catEvent,marks:catMarks,ach:catAch};
+const CAT_R={home:catHome,plan:catPlan,look:catLook,dlg:catDlg,quest:catQuest,rep:catRep,scare:catScare,prank:()=>window.PRANK?PRANK.adm():'<div class="rfa-box"><div class="rfa-note">Пранки не загрузились — обнови страницу.</div></div>',rift:catRift,event:catEvent,marks:catMarks,ach:catAch};
 function godErrBox(){return '<div class="rfa-box"><div class="rfa-note">'+(R.godErr?'⚠️ '+esc(R.godErr):'Загрузка…')+'</div></div>';}
 function swR(on,label,onch,sub,id){return '<label class="rfa-sw"><input type="checkbox" '+(id?'id="'+id+'" ':'')+(on?'checked ':'')+(onch?'onchange="'+onch+'"':'')+'><i></i><span><b>'+label+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</span></label>';}
 function fld(id,label,val,max,ph,hint){return '<div class="rfa-f"><label for="'+id+'">'+label+'</label><input type="text" id="'+id+'" maxlength="'+max+'" value="'+esc(val||'')+'" placeholder="'+esc(ph||'')+'">'+(hint?'<small>'+hint+'</small>':'')+'</div>';}
@@ -8360,6 +8363,7 @@ function catSum(k){
     case 'look':return esc((g.name||'без имени')+(g.theme?' · тема':''));
     case 'dlg':return ds.length+' '+plural(ds.length,['диалог','диалога','диалогов'])+(R.godDirty?' · не сохранено':'');
     case 'quest':{const n=ds.filter(d=>d.type==='quest').length,ql=R.gqList;return n+' '+plural(n,['задание','задания','заданий'])+(ql?' · выполняют '+ql.filter(q=>q.s==='accepted').length:'');}
+    case 'prank':return window.PRANK?PRANK.sum():'';
     case 'scare':{const s=g.scares||{};return 'отказ: '+({'0':'—','1':'👁','2':'😱',esc:'👁→😱'}[String(s.refuse!=null?s.refuse:'2')]||'—');}
     case 'rift':return a.level?a.level+'-й уровень · глаз '+(a.eyes||[]).filter(e=>!e.gone).length:'скрыт';
     case 'event':{const ev=R.evAdm;return ev?({hidden:'скрыт',active:'идёт',fleeing:'финал',done:'завершён'}[ev.status]||ev.status):'бой с богом';}
@@ -9143,7 +9147,7 @@ function init(){
   setInterval(adminBtn,4000);
 }
 if(window.RIFT&&window.RIFT._R)return;
-window.RIFT={init,adminOpen,adminBtn,afterRender,refresh,a:A,test:{open:tOpen,close:tExit,get on(){return TM.on;},render:tRender},gq:{open:gqOpen,close:gqClose,ev:gqEv,hud:gqHud,msg:gqMsg},markHtml,markLoad,markOn,mrpc,fishSpecies,_mk:MK,_R:R,_cine:playCine,_god:{G,GT,TM,playGodCine,godClick,runDialog,questShow,godScare,godBlessFx,godMe,tRender,godSync,godTheme,godShow,godFire,godAppear,godNotice,godPos,godScreen,godData,godPresent,godWrathFx,godDlgClose,closeAllUi},_fx:{fx,flash,ring,shake,caption,shards,dimTo,spot,panTo,endCine,view,build,kick,rumble,thump,crackle,tear,whoosh,choir,whisper,musicFade,ping,refreshSoon,esc,rpc,guestId,isCreator,ac,GIMG,GL,MK,MK_K,markLoad}};
+window.RIFT={init,adminOpen,adminBtn,afterRender,refresh,a:A,test:{open:tOpen,close:tExit,get on(){return TM.on;},render:tRender},gq:{open:gqOpen,close:gqClose,ev:gqEv,hud:gqHud,msg:gqMsg},markHtml,markLoad,markOn,mrpc,fishSpecies,_mk:MK,_R:R,_cine:playCine,_god:{G,GT,TM,playGodCine,godClick,runDialog,questShow,godScare,godBlessFx,godMe,tRender,godSync,godTheme,godShow,godFire,godAppear,godNotice,godPos,godScreen,godData,godPresent,godWrathFx,godDlgClose,closeAllUi,iAtt,iRep},_fx:{fx,flash,ring,shake,caption,shards,dimTo,spot,panTo,endCine,view,build,kick,rumble,thump,crackle,tear,whoosh,choir,whisper,musicFade,ping,refreshSoon,esc,rpc,guestId,isCreator,ac,GIMG,GL,MK,MK_K,markLoad}};
 addEventListener('resize',()=>{placeFog();});
 setTimeout(init,1200);
 })();
@@ -15293,6 +15297,499 @@ window.SKIN=(function(){
   try{new MutationObserver(rs=>{for(const r of rs)for(const n of r.addedNodes){if(n.nodeType!==1)continue;if(isR(n))set(n);else if(n.firstElementChild&&n.querySelector('input[type=range]'))all(n);}}).observe(document.body,{childList:true,subtree:true});}catch(e){}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>all());else all();
   return {all,set};
+})();
+</script>
+<style id="prank-css">
+/* ===== ☠ пранки бога: он издевается над теми, на кого гневается. Всё понарошку — звёзды и аккаунт не трогаются ===== */
+.gp-layer{position:fixed;inset:0;z-index:100000;pointer-events:none;overflow:hidden;font-family:'Pixelify Sans','Courier New',monospace;-webkit-user-select:none;user-select:none}
+/* голос бога: буквы проявляются по одной, как в его диалогах */
+.gp-say{position:fixed;left:50%;bottom:clamp(70px,16vh,150px);transform:translateX(-50%);z-index:100001;pointer-events:none;width:min(92vw,760px);text-align:center;
+  font:400 clamp(17px,4.6vw,30px)/1.4 'Pixelify Sans','Courier New',monospace;color:#fff;letter-spacing:.04em;overflow-wrap:anywhere;
+  text-shadow:0 0 12px rgba(255,255,255,.7),0 0 26px rgba(160,150,255,.45),0 1px 2px #000;transition:opacity .45s ease}
+.gp-say.out{opacity:0}
+.gp-say .l{display:inline-block;opacity:0;animation:gpLet .38s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes gpLet{0%{opacity:0;transform:scale(.3);filter:blur(3px)}60%{opacity:1;transform:scale(1.15);filter:blur(0)}100%{opacity:1;transform:scale(1)}}
+.gp-say.angry{color:#ffe1ea;text-shadow:0 0 12px rgba(255,60,110,.9),0 0 30px rgba(170,20,70,.6),0 1px 2px #000}
+.gp-say.angry .l{animation:gpLet .38s cubic-bezier(.2,.8,.2,1) forwards,gpShk .16s linear infinite}
+.gp-say.shout{font-size:clamp(26px,8vw,64px);font-weight:600;letter-spacing:.08em}
+.gp-say.whisper{font-size:clamp(14px,3.6vw,20px);color:rgba(230,228,255,.82);letter-spacing:.12em;text-shadow:0 0 10px rgba(160,150,255,.5)}
+@keyframes gpShk{0%{translate:0 -1px}25%{translate:1px 1px}50%{translate:-1px 0}75%{translate:1px -1px}100%{translate:0 1px}}
+
+/* 1. «Приговор»: бог посылает — экран отбрасывает во тьму — потом таймер */
+.gp-kick{position:fixed;inset:0;z-index:100000;pointer-events:auto;background:#000;opacity:0}
+.gp-timer{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));z-index:100000;transform:translateX(-50%);pointer-events:auto;cursor:default;text-align:center;
+  padding:10px 22px 12px;border-radius:14px;background:rgba(0,0,0,.82);border:1px solid rgba(255,90,130,.55);
+  box-shadow:0 0 24px rgba(255,40,100,.35),inset 0 0 18px rgba(255,40,100,.12);color:#fff;min-width:min(86vw,300px);max-width:92vw}
+.gp-timer small{display:block;font:600 clamp(10px,2.8vw,13px)/1.3 'Pixelify Sans','Courier New',monospace;letter-spacing:.22em;color:#ffb3c6;text-shadow:0 0 8px rgba(255,60,110,.8)}
+.gp-timer b{display:block;font:700 clamp(34px,10vw,58px)/1.05 'Pixelify Sans','Courier New',monospace;letter-spacing:.06em;color:#fff;text-shadow:0 0 14px rgba(255,60,110,.95),0 0 34px rgba(255,30,90,.6);font-variant-numeric:tabular-nums}
+.gp-timer.hot{animation:gpHot .5s ease-in-out infinite}
+.gp-timer.big{top:50%;transform:translate(-50%,-50%) scale(1.25)}
+.gp-timer.move{transition:top .9s cubic-bezier(.5,0,.2,1),transform .9s cubic-bezier(.5,0,.2,1)}
+@keyframes gpHot{50%{box-shadow:0 0 40px rgba(255,40,100,.75),inset 0 0 26px rgba(255,40,100,.3)}}
+.gp-vig{position:fixed;inset:0;z-index:99999;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0) 45%,rgba(120,0,30,.45) 85%,rgba(60,0,15,.75) 100%);transition:opacity 1s ease}
+.gp-boom{position:fixed;inset:0;z-index:100000;pointer-events:auto;background:#000;display:flex;align-items:center;justify-content:center;
+  font:700 clamp(30px,10vw,90px) 'Pixelify Sans','Courier New',monospace;letter-spacing:.12em;color:#ff2d6a;text-shadow:0 0 22px #ff2d6a,0 0 4px #fff;text-align:center;padding:0 16px}
+.gp-boom.g{animation:gpGl .09s steps(2) infinite}
+@keyframes gpGl{0%{transform:translate(3px,-2px) skewX(4deg)}50%{transform:translate(-4px,2px) skewX(-6deg)}100%{transform:none}}
+
+/* 2. «Изгнание души»: окно удаления, кнопка «Отменить» убегает */
+.gp-shade{position:fixed;inset:0;z-index:100000;pointer-events:auto;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:16px}
+.gp-win{position:relative;width:min(92vw,420px);padding:22px 20px 18px;border-radius:16px;background:#050407;border:1px solid rgba(255,255,255,.55);
+  box-shadow:0 0 0 1px rgba(255,255,255,.08),0 0 40px rgba(255,255,255,.12),inset 0 0 30px rgba(255,255,255,.04);color:#fff;text-align:center}
+.gp-win h3{margin:0 0 4px;font:700 clamp(17px,4.6vw,22px) 'Cormorant SC',Georgia,serif;letter-spacing:.18em;text-shadow:0 0 12px rgba(255,255,255,.6)}
+.gp-win .who{font:600 13px 'Pixelify Sans','Courier New',monospace;color:#c9c4ef;letter-spacing:.08em;margin-bottom:14px;overflow-wrap:anywhere}
+.gp-bar{position:relative;height:10px;border-radius:5px;background:rgba(255,255,255,.1);overflow:hidden;border:1px solid rgba(255,255,255,.25)}
+.gp-bar i{position:absolute;inset:0;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,#fff,#ff7aa2);box-shadow:0 0 12px #fff}
+.gp-pct{font:700 clamp(28px,8vw,40px) 'Pixelify Sans','Courier New',monospace;margin:10px 0 2px;font-variant-numeric:tabular-nums;text-shadow:0 0 14px rgba(255,255,255,.6)}
+.gp-step{min-height:2.6em;font:400 13px/1.3 'Pixelify Sans','Courier New',monospace;color:#d7d3f5;letter-spacing:.04em}
+.gp-btns{position:relative;height:46px;margin-top:12px}
+.gp-cancel{position:absolute;left:50%;top:0;transform:translateX(-50%);padding:10px 22px;border-radius:10px;border:1px solid rgba(255,255,255,.7);background:#000;color:#fff;
+  font:700 14px 'Pixelify Sans','Courier New',monospace;letter-spacing:.1em;cursor:pointer;transition:left .22s cubic-bezier(.3,1.4,.5,1),top .22s cubic-bezier(.3,1.4,.5,1);white-space:nowrap;touch-action:manipulation}
+.gp-win.crack{animation:gpCrack .6s steps(3) forwards}
+@keyframes gpCrack{0%{filter:none}50%{filter:invert(1)}100%{filter:none;opacity:0;transform:scale(1.08)}}
+
+/* 3. «Твои звёзды» */
+.gp-wallet{position:fixed;left:50%;top:max(16px,env(safe-area-inset-top));transform:translateX(-50%);z-index:100000;pointer-events:none;padding:10px 22px;border-radius:999px;
+  background:rgba(0,0,0,.85);border:1px solid rgba(255,255,255,.5);box-shadow:0 0 24px rgba(255,255,255,.18);text-align:center;color:#fff;white-space:nowrap}
+.gp-wallet b{font:700 clamp(26px,7vw,40px) 'Pixelify Sans','Courier New',monospace;font-variant-numeric:tabular-nums;text-shadow:0 0 14px rgba(255,220,120,.7)}
+.gp-wallet small{display:block;font:600 12px 'Pixelify Sans','Courier New',monospace;letter-spacing:.14em;color:#d7d3f5;margin-top:2px}
+.gp-wallet.drain{border-color:rgba(255,80,120,.8);box-shadow:0 0 30px rgba(255,40,100,.5)}
+.gp-wallet.drain b{color:#ffd0dc;text-shadow:0 0 16px rgba(255,60,110,.9)}
+.gp-wallet.drain small{color:#ffb3c6}
+.gp-mote{position:fixed;z-index:100000;pointer-events:none;font-size:18px;line-height:1}
+
+/* 4. «Я вижу тебя»: огромный глаз следит за пальцем */
+.gp-eye{position:fixed;width:min(62vw,420px);aspect-ratio:1.19;z-index:100000;pointer-events:auto;cursor:pointer;will-change:transform;touch-action:manipulation}
+.gp-eye img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 26px rgba(255,255,255,.55)) drop-shadow(0 0 60px rgba(160,150,255,.35));pointer-events:none;-webkit-user-drag:none}
+.gp-eye.blink img{animation:gpBlink .32s ease-in-out}
+@keyframes gpBlink{50%{transform:scaleY(.06)}}
+.gp-wh{position:fixed;z-index:100001;pointer-events:none;font:400 clamp(13px,3.4vw,17px) 'Pixelify Sans','Courier New',monospace;color:rgba(235,232,255,.9);letter-spacing:.1em;white-space:nowrap;
+  text-shadow:0 0 10px rgba(160,150,255,.8),0 1px 2px #000}
+
+/* 5. «Тьма»: виден только круг света вокруг пальца */
+.gp-dark{position:fixed;inset:0;z-index:100000;pointer-events:none;background:#000;--x:50vw;--y:50vh;--r:120px;opacity:0;transition:opacity 1.2s ease;
+  -webkit-mask-image:radial-gradient(circle at var(--x) var(--y),transparent 0,transparent calc(var(--r)*.55),rgba(0,0,0,.6) calc(var(--r)*.85),#000 var(--r));
+  mask-image:radial-gradient(circle at var(--x) var(--y),transparent 0,transparent calc(var(--r)*.55),rgba(0,0,0,.6) calc(var(--r)*.85),#000 var(--r))}
+.gp-dark.on{opacity:1}
+.gp-peek{position:fixed;z-index:100001;pointer-events:none;width:clamp(54px,12vw,96px);opacity:0}
+.gp-peek img{width:100%;filter:drop-shadow(0 0 12px rgba(255,80,120,.7)) brightness(.9)}
+
+/* 6. «Перевёрнутый мир» */
+html.gp-flip{transform:rotate(180deg);transition:transform 1.6s cubic-bezier(.6,0,.3,1)}
+html.gp-unflip{transition:transform 1.4s cubic-bezier(.5,0,.3,1)}
+
+/* 7. «ЖАЛКИЙ» */
+.gp-flood{position:fixed;inset:0;z-index:100000;pointer-events:auto;background:rgba(0,0,0,.35)}
+.gp-w{position:absolute;transform:translate(-50%,-50%);font-family:'Pixelify Sans','Courier New',monospace;font-weight:700;letter-spacing:.08em;white-space:nowrap;
+  color:#fff;text-shadow:0 0 14px rgba(255,255,255,.75),0 0 30px rgba(160,150,255,.5)}
+.gp-w.r{color:#ffd0dc;text-shadow:0 0 14px rgba(255,60,110,.95),0 0 32px rgba(170,20,70,.6)}
+
+/* 8. «Шёпот»: уведомления от бога */
+.gp-notes{position:fixed;right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));z-index:100000;pointer-events:none;display:flex;flex-direction:column;gap:8px;width:min(80vw,300px)}
+.gp-note{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:rgba(8,6,14,.94);border:1px solid rgba(255,255,255,.35);box-shadow:0 8px 26px rgba(0,0,0,.6),0 0 18px rgba(255,255,255,.08);color:#fff}
+.gp-note img{width:34px;height:auto;flex:0 0 auto;filter:drop-shadow(0 0 6px rgba(255,255,255,.6))}
+.gp-note b{display:block;font:700 12px 'Cormorant SC',Georgia,serif;letter-spacing:.16em;color:#d7d3f5}
+.gp-note span{display:block;font:400 14px/1.3 'Pixelify Sans','Courier New',monospace;letter-spacing:.03em}
+@media (max-width:560px){.gp-notes{left:50%;right:auto;transform:translateX(-50%);width:min(92vw,340px)}}
+
+/* админка: список пранков */
+.gp-adm-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.08)}
+.gp-adm-row:first-of-type{border-top:none}
+.gp-adm-row label{flex:1;display:flex;gap:8px;align-items:flex-start;cursor:pointer;min-width:0}
+.gp-adm-row label input{margin-top:3px;flex:0 0 auto}
+.gp-adm-row b{display:block;font-size:13px}
+.gp-adm-row small{display:block;font-size:11px;opacity:.7;line-height:1.35}
+.gp-adm-row .btn{flex:0 0 auto}
+
+/* ===== «ТЫ — СОСУД»: метка тех, кто выполнил последнее задание бога «Заполучи Гордость Бога» ===== */
+#god-vessel{position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:101;display:none;align-items:center;gap:9px;padding:6px 15px 6px 10px;border-radius:10px;
+  background:rgba(0,0,0,.84);border:1px solid rgba(255,255,255,.62);box-shadow:0 0 14px rgba(255,255,255,.2),inset 0 0 12px rgba(255,255,255,.06);
+  color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+#god-vessel.on{display:flex}
+#god-vessel.below{z-index:95}
+#god-vessel img{width:26px;height:auto;flex:0 0 auto;filter:drop-shadow(0 0 5px rgba(255,255,255,.85));animation:gvBlink 7s ease-in-out infinite;pointer-events:none;-webkit-user-drag:none}
+#god-vessel b{font:700 15px/1 'Cormorant SC',Georgia,'Times New Roman',serif;letter-spacing:.32em;margin-right:-.32em;text-shadow:0 0 10px rgba(255,255,255,.75),0 0 22px rgba(170,160,255,.45)}
+#god-vessel::after{content:'';position:absolute;inset:-1px;border-radius:inherit;box-shadow:0 0 22px rgba(255,255,255,.4),inset 0 0 10px rgba(255,255,255,.12);opacity:0;animation:gvPulse 3.6s ease-in-out infinite;pointer-events:none}
+#god-vessel.tap img{animation:gpBlink .32s ease-in-out}
+@keyframes gvPulse{50%{opacity:1}}
+@keyframes gvBlink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+@media (max-width:420px){#god-vessel{padding:5px 12px 5px 8px;gap:7px}#god-vessel img{width:22px}#god-vessel b{font-size:13px;letter-spacing:.26em;margin-right:-.26em}}
+/* бога победили: оковы спадают */
+#god-vessel.free{pointer-events:none;animation:gvFree 1.7s cubic-bezier(.5,0,.7,.4) forwards}
+@keyframes gvFree{0%{opacity:1;translate:0 0;rotate:0deg}12%{translate:-4px 0;rotate:-2deg}24%{translate:4px 0;rotate:2deg}36%{translate:-3px 0;rotate:-1deg;filter:invert(1)}46%{filter:none;opacity:1;translate:0 0;rotate:0deg}100%{opacity:0;translate:0 70px;rotate:9deg;filter:blur(3px)}}
+html.rf-tabcov #god-vessel,html.rf-covered #god-vessel{visibility:hidden}
+html.fx-off #god-vessel img,html.fx-off #god-vessel::after{animation:none}
+@media (prefers-reduced-motion:reduce){#god-vessel img,#god-vessel::after{animation:none}}
+</style>
+<script>
+/* ===== ☠ ПРАНКИ БОГА =====
+   Бог издевается над теми, на кого гневается: посылает, пугает таймером, «удаляет» душу, «забирает» звёзды…
+   Только пока бог на сайте и только у тех, к кому он «гневается» (репутация). Во время боя с богом — нет.
+   Всё понарошку: звёзды, аккаунт и прогресс не трогаются. Настройки — админка → Разлом → 🃏 Пранки (opts.pranks). */
+(function(){
+if(!window.RIFT||!RIFT._god||!RIFT._fx)return;
+const GD=RIFT._god,FX=RIFT._fx,G=GD.G,TM=GD.TM,RR=RIFT._R,H=document.documentElement;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const now=()=>Date.now();
+const lsG=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
+const lsS=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
+const snd=(f,...a)=>{try{if(FX[f])FX[f](...a);}catch(e){}};
+const buzz=p=>{try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}};
+const calm=()=>H.classList.contains('fx-off')||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+const fmtN=n=>Math.max(0,Math.round(+n||0)).toLocaleString('ru-RU');
+const P={busy:null,next:0,tt:0,raf:0};
+const PT={x:innerWidth/2,y:innerHeight*.45};
+addEventListener('pointermove',e=>{PT.x=e.clientX;PT.y=e.clientY;},{passive:true});
+addEventListener('pointerdown',e=>{PT.x=e.clientX;PT.y=e.clientY;},{passive:true,capture:true});
+
+function mk(cls,html){const e=document.createElement('div');e.className=cls;if(html)e.innerHTML=html;document.body.appendChild(e);return e;}
+function fade(el,ms){if(!el||!el.isConnected)return Promise.resolve();return el.animate([{opacity:getComputedStyle(el).opacity},{opacity:0}],{duration:ms||600,fill:'forwards'}).finished.catch(()=>{}).then(()=>el.remove());}
+function tone(f0,f1,sec,vol,type){const a=FX.ac&&FX.ac();if(!a)return;const t=a.currentTime,o=a.createOscillator(),g=a.createGain();o.type=type||'sine';
+  o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+sec);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.04);g.gain.exponentialRampToValueAtTime(.001,t+sec);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+sec+.05);}
+function myName(){try{if(typeof currentProfile!=='undefined'&&currentProfile&&currentProfile.username)return '@'+currentProfile.username;}catch(e){}
+  try{if(typeof currentGuestData!=='undefined'&&currentGuestData)return currentGuestData.nickname||'Гость';}catch(e){}return 'смертный';}
+function myStars(){try{if(typeof currentProfile!=='undefined'&&currentProfile)return +currentProfile.gold_stars||0;}catch(e){}
+  try{if(typeof currentGuestData!=='undefined'&&currentGuestData)return +currentGuestData.gold_stars||0;}catch(e){}return 0;}
+
+/* ---------- голос бога: буквы проявляются по одной, как в его диалогах ---------- */
+function say(text,o){o=o||{};return new Promise(res=>{
+  document.querySelectorAll('.gp-say').forEach(x=>x.remove());
+  const el=mk('gp-say'+(o.cls?' '+o.cls:''));const k=o.fast?.6:1,ang=/angry/.test(o.cls||'');let i=0;
+  String(text).split(/(\s+)/).forEach(w=>{
+    if(!w)return;if(/^\s+$/.test(w)){el.appendChild(document.createTextNode(' '));if(w.indexOf('\n')>=0)el.appendChild(document.createElement('br'));return;}
+    const ws=document.createElement('span');ws.style.whiteSpace='nowrap';
+    for(const ch of w){const s=document.createElement('span');s.className='l';s.textContent=ch;s.style.animationDelay=(i*.045*k).toFixed(3)+'s'+(ang?',0s':'');ws.appendChild(s);i++;}
+    el.appendChild(ws);});
+  if(/whisper/.test(o.cls||'')){snd('whisper');setTimeout(()=>snd('whisper'),120);}else if(ang||/shout/.test(o.cls||''))snd('thump',/shout/.test(o.cls||'')?1.1:.7);
+  const hold=o.hold!=null?o.hold:1250+i*40*k;
+  P.sayT=setTimeout(()=>{el.classList.add('out');setTimeout(()=>{el.remove();res();},460);},i*45*k+hold);
+});}
+
+/* ========== 1. ⏳ ПРИГОВОР: посылает, отбрасывает во тьму и включает страшный таймер ========== */
+async function pTimer(){
+  await say(rnd(['УХОДИ.','ПРОЧЬ С МОИХ ГЛАЗ.','ТЫ МНЕ НАДОЕЛ.','УБИРАЙСЯ, ЖАЛКИЙ.']),{cls:'angry shout',hold:900});
+  const k=mk('gp-kick');snd('whoosh',1.1,.35);
+  await k.animate([{opacity:0},{opacity:1}],{duration:calm()?200:650,easing:'ease-in',fill:'forwards'}).finished.catch(()=>{});
+  snd('thump',1.1);buzz([120]);await wait(1000);
+  const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  let left=30+Math.floor(Math.random()*16);
+  const label=rnd(['ДО ИЗЪЯТИЯ ТВОЕЙ ДУШИ','МОИ ПРИСЛУЖНИКИ ИДУТ ЗА ТОБОЙ','ДО ТВОИХ ВЕЧНЫХ МУК','ТВОЯ ДУША СТАНЕТ МОЕЙ ЧЕРЕЗ','КЛЕТКА ЗАКРОЕТСЯ ЧЕРЕЗ','Я ВЫСОСУ ТВОЮ СИЛУ ЧЕРЕЗ']);
+  const t=mk('gp-timer big','<small>'+esc(label)+'</small><b>'+fmt(left)+'</b>'),b=t.querySelector('b');
+  t.animate([{opacity:0,filter:'blur(8px)'},{opacity:1,filter:'blur(0)'}],{duration:800});snd('thump',1.3);
+  await wait(1900);
+  t.classList.add('move');t.classList.remove('big');fade(k,900);
+  const vig=mk('gp-vig');requestAnimationFrame(()=>{vig.style.opacity='.15';});
+  let poked=0;
+  t.addEventListener('pointerdown',e=>{e.stopPropagation();t.animate([{translate:'-6px 0'},{translate:'6px 0'},{translate:'0 0'}],{duration:200});snd('thump',.5);
+    if(!poked++)say(rnd(['Не трогай. Это не поможет.','Думаешь, это остановится от касания?']),{cls:'whisper'});});
+  const JEER=['Я вижу тебя.','Беги. Это не поможет.','Тик. Так.','Твоя душа уже дрожит.','Никто не придёт.','Я считаю вместе с тобой.'];
+  let nextJ=left-6;
+  await new Promise(res=>{const tick=()=>{
+    left--;b.textContent=fmt(Math.max(0,left));
+    const hot=left<=10;t.classList.toggle('hot',hot);vig.style.opacity=hot?String(Math.min(1,.3+.07*(10-left))):'.15';
+    snd('thump',hot?.95:.4);if(hot&&left>0)setTimeout(()=>snd('thump',.55),230);if(hot&&left<=3)buzz([60]);
+    if(left===nextJ&&left>10){nextJ-=8;say(rnd(JEER),{cls:'whisper'});}
+    if(left<=0){res();return;}P.tt=setTimeout(tick,1000);};P.tt=setTimeout(tick,1000);});
+  const bm=mk('gp-boom'+(calm()?'':' g'),esc(rnd(['ВРЕМЯ ВЫШЛО','ТЫ МОЙ','ПОРА'])));
+  t.remove();snd('tear',.9);snd('thump',1.5);buzz([220,60,320]);
+  await wait(1100);bm.classList.remove('g');bm.textContent='';vig.remove();await wait(1000);
+  await say('...',{hold:500});
+  await say(rnd(['Шучу.','Испугался?','Ха.']));
+  await say(rnd(['Пока что.','Жалкий.','В следующий раз — не шучу.']),{cls:'angry'});
+  await fade(bm,900);
+}
+
+/* ========== 2. 🗑 ИЗГНАНИЕ ДУШИ: «удаление», кнопка «Отменить» убегает ========== */
+async function pExile(){
+  await say(rnd(['Ты больше не нужен этой вселенной.','Я вычеркну тебя.','Твоё место займёт другой сосуд.']),{cls:'angry'});
+  const sh=mk('gp-shade','<div class="gp-win"><h3>ИЗГНАНИЕ ДУШИ</h3><div class="who">'+esc(myName())+'</div><div class="gp-bar"><i></i></div><div class="gp-pct">0%</div><div class="gp-step"></div><div class="gp-btns"><button class="gp-cancel" type="button">Отменить</button></div></div>');
+  const W=sh.querySelector('.gp-win'),bar=W.querySelector('.gp-bar i'),pct=W.querySelector('.gp-pct'),st=W.querySelector('.gp-step'),bt=W.querySelector('.gp-cancel'),box=W.querySelector('.gp-btns');
+  W.animate([{opacity:0,transform:'scale(.9)'},{opacity:1,transform:'scale(1)'}],{duration:350,easing:'cubic-bezier(.2,.8,.2,1)'});snd('thump',.8);
+  const LBL=['Отменить','Отменить','Нельзя','Нет.','Ха.','Сдайся.','ЖАЛКИЙ'];let tries=0,lastF=0;
+  const flee=e=>{if(e){e.preventDefault();e.stopPropagation();}if(now()-lastF<220)return;lastF=now();tries++;
+    const bw=box.clientWidth,w=bt.offsetWidth,cur=parseFloat(bt.style.left)||bw/2;let x;
+    for(let g=0;g<6;g++){x=w/2+Math.random()*Math.max(0,bw-w);if(Math.abs(x-cur)>w*.7)break;}
+    bt.style.left=x+'px';bt.textContent=LBL[Math.min(tries,LBL.length-1)];snd('whisper');
+    if(tries===4)say('Ты правда думал, что можешь отменить МЕНЯ?',{cls:'whisper'});};
+  bt.addEventListener('pointerdown',flee);bt.addEventListener('click',e=>e.preventDefault());
+  sh.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const r=bt.getBoundingClientRect();if(Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2))<64)flee();});
+  const STEPS=['отрезаю твою душу от вселенной…','стираю твоё имя из памяти…','забираю твои звёзды…','разрываю связь между мирами…','передаю тебя моим прислужникам…','закрываю за тобой небо…'];
+  let p=0,si=-1;
+  while(p<99){
+    p=Math.min(99,p+1+Math.floor(Math.random()*4));
+    bar.style.transform='scaleX('+(p/100).toFixed(3)+')';pct.textContent=p+'%';
+    const s=Math.min(STEPS.length-1,Math.floor(p/100*STEPS.length));if(s!==si){si=s;st.textContent=STEPS[s];snd('crackle',.35);}
+    await wait(p>80?260+Math.random()*260:110+Math.random()*190);
+    if(Math.random()<.06)await wait(700);
+  }
+  st.textContent='…';bt.style.visibility='hidden';snd('thump',1);
+  await wait(1300);
+  await say('...Нет.',{hold:700});
+  await say('Сосуд не выбрасывают.');
+  await say(rnd(['Ты ещё послужишь мне.','Я ещё не выпил тебя до дна.']),{cls:'angry'});
+  W.classList.add('crack');snd('tear',.6);await wait(600);
+  await fade(sh,400);
+}
+
+/* ========== 3. ✨ ТВОИ ЗВЁЗДЫ: «забирает» всё до нуля и возвращает (настоящие звёзды не трогаются) ========== */
+async function pStars(){
+  const real=myStars();
+  await say(rnd(['Мне нужна твоя сила.','Всё твоё — моё.','Отдай мне то, что тебе не принадлежит.']),{cls:'angry'});
+  const w=mk('gp-wallet','<b>✨ '+fmtN(real)+'</b><small>ТВОИ ЗВЁЗДЫ</small>'),b=w.querySelector('b'),sm=w.querySelector('small');
+  w.animate([{opacity:0,transform:'translate(-50%,-14px)'},{opacity:1,transform:'translate(-50%,0)'}],{duration:400});
+  await wait(1100);
+  if(real<=0){await say('...У тебя даже забрать нечего.');await say('ЖАЛКИЙ.',{cls:'angry shout'});await fade(w,500);return;}
+  w.classList.add('drain');sm.textContent='БОГ ЗАБИРАЕТ…';tone(880,70,3.2,.12,'sawtooth');snd('rumble',3.2,.25);
+  const r0=w.getBoundingClientRect(),dur=3200,t0=performance.now();
+  await new Promise(res=>{const step=ts=>{const k=Math.min(1,(ts-t0)/dur),v=Math.round(real*(1-k*k));b.textContent='✨ '+fmtN(v);
+    if(Math.random()<.35){const m=mk('gp-mote');m.textContent='✨';m.style.left=(r0.left+Math.random()*r0.width)+'px';m.style.top=(r0.top+r0.height/2)+'px';
+      m.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+((Math.random()-.5)*120).toFixed(0)+'px,'+(-80-Math.random()*160).toFixed(0)+'px) scale(.3)',opacity:0}],{duration:900,easing:'ease-in',fill:'forwards'});setTimeout(()=>m.remove(),950);}
+    if(k<1)P.raf=requestAnimationFrame(step);else res();};P.raf=requestAnimationFrame(step);});
+  sm.textContent='☠ БОГ ЗАБРАЛ ТВОИ ЗВЁЗДЫ';snd('thump',1.2);buzz([160]);
+  await wait(2300);
+  await say('Испугался?');
+  await say(rnd(['Мне не нужна твоя пыль.','Оставь себе эти крохи.']));
+  await say('Мне нужен твой страх.',{cls:'angry'});
+  w.classList.remove('drain');sm.textContent='ВОЗВРАЩЕНО… ПОКА ЧТО';snd('choir',1.6,.12);
+  const t1=performance.now();
+  await new Promise(res=>{const step=ts=>{const k=Math.min(1,(ts-t1)/900);b.textContent='✨ '+fmtN(real*k);if(k<1)P.raf=requestAnimationFrame(step);else res();};P.raf=requestAnimationFrame(step);});
+  b.textContent='✨ '+fmtN(myStars());
+  await wait(1800);await fade(w,500);
+}
+
+/* ========== 4. 👁 Я ВИЖУ ТЕБЯ: огромный глаз следит за пальцем ========== */
+async function pEye(){
+  const e=mk('gp-eye','<img alt="" src="'+FX.GIMG.eye+'">');
+  let side=Math.random()<.5?'b':'t',cx=PT.x,rise=1,alive=true,taps=0,sink=false;
+  e.addEventListener('pointerdown',ev=>{ev.preventDefault();ev.stopPropagation();taps++;e.classList.remove('blink');void e.offsetWidth;e.classList.add('blink');snd('whisper');
+    if(taps===1)say('Не тыкай в меня, смертный.',{cls:'whisper'});else if(taps===3){say('Я СКАЗАЛ — НЕ ТРОГАЙ.',{cls:'angry'});FX.shake&&FX.shake('rf-shake2',600);}
+    setTimeout(()=>{side=side==='b'?'t':'b';rise=1;cx=Math.random()*innerWidth;},260);});
+  const loop=()=>{if(!alive)return;
+    const w=e.offsetWidth,h=e.offsetHeight;cx+=(PT.x-cx)*.045;rise+=((sink?1:0)-rise)*.05;
+    const x=Math.max(-w*.3,Math.min(innerWidth-w*.7,cx-w/2)),y=side==='b'?innerHeight-h*.6+rise*h*.7:-h*.4-rise*h*.7;
+    const ang=Math.max(-16,Math.min(16,(PT.x-(x+w/2))/innerWidth*42));
+    e.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) rotate('+(side==='t'?180-ang:ang).toFixed(1)+'deg)';
+    P.raf=requestAnimationFrame(loop);};
+  loop();snd('rumble',2,.2);
+  const WH=['я вижу тебя','я всегда наблюдал за тобой...','мои глаза повсюду','не оборачивайся','ты не спрячешься','я помню всё, что ты сделал'];
+  const t0=now();let wi=0;
+  await wait(1400);
+  while(now()-t0<16000){
+    const m=mk('gp-wh');m.textContent=WH[wi++%WH.length];m.style.left=Math.max(8,Math.min(innerWidth-220,PT.x+18))+'px';m.style.top=Math.max(8,Math.min(innerHeight-30,PT.y-34))+'px';
+    m.animate([{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'translateY(0)',offset:.2},{opacity:0,transform:'translateY(-14px)'}],{duration:2600,fill:'forwards'});setTimeout(()=>m.remove(),2650);
+    snd('whisper');await wait(2900);
+  }
+  e.classList.remove('blink');e.querySelector('img').animate([{transform:'scaleY(1)'},{transform:'scaleY(.05)'}],{duration:500,fill:'forwards'});
+  say('Я буду смотреть.',{cls:'whisper'});await wait(600);sink=true;await wait(1500);alive=false;cancelAnimationFrame(P.raf);e.remove();await wait(1400);
+}
+
+/* ========== 5. 🌑 ТЬМА: свет только вокруг пальца, в темноте открываются глаза ========== */
+async function pDark(){
+  await say(rnd(['Я заберу у тебя свет.','Темнота тебе к лицу.']),{cls:'whisper'});
+  const d=mk('gp-dark');let lx=PT.x,ly=PT.y,alive=true;const t0=now(),R0=Math.max(110,Math.min(190,Math.min(innerWidth,innerHeight)*.26));
+  const loop=()=>{if(!alive)return;lx+=(PT.x-lx)*.2;ly+=(PT.y-ly)*.2;const k=Math.min(1,(now()-t0)/11000),fl=Math.random()<.04?.6:1;
+    d.style.setProperty('--x',lx.toFixed(0)+'px');d.style.setProperty('--y',ly.toFixed(0)+'px');d.style.setProperty('--r',(R0*(1-k*.45)*fl).toFixed(0)+'px');P.raf=requestAnimationFrame(loop);};
+  loop();requestAnimationFrame(()=>d.classList.add('on'));snd('rumble',11,.18);
+  await wait(1600);
+  while(now()-t0<11500){
+    let x,y;for(let g=0;g<8;g++){x=40+Math.random()*(innerWidth-80);y=40+Math.random()*(innerHeight-80);if(Math.hypot(x-lx,y-ly)>R0*1.4)break;}
+    const p=mk('gp-peek','<img alt="" src="'+FX.GIMG.eye+'">');p.style.left=(x-40)+'px';p.style.top=(y-30)+'px';
+    p.animate([{opacity:0,transform:'scaleY(.1)'},{opacity:.9,transform:'scaleY(1)',offset:.25},{opacity:.9,transform:'scaleY(1)',offset:.7},{opacity:0,transform:'scaleY(.1)'}],{duration:1500,fill:'forwards'});setTimeout(()=>p.remove(),1550);
+    snd('whisper');await wait(1200+Math.random()*900);
+  }
+  alive=false;cancelAnimationFrame(P.raf);
+  const f=mk('gp-kick');f.style.background='#fff';f.style.pointerEvents='none';f.animate([{opacity:0},{opacity:.85,offset:.3},{opacity:0}],{duration:500,fill:'forwards'});setTimeout(()=>f.remove(),520);
+  snd('thump',1);d.remove();
+  await say('Боишься темноты?..',{cls:'whisper'});
+  await say('Правильно.',{cls:'angry'});
+}
+
+/* ========== 6. 🙃 ПЕРЕВЁРНУТЫЙ МИР ========== */
+async function pFlip(){
+  await say(rnd(['Ты всё видишь не так.','Я переверну твой мир.']),{cls:'angry'});
+  H.classList.remove('gp-unflip');H.style.transformOrigin=(innerWidth/2)+'px '+(innerHeight/2+(scrollY||0))+'px';H.classList.add('gp-flip');snd('whoosh',1.6,.3);snd('rumble',1.6,.25);
+  await wait(1800);
+  await say(rnd(['Так ты выглядишь честнее.','Вот теперь — правильно.','Привыкай.']));
+  await wait(3600);
+  H.classList.add('gp-unflip');H.classList.remove('gp-flip');snd('whoosh',1.4,.25);
+  await wait(1500);H.classList.remove('gp-unflip');H.style.transformOrigin='';
+  await say(rnd(['Ладно. Смотри дальше.','Я верну, когда захочу.','Пока я разрешаю.']),{cls:'whisper'});
+}
+
+/* ========== 7. ☠ ЖАЛКИЙ: экран заваливает словами всё быстрее — и резкая тишина ========== */
+async function pPathetic(){
+  const f=mk('gp-flood'),W=['ЖАЛКИЙ','ЖАЛКИЙ','ЖАЛКИЙ','ЖАЛКИЙ','ЖАЛКОЕ СУЩЕСТВО','БЕЗМОЗГЛОЕ СУЩЕСТВО'];
+  let delay=calm()?520:430;const t0=now();
+  while(now()-t0<(calm()?2800:4300)){
+    const w=document.createElement('div');w.className='gp-w'+(Math.random()<.35?' r':'');w.textContent=rnd(W);
+    const fs=Math.round(18+Math.random()*Math.min(70,innerWidth*.08));w.style.fontSize=fs+'px';w.style.left=(6+Math.random()*88)+'%';w.style.top=(6+Math.random()*88)+'%';
+    const rot=(Math.random()*24-12).toFixed(1);w.style.rotate=rot+'deg';f.appendChild(w);
+    if(!calm())w.animate([{opacity:0,scale:'2.2'},{opacity:1,scale:'1'}],{duration:160,easing:'ease-out'});
+    snd('thump',.3+Math.min(.7,(now()-t0)/6000));delay=Math.max(55,delay*.84);await wait(delay);
+  }
+  f.innerHTML='';f.style.background='#000';snd('thump',1.5);buzz([200]);
+  await wait(1300);
+  await say('...',{hold:500});
+  await say(rnd(['Ты всё ещё здесь?','Почему ты всё ещё здесь?']),{cls:'whisper'});
+  await fade(f,700);
+}
+
+/* ========== 8. 💬 ШЁПОТ: уведомления от бога ========== */
+async function pNotes(){
+  const box=mk('gp-notes'),POOL=['Я вижу, что ты делаешь.','Ты один?','Я знаю, где ты.','Почему ты дрожишь?','Мои глаза уже здесь.','Я помню твоё имя.'];
+  const seq=['Я рядом.'].concat(POOL.sort(()=>Math.random()-.5).slice(0,2),['Обернись.','...','Не оборачивайся.']);
+  for(const t of seq){
+    const n=document.createElement('div');n.className='gp-note';n.innerHTML='<img alt="" src="'+FX.GIMG.eye+'"><div><b>БОГ · сейчас</b><span>'+esc(t)+'</span></div>';box.appendChild(n);
+    n.animate([{opacity:0,transform:'translateX(30px)'},{opacity:1,transform:'translateX(0)'}],{duration:320,easing:'cubic-bezier(.2,.8,.2,1)'});
+    snd('whisper');setTimeout(()=>snd('whisper'),110);
+    while(box.children.length>3)box.firstChild.remove();
+    await wait(t==='...'?1500:2400);
+  }
+  const s=mk('gp-boom','<img alt="" src="'+FX.GIMG.eye+'" style="width:min(80vw,620px)">');snd('tear',1);snd('thump',1.4);buzz([200,50,200]);
+  if(!calm())s.querySelector('img').animate([{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:500,easing:'cubic-bezier(.2,.8,.2,1)'});
+  await wait(750);s.remove();box.remove();
+  await say('Я пошутил.');
+  await say('Или нет.',{cls:'angry'});
+}
+
+const LIST=[
+  {id:'timer',n:'⏳ Приговор',d:'Посылает тебя прочь, экран гаснет, потом страшный таймер («До изъятия твоей души 00:40»). В конце — «Шучу. Пока что.»',f:pTimer},
+  {id:'exile',n:'🗑 Изгнание души',d:'Окно «удаления» души с прогрессом. Кнопка «Отменить» убегает от пальца. На 99% — «Сосуд не выбрасывают».',f:pExile},
+  {id:'stars',n:'✨ Твои звёзды',d:'На глазах «забирает» все звёзды до нуля, потом возвращает: «Мне нужен твой страх». Настоящие звёзды не трогаются.',f:pStars},
+  {id:'eye',n:'👁 Я вижу тебя',d:'Огромный глаз выглядывает из-за края экрана, следит за пальцем и шепчет. Если ткнуть — моргает и перепрыгивает.',f:pEye},
+  {id:'dark',n:'🌑 Тьма',d:'Гаснет свет: виден только круг вокруг пальца, в темноте открываются глаза. «Боишься темноты?.. Правильно.»',f:pDark},
+  {id:'flip',n:'🙃 Перевёрнутый мир',d:'Переворачивает весь сайт вверх ногами: «Так ты выглядишь честнее».',f:pFlip},
+  {id:'pathetic',n:'☠ ЖАЛКИЙ',d:'Экран заваливает словами «ЖАЛКИЙ» всё быстрее — и резкая тишина: «Ты всё ещё здесь?»',f:pPathetic},
+  {id:'notes',n:'💬 Шёпот',d:'Уведомления от бога: «Я рядом», «Ты один?», «Не оборачивайся»… и вспышка глаза.',f:pNotes}
+];
+
+function cleanup(){
+  clearTimeout(P.tt);clearTimeout(P.sayT);cancelAnimationFrame(P.raf);
+  document.querySelectorAll('.gp-say,.gp-kick,.gp-timer,.gp-vig,.gp-boom,.gp-shade,.gp-wallet,.gp-mote,.gp-eye,.gp-wh,.gp-dark,.gp-peek,.gp-flood,.gp-notes').forEach(e=>e.remove());
+  H.classList.remove('gp-flip','gp-unflip','gp-on');H.style.transformOrigin='';
+}
+async function run(id){
+  const p=LIST.find(x=>x.id===id);if(!p||P.busy)return false;
+  P.busy=id;H.classList.add('gp-on');
+  try{await p.f();}catch(e){console.warn('prank',e);}finally{cleanup();P.busy=null;}
+  return true;
+}
+
+/* ---------- когда бог шутит ---------- */
+function cfg(){const g=GD.godData()||RR.godAdm||{},p=((g.opts||{}).pranks)||{};
+  return {on:p.on!==false,every:Math.max(2,Math.min(120,+p.every||7)),off:Array.isArray(p.off)?p.off:[]};}
+function angry(){try{return GD.iAtt()==='bad';}catch(e){return false;}}
+function canRun(){
+  if(P.busy||!cfg().on)return false;
+  if(!(TM.on||GD.godPresent()))return false;
+  if(!angry())return false;
+  {const xm=RR.st&&RR.st.xm;if(xm&&(xm.st==='active'||xm.st==='fleeing'))return false;}/* идёт бой с богом — не до шуток */
+  if(document.hidden||G.dlg||G.scaring||G.leaving||RR.cine)return false;
+  if($('pg-frame')||document.querySelector('.god-scare,.god-haunt'))return false;
+  const ae=document.activeElement;if(ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))return false;
+  return true;
+}
+function plan(first){const c=cfg();P.next=now()+(first?(60+Math.random()*90)*1000:c.every*60000*(.75+Math.random()*.5));lsS('god_prank_next',String(P.next));}
+setInterval(()=>{
+  if(!canRun())return;
+  if(!P.next){const v=+lsG('god_prank_next')||0;if(v>now()+60000&&v<now()+130*60000)P.next=v;else plan(true);return;}
+  if(now()<P.next)return;
+  const c=cfg(),last=lsG('god_prank_last');let L=LIST.filter(x=>c.off.indexOf(x.id)<0&&!(calm()&&x.id==='flip'));
+  if(L.length>1)L=L.filter(x=>x.id!==last);plan();if(!L.length)return;
+  const p=rnd(L);lsS('god_prank_last',p.id);run(p.id);
+},5000);
+
+/* ---------- админка: Разлом → 🃏 Пранки ---------- */
+function adm(){
+  const g=RR.godAdm||{},p=((g.opts||{}).pranks)||{},on=p.on!==false,every=Math.max(2,Math.min(120,+p.every||7)),off=Array.isArray(p.off)?p.off:[];
+  return '<div class="rfa-box"><div class="rfa-note" style="margin-bottom:8px">Бог разыгрывает только тех, на кого <b>гневается</b> (☠ в «Репутации»), и только пока он на сайте. Во время боя с богом пранков нет. Всё понарошку: звёзды, аккаунт и прогресс не трогаются.</div>'
+    +'<label class="rfa-sw"><input type="checkbox" id="rfa-pk-on" '+(on?'checked':'')+'><i></i><span><b>Пранки включены</b><small>первый — через 1–2 минуты после входа на сайт</small></span></label>'
+    +'<div class="rfa-f"><label for="rfa-pk-every">Не чаще, чем раз в … минут</label><input type="number" id="rfa-pk-every" min="2" max="120" value="'+every+'" class="rfa-in-s"></div></div>'
+    +'<div class="rfa-box"><div class="admin-section-title">Какие пранки</div>'
+    +LIST.map(x=>'<div class="gp-adm-row"><label><input type="checkbox" id="rfa-pk-'+x.id+'" '+(off.indexOf(x.id)<0?'checked':'')+'><span><b>'+x.n+'</b><small>'+esc(x.d)+'</small></span></label><button class="btn small" type="button" title="Показать у себя" onclick="PRANK.play(\''+x.id+'\')">▶</button></div>').join('')
+    +'<div class="rfa-note">▶ — показать пранк у себя прямо сейчас.</div>'
+    +'<button class="btn primary rfa-big" onclick="PRANK.save()">💾 Сохранить пранки</button></div>';
+}
+function sum(){const g=RR.godAdm||{},p=((g.opts||{}).pranks)||{};if(p.on===false)return 'выключены';const n=LIST.length-(Array.isArray(p.off)?p.off.filter(id=>LIST.some(x=>x.id===id)).length:0);return n+' из '+LIST.length+' · раз в '+Math.max(2,Math.min(120,+p.every||7))+' мин';}
+async function save(){
+  const o={on:!!($('rfa-pk-on')||{}).checked,every:Math.max(2,Math.min(120,parseInt(($('rfa-pk-every')||{}).value,10)||7)),off:LIST.filter(x=>{const c=$('rfa-pk-'+x.id);return c&&!c.checked;}).map(x=>x.id)};
+  try{const r=await FX.rpc('rift_god_set',{p:{opts:{pranks:o}}});if(r)RR.godAdm=r;try{showToast('💾 Пранки сохранены');}catch(e){}try{RIFT.refresh();}catch(e){}try{RIFT.a.cat('prank');}catch(e){}}
+  catch(e){try{showToast('⚠️ '+String(e&&e.message||e));}catch(_){}}
+}
+/* ========== «ТЫ — СОСУД»: метка тех, кто выполнил последнее задание «Заполучи Гордость Бога» ==========
+   Видна всегда, пока бога не победили: после победы над богом оковы спадают и метка уходит навсегда
+   (снова — только если задание выполнено заново). Сервер: gev_vessel_me (помнит победы в gev_defeats).
+   Без него метка работает по заданию и снимается по победе, которую видно в состоянии боя. */
+const VQ='dmvgfvqbo',VT='ТЫ — СОСУД';
+const V={key:'',fetched:'',busy:false,tapAt:0,srv:null,me:null,meKey:'',was:false,xst:''};
+function vKey(){try{if(typeof currentUser!=='undefined'&&currentUser&&currentUser.id)return 'u'+currentUser.id;}catch(e){}const g=FX.guestId&&FX.guestId();return g?'g'+g:'';}
+function xmS(){return (RR.st&&RR.st.xm)||null;}
+function vQuest(k){/* {done, at} по заданию */
+  if(TM.on){const q=TM.q&&TM.q[VQ];return {done:!!(q&&q.s==='done'),at:q&&q.done};}
+  if(G.me&&G.me.quests&&V.meKey===k){const q=G.me.quests[VQ];return {done:!!(q&&q.s==='done'),at:q&&q.done};}
+  const c=String(lsG('god_vessel_'+k)||'');return {done:c.charAt(0)==='1',at:c.slice(2)||null};
+}
+function vDefeated(at){const x=xmS();if(!x||!(x.st==='fleeing'||x.st==='done')||!x.fa)return false;return !at||Date.parse(x.fa)>Date.parse(at);}
+function vState(k){
+  if(V.srv&&V.me&&V.me.k===k&&!TM.on)return !!V.me.v&&!(vDefeated(V.me.at||null)&&V.xst!==V.me.st);
+  const q=vQuest(k);return q.done&&!vDefeated(q.at);
+}
+function vFonts(){if(document.querySelector('link[href*="Cormorant+SC"]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@500;700&family=Pixelify+Sans:wght@400;600&display=swap';document.head.appendChild(l);}
+function vEl(){let el=$('god-vessel');if(el)return el;
+  el=document.createElement('div');el.id='god-vessel';el.setAttribute('role','note');el.title='Метка бога';
+  el.innerHTML='<img alt="" src="'+FX.GIMG.eye+'"><b>'+esc(VT)+'</b>';document.body.appendChild(el);
+  el.addEventListener('click',vClick);return el;}
+function vClick(){
+  const el=$('god-vessel');if(!el||P.busy||now()-V.tapAt<4500)return;V.tapAt=now();el.classList.remove('tap');void el.offsetWidth;el.classList.add('tap');
+  say(rnd(['Ты принадлежишь мне.','Твоя сила — теперь моя.','Я горжусь тобой... мой сосуд.','Не забывай, кому ты служишь.','Ты сам пришёл ко мне.']),{cls:'whisper'});
+}
+/* где стоит метка: в строке верхней панели, если между логотипом и кнопками есть место, иначе — под панелью (и под таймером бога) */
+function vPlace(){
+  const el=$('god-vessel');if(!el||!el.classList.contains('on'))return;
+  const w=el.offsetWidth,h=el.offsetHeight,tb=$('topbar');let top=12,inline=false;
+  if(tb){const r=tb.getBoundingClientRect();let L=0,Rt=innerWidth;
+    [...tb.children].forEach(k=>{const kr=k.getBoundingClientRect();if(!kr.width||!kr.height)return;if(kr.left+kr.width/2<innerWidth/2)L=Math.max(L,kr.right);else Rt=Math.min(Rt,kr.left);});
+    const cx=innerWidth/2;
+    if(cx-w/2>L+14&&cx+w/2<Rt-14){inline=true;top=Math.round(r.top+Math.max(6,(r.height-h)/2));}
+    else top=Math.round(r.bottom)+(innerWidth<700?4:6);}
+  if(!inline){[$('god-timer'),$('gev-chip')].forEach(x=>{if(x&&x.classList.contains('on')){const b=x.getBoundingClientRect();if(b.height&&b.bottom>top-2&&b.top<top+h)top=Math.round(b.bottom)+6;}});}
+  el.classList.toggle('below',!inline);
+  const t=top+'px';if(el.style.top!==t)el.style.top=t;
+}
+async function vFetch(k){
+  if(V.busy||TM.on)return;V.busy=true;V.fetched=k+'|'+V.xst;
+  if(V.srv!==false)try{const m=await FX.rpc('gev_vessel_me',{p_guest:FX.guestId()});
+    if(m&&typeof m==='object'&&vKey()===k){V.srv=true;const q=vQuest(k);V.me={k,v:!!m.v,st:m.st,at:q.at||null};}}
+  catch(e){const s=String(e&&e.message||e);if(/gev_vessel_me|function|schema cache|404/i.test(s))V.srv=false;else V.fetched='';}
+  /* SQL «сосуды» ещё не запущен: узнаём про задание напрямую (один раз) */
+  if(V.srv===false&&!(G.me&&G.me.quests)&&vKey()===k&&V.qf!==k){V.qf=k;try{const m=await FX.rpc('rift_god_me',{p_guest:FX.guestId()});const q=m&&m.quests&&m.quests[VQ];if(m&&m.quests)lsS('god_vessel_'+k,(q&&q.s==='done'?'1':'0')+'|'+((q&&q.done)||''));}catch(e){}}
+  V.busy=false;vTick();
+}
+function vFree(el){/* бога победили: оковы спадают */
+  const x=xmS(),key=String((x&&x.fa)||'');if(!el||lsG('god_vessel_freed')===key){if(el)el.classList.remove('on');return;}lsS('god_vessel_freed',key);
+  el.classList.add('free');snd('tear',.6);buzz([80,40,160]);
+  setTimeout(()=>{el.classList.remove('on','free');},1700);
+  setTimeout(async()=>{await say('Оковы спали...',{cls:'whisper'});await say('Ты больше не сосуд.');},900);
+}
+function vTick(){
+  if(!RR.st&&!TM.on)return;
+  const k=vKey(),x=xmS(),xst=x?x.st:'';
+  if(G.me&&G.me.quests&&!TM.on){if(V.meSeen!==G.me){V.meSeen=G.me;V.meKey=k;const q=G.me.quests[VQ];const nv=(q&&q.s==='done'?'1':'0')+'|'+((q&&q.done)||'');if(lsG('god_vessel_'+k)!==nv){lsS('god_vessel_'+k,nv);V.fetched='';}}}
+  if(xst!==V.xst){V.xst=xst;V.fetched='';}
+  const on=!!k&&vState(k);
+  let el=$('god-vessel');
+  if(on){el=vEl();if(!el.classList.contains('on')){vFonts();el.classList.remove('free');el.classList.add('on');}vPlace();}
+  else if(el&&el.classList.contains('on')&&!el.classList.contains('free')){if(V.was&&(xst==='fleeing'||xst==='done'))vFree(el);else el.classList.remove('on');}
+  V.was=on;
+  if(k&&!TM.on&&!V.busy&&(V.srv!==false?V.fetched!==k+'|'+xst:V.qf!==k&&!(G.me&&G.me.quests))&&(V.fetched||now()-V.t0>2500)&&(vQuest(k).done||V.srv||lsG('god_vessel_'+k)==null))vFetch(k);
+}
+V.t0=now();setInterval(vTick,1000);addEventListener('resize',()=>{try{vPlace();}catch(e){}});setTimeout(vTick,1200);
+
+window.PRANK={play:id=>{run(id);},adm,sum,save,list:LIST.map(x=>x.id),get busy(){return P.busy;},vessel:{tick:vTick,place:vPlace,quest:VQ}};
 })();
 </script>
 </body>
