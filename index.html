@@ -7746,7 +7746,7 @@ const GQM={
   bb_rows:{ic:'📏',n:'Продержаться рядов за игру',us:'рядов',mx:1,only:['blockboom'],t:'Продержись {N} {u} за одну игру',u:['ряд','ряда','рядов'],h:'сколько рядов блоков опустилось за одну игру — лучший результат'},
   ni_slice:{ic:'🪐',n:'Разрезать планет',us:'план.',one:1,only:['ninja'],t:'Разрежь {N} {u}',u:['планету','планеты','планет']},
   ni_combo:{ic:'⚔',n:'Сделать комбо разрезов',us:'×',mx:1,only:['ninja'],t:'Сделай комбо ×{N}',h:'сколько планет подряд разрезано — лучший результат'},
-  ko_win:{ic:'🎲',n:'Победить в партиях',us:'побед',only:['kosti'],t:'Победи в {N} {u}',u:['партии','партиях','партиях'],h:'победы в партиях, за которые игра даёт награду'},
+  ko_win:{ic:'🎲',n:'Победить в партиях',us:'побед',only:['kosti'],t:'Победи в {N} {u}',u:['партии','партиях','партиях'],h:'победы в любых партиях — с игроками и с ботами'},
   sl_spin:{ic:'🎰',n:'Крутить автомат',us:'раз',only:['slot'],t:'Крутани автомат {N} {u}',u:['раз','раза','раз']},
   sl_win:{ic:'🔔',n:'Выиграть в автомате',us:'раз',only:['slot'],t:'Выиграй в автомате {N} {u}',u:['раз','раза','раз'],h:'любой выигрыш, включая милость глаза бога'},
   sl_jack:{ic:'💎',n:'Сорвать джекпот 7-7-7',us:'раз',only:['slot'],t:'Сорви джекпот 7-7-7 {N} {u}',u:['раз','раза','раз']},
@@ -7822,7 +7822,8 @@ async function gqEv(gid,kind,data){
 function gqMsg(gid,d){
   try{if(!d||!d.type)return;const ty=(GQ.games[gid]||{}).type;
     if(d.type==='andra-gq-ev')gqEv(gid,'m',d);
-    else if(d.type==='andra-win'){if(ty==='g2048')gqEv(gid,'m',{k:'m_merge',add:1,cur:1});else if(ty==='kosti')gqEv(gid,'m',{k:'ko_win',add:1,cur:1});}
+    else if(d.type==='andra-win'){if(ty==='g2048')gqEv(gid,'m',{k:'m_merge',add:1,cur:1});}
+    else if(d.type==='andra-gq-stars'&&ty==='kosti')gqEv(gid,'stars',{n:Math.min(5000,Math.max(0,+d.n||0))});
     else if(d.type==='andra-fish-cast'&&ty==='fishing')gqEv(gid,'m',{k:'fi_cast',add:1,cur:1});
   }catch(e){}
 }
@@ -7881,7 +7882,7 @@ function gqInjFn(){
 }
 /* что делает игрок внутри игры: удары, линии, разрезы… — сайт сам решает, к каким целям это идёт */
 function gqTrkFn(){
-  var K=window.__GQK||'',run={},last={},hiV={};
+  var K=window.__GQK||'',run={},last={},hiV={},kbW=false;
   function send(k,add,cur){try{parent.postMessage({type:'andra-gq-ev',k:k,add:add||0,cur:cur||0},'*');}catch(e){}}
   function bump(k,d){d=+d||0;if(!(d>0))return;run[k]=(run[k]||0)+d;send(k,d,run[k]);}
   function cnt(k,v){v=+v||0;var o=last[k]||0;last[k]=v;if(v<o){run[k]=0;o=0;}bump(k,v-o);}
@@ -7896,6 +7897,7 @@ function gqTrkFn(){
     else if(K==='tetris')newRun(typeof score!=='undefined'?score:0);
     else if(K==='blockboom'){newRun(typeof score!=='undefined'?score:0);hi('bb_rows',typeof waveRow!=='undefined'?waveRow:0);}
     else if(K==='ninja')newRun(typeof bestCombo!=='undefined'?bestCombo:0);
+    else if(K==='kosti'){var KB=window.__kb,V=KB&&KB.V;if(V){if(!V.over)kbW=false;else if(!kbW){var T=document.getElementById('resTitle'),O=document.getElementById('ovRes');if(T&&O&&O.classList.contains('on')){kbW=true;if(/\bwin\b/.test(T.className)){bump('ko_win',1);var n=0,mv=KB.M&&KB.M.view;if(V.mode==='bot'){var rs=document.getElementById('resStake'),mm=rs&&/\+\s*(\d+)\s*★/.exec(rs.textContent||'');n=mm?+mm[1]:0;}else if(mv&&mv.free)n=+mv.xp||0;if(n>0)try{parent.postMessage({type:'andra-gq-stars',n:n},'*');}catch(e){}}}}}}
     else if(K==='g2048'&&typeof tiles!=='undefined'&&tiles&&tiles.length){var m=0;for(var i=0;i<tiles.length;i++){var x=tiles[i];if(x&&+x.value>m)m=+x.value;}hi('m_tile',m);}
   }catch(e){}},250);
 }
