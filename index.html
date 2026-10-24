@@ -3558,9 +3558,9 @@ function handleFileDrop(e,type){e.preventDefault();document.getElementById(type+
 async function uploadToStorage(bucket,base64,userId){const res=await fetch(base64);const blob=await res.blob();const ext=blob.type.includes('gif')?'gif':'webp';const path=userId+'/'+Date.now()+'.'+ext;const{error}=await sb.storage.from(bucket).upload(path,blob,{contentType:blob.type,upsert:true});if(error)throw error;return sb.storage.from(bucket).getPublicUrl(path).data.publicUrl;}
 async function loadPlanets(){try{const[{data:planets},{data:decos},{data:bans}]=await Promise.all([sb.from('planets').select('*').order('created_at',{ascending:false}).limit(200),sb.from('decorations').select('*').order('created_at',{ascending:false}).limit(200),sb.from('profiles').select('id,ban_until').eq('is_banned',true)]);const banIds=new Set((bans||[]).filter(b=>!b.ban_until||new Date(b.ban_until)>new Date()).map(b=>b.id));planetsCache=(planets||[]).filter(x=>!banIds.has(x.user_id));decosCache=(decos||[]).filter(x=>!banIds.has(x.user_id));const{data:profiles}=await sb.from('profiles').select('id,username,boosty_level,role,avatar_url,level,xp').limit(500);usersCache=profiles||[];renderAll();document.getElementById('planet-count').textContent='🪐 '+planetsCache.length+' планет · 🌠 '+decosCache.length+' декораций';checkAddContentLimit();}catch(err){console.error(err);showToast('❌ Ошибка загрузки');}}
 function renderAll(){orbitItems=[];const layer=document.getElementById('planets-layer');layer.innerHTML='';decosCache.forEach(d=>layer.appendChild(createDecoEl(d)));planetsCache.forEach(p=>layer.appendChild(createPlanetEl(p)));if(window.LAVKA&&LAVKA.styleMapNicks)LAVKA.styleMapNicks();if(window.RIFT)RIFT.afterRender();}
-function createPlanetEl(planet){const isOwner=currentUser?.id===planet.user_id;const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;const glow=planet.glow_color||'#22d3ee';const orbitR=planet.orbit_radius||0;const canManage=isOwner||isRealAdmin;function makeContent(){const img=document.createElement('img');img.className=getAnimClass(planet.animation||'float');img.style.cssText='display:block;object-fit:contain;width:'+planet.size+'px;height:'+planet.size+'px;filter:drop-shadow(0 0 12px '+glow+');margin:0 auto';img.src=planet.image_url;img.alt=planet.username;img.loading='lazy';img.onerror=()=>{img.src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'><circle cx='40' cy='40' r='40' fill='%236b21d4'/><text x='40' y='52' text-anchor='middle' fill='white' font-size='28'>🪐</text></svg>";};const label=document.createElement('div');label.style.cssText='text-align:center;font-size:11px;color:#22d3ee;margin-top:3px;white-space:nowrap;pointer-events:none;text-shadow:0 0 8px #22d3ee';label.textContent=planet.username;label.className='pl-nick';label.dataset.uid=planet.user_id||'';label.dataset.name=planet.username||'';const NICK_MAX=100,halfSize=(parseFloat(planet.size)||0)/2,nickShift=halfSize-NICK_MAX;if(nickShift>0){label.style.transform='translateY('+(-nickShift)+'px)';label.style.position='relative';label.style.zIndex='1';label.style.textShadow='0 0 8px #22d3ee,0 0 3px #000,0 1px 3px #000';}label.dataset.ts=label.style.textShadow;return{img,label};}if(orbitR>0){const orbitEl=document.createElement('div');orbitEl.dataset.planetId=planet.id;orbitEl.style.cssText='position:absolute;left:'+(planet.x_pos+cam.x)+'px;top:'+(planet.y_pos+cam.y)+'px;width:0;height:0;pointer-events:none;z-index:2';orbitEl.classList.add('orbit-wrap');const inner=document.createElement('div');inner.className='orbit-inner';inner.setAttribute('data-planet-inner',planet.id);inner.style.position='absolute';inner.style.left='0';inner.style.top='0';inner.style.pointerEvents='all';inner.style.cursor='pointer';const{img,label}=makeContent();inner.appendChild(img);inner.appendChild(label);inner.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showPlanetDialog(planet,inner);if(canManage)showFloatPanel('planet',planet.id);});orbitEl.appendChild(inner);orbitItems.push({el:orbitEl,radius:orbitR,durationMs:orbitSpeedToDurationMs(planet.orbit_speed||5),start:performance.now()});return orbitEl;}const wrap=document.createElement('div');wrap.dataset.planetId=planet.id;wrap.setAttribute('data-planet-inner',planet.id);wrap.style.cssText='position:absolute;pointer-events:all;cursor:pointer;z-index:2;left:'+(planet.x_pos+cam.x)+'px;top:'+(planet.y_pos+cam.y)+'px;transform:translate(-50%,-50%);text-align:center;display:flex;flex-direction:column;align-items:center';const{img,label}=makeContent();wrap.appendChild(img);wrap.appendChild(label);wrap.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showPlanetDialog(planet,wrap);if(canManage)showFloatPanel('planet',planet.id);});return wrap;}
+function createPlanetEl(planet){const isOwner=currentUser?.id===planet.user_id;const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;const glow=planet.glow_color||'#22d3ee';const orbitR=planet.orbit_radius||0;const canManage=isOwner||isRealAdmin;function makeContent(){const img=document.createElement('img');img.className=getAnimClass(planet.animation||'float');img.style.cssText='display:block;object-fit:contain;width:'+planet.size+'px;height:'+planet.size+'px;filter:drop-shadow(0 0 12px '+glow+');margin:0 auto';img.loading='lazy';img.decoding='async';if(!window.__BOT)img.src=planet.image_url;img.alt=planet.username;img.onerror=()=>{img.src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'><circle cx='40' cy='40' r='40' fill='%236b21d4'/><text x='40' y='52' text-anchor='middle' fill='white' font-size='28'>🪐</text></svg>";};const label=document.createElement('div');label.style.cssText='text-align:center;font-size:11px;color:#22d3ee;margin-top:3px;white-space:nowrap;pointer-events:none;text-shadow:0 0 8px #22d3ee';label.textContent=planet.username;label.className='pl-nick';label.dataset.uid=planet.user_id||'';label.dataset.name=planet.username||'';const NICK_MAX=100,halfSize=(parseFloat(planet.size)||0)/2,nickShift=halfSize-NICK_MAX;if(nickShift>0){label.style.transform='translateY('+(-nickShift)+'px)';label.style.position='relative';label.style.zIndex='1';label.style.textShadow='0 0 8px #22d3ee,0 0 3px #000,0 1px 3px #000';}label.dataset.ts=label.style.textShadow;return{img,label};}if(orbitR>0){const orbitEl=document.createElement('div');orbitEl.dataset.planetId=planet.id;orbitEl.style.cssText='position:absolute;left:'+(planet.x_pos+cam.x)+'px;top:'+(planet.y_pos+cam.y)+'px;width:0;height:0;pointer-events:none;z-index:2';orbitEl.classList.add('orbit-wrap');const inner=document.createElement('div');inner.className='orbit-inner';inner.setAttribute('data-planet-inner',planet.id);inner.style.position='absolute';inner.style.left='0';inner.style.top='0';inner.style.pointerEvents='all';inner.style.cursor='pointer';const{img,label}=makeContent();inner.appendChild(img);inner.appendChild(label);inner.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showPlanetDialog(planet,inner);if(canManage)showFloatPanel('planet',planet.id);});orbitEl.appendChild(inner);orbitItems.push({el:orbitEl,radius:orbitR,durationMs:orbitSpeedToDurationMs(planet.orbit_speed||5),start:performance.now()});return orbitEl;}const wrap=document.createElement('div');wrap.dataset.planetId=planet.id;wrap.setAttribute('data-planet-inner',planet.id);wrap.style.cssText='position:absolute;pointer-events:all;cursor:pointer;z-index:2;left:'+(planet.x_pos+cam.x)+'px;top:'+(planet.y_pos+cam.y)+'px;transform:translate(-50%,-50%);text-align:center;display:flex;flex-direction:column;align-items:center';const{img,label}=makeContent();wrap.appendChild(img);wrap.appendChild(label);wrap.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showPlanetDialog(planet,wrap);if(canManage)showFloatPanel('planet',planet.id);});return wrap;}
 function getAnimClass(anim){const m={'float':'anim-float','pulse':'anim-pulse','spin':'anim-spin','wobble':'anim-wobble','bounce':'anim-bounce','sway':'anim-sway','none':'anim-none'};return m[anim]||'anim-float';}
-function createDecoEl(deco){const isOwner=currentUser?.id===deco.user_id;const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;const glow=deco.glow_color||'rgba(255,255,255,0.3)';const orbitR=deco.orbit_radius||0;const canManage=isOwner||isRealAdmin;const owner=usersCache.find(u=>u.id===deco.user_id);function makeContent(){const img=document.createElement('img');img.className=getAnimClass(deco.animation||'float');img.src=deco.image_url;img.loading='lazy';img.style.cssText='display:block;object-fit:contain;width:'+deco.size+'px;height:'+deco.size+'px;filter:drop-shadow(0 0 8px '+glow+');margin:0 auto';const els=[img];if(deco.name){const lbl=document.createElement('div');lbl.style.cssText='text-align:center;font-size:10px;color:rgba(255,255,255,0.85);margin-top:2px;white-space:nowrap;pointer-events:none';lbl.textContent=deco.name;els.push(lbl);}const auth=document.createElement('div');auth.style.cssText='text-align:center;font-size:9px;color:#94a3b8;pointer-events:none';auth.textContent=owner?.username||'?';auth.className='pl-nick';auth.dataset.uid=deco.user_id||'';auth.dataset.name=owner?.username||'?';auth.dataset.ts='';els.push(auth);return els;}if(orbitR>0){const orbitEl=document.createElement('div');orbitEl.dataset.decoId=deco.id;orbitEl.style.cssText='position:absolute;left:'+(deco.x_pos+cam.x)+'px;top:'+(deco.y_pos+cam.y)+'px;width:0;height:0;pointer-events:none;z-index:2';orbitEl.classList.add('orbit-wrap');const inner=document.createElement('div');inner.className='orbit-inner';inner.setAttribute('data-deco-inner',deco.id);inner.style.position='absolute';inner.style.left='0';inner.style.top='0';inner.style.pointerEvents=canManage?'all':'none';if(canManage)inner.style.cursor='pointer';makeContent().forEach(el=>inner.appendChild(el));if(canManage)inner.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showFloatPanel('deco',deco.id);});orbitEl.appendChild(inner);orbitItems.push({el:orbitEl,radius:orbitR,durationMs:orbitSpeedToDurationMs(deco.orbit_speed||5),start:performance.now()});return orbitEl;}const wrap=document.createElement('div');wrap.dataset.decoId=deco.id;wrap.setAttribute('data-deco-inner',deco.id);wrap.style.cssText='position:absolute;z-index:2;left:'+(deco.x_pos+cam.x)+'px;top:'+(deco.y_pos+cam.y)+'px;transform:translate(-50%,-50%);text-align:center;display:flex;flex-direction:column;align-items:center;pointer-events:'+(canManage?'all':'none');if(canManage)wrap.style.cursor='pointer';makeContent().forEach(el=>wrap.appendChild(el));if(canManage)wrap.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showFloatPanel('deco',deco.id);});return wrap;}
+function createDecoEl(deco){const isOwner=currentUser?.id===deco.user_id;const isRealAdmin=currentProfile?.role==='admin'&&!testRestrictions;const glow=deco.glow_color||'rgba(255,255,255,0.3)';const orbitR=deco.orbit_radius||0;const canManage=isOwner||isRealAdmin;const owner=usersCache.find(u=>u.id===deco.user_id);function makeContent(){const img=document.createElement('img');img.className=getAnimClass(deco.animation||'float');img.loading='lazy';img.decoding='async';if(!window.__BOT)img.src=deco.image_url;img.style.cssText='display:block;object-fit:contain;width:'+deco.size+'px;height:'+deco.size+'px;filter:drop-shadow(0 0 8px '+glow+');margin:0 auto';const els=[img];if(deco.name){const lbl=document.createElement('div');lbl.style.cssText='text-align:center;font-size:10px;color:rgba(255,255,255,0.85);margin-top:2px;white-space:nowrap;pointer-events:none';lbl.textContent=deco.name;els.push(lbl);}const auth=document.createElement('div');auth.style.cssText='text-align:center;font-size:9px;color:#94a3b8;pointer-events:none';auth.textContent=owner?.username||'?';auth.className='pl-nick';auth.dataset.uid=deco.user_id||'';auth.dataset.name=owner?.username||'?';auth.dataset.ts='';els.push(auth);return els;}if(orbitR>0){const orbitEl=document.createElement('div');orbitEl.dataset.decoId=deco.id;orbitEl.style.cssText='position:absolute;left:'+(deco.x_pos+cam.x)+'px;top:'+(deco.y_pos+cam.y)+'px;width:0;height:0;pointer-events:none;z-index:2';orbitEl.classList.add('orbit-wrap');const inner=document.createElement('div');inner.className='orbit-inner';inner.setAttribute('data-deco-inner',deco.id);inner.style.position='absolute';inner.style.left='0';inner.style.top='0';inner.style.pointerEvents=canManage?'all':'none';if(canManage)inner.style.cursor='pointer';makeContent().forEach(el=>inner.appendChild(el));if(canManage)inner.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showFloatPanel('deco',deco.id);});orbitEl.appendChild(inner);orbitItems.push({el:orbitEl,radius:orbitR,durationMs:orbitSpeedToDurationMs(deco.orbit_speed||5),start:performance.now()});return orbitEl;}const wrap=document.createElement('div');wrap.dataset.decoId=deco.id;wrap.setAttribute('data-deco-inner',deco.id);wrap.style.cssText='position:absolute;z-index:2;left:'+(deco.x_pos+cam.x)+'px;top:'+(deco.y_pos+cam.y)+'px;transform:translate(-50%,-50%);text-align:center;display:flex;flex-direction:column;align-items:center;pointer-events:'+(canManage?'all':'none');if(canManage)wrap.style.cursor='pointer';makeContent().forEach(el=>wrap.appendChild(el));if(canManage)wrap.addEventListener('click',e=>{e.stopPropagation();if(itemDrag.active)return;showFloatPanel('deco',deco.id);});return wrap;}
   function showPlanetDialog(planet,wrapEl){if(activeAudio){activeAudio.pause();activeAudio=null;}currentPlanetSound=planet.sound_url||null;document.getElementById('pd-avatar').src=planet.image_url;const pdUser=document.getElementById('pd-username');document.getElementById('pd-username-text').textContent=planet.username;pdUser.style.cursor='pointer';pdUser.onclick=()=>openProfileModal(planet.user_id);const profile=usersCache.find(u=>u.id===planet.user_id);const ownerAvEl=document.getElementById('pd-owner-avatar');if(ownerAvEl){ownerAvEl.innerHTML=avatarHtml(profile,'avatar-sm');}const level=profile?.boosty_level||null;const lvWrap=document.getElementById('pd-level-wrap');if(level){document.getElementById('pd-level').textContent='⭐ '+level;lvWrap.style.display='';}else lvWrap.style.display='none';const commentEl=document.getElementById('pd-comment'),noEl=document.getElementById('pd-no-comment');if(planet.comment&&planet.comment.trim()){commentEl.textContent=planet.comment;commentEl.style.display='block';noEl.style.display='none';}else{commentEl.style.display='none';noEl.style.display='block';}const soundEl=document.getElementById('pd-sound-badge');const volRow=document.getElementById('pd-volume-row');if(planet.sound_url){soundEl.style.display='inline-flex';soundEl.textContent='🔊 Нажми для звука';const vol=planet.sound_volume!=null?planet.sound_volume:planetSoundVolume;volRow.style.display='flex';document.getElementById('pd-volume-slider').value=vol;document.getElementById('pd-volume-val').textContent=Math.round(vol*100)+'%';planetSoundVolume=vol;if(bgMusicAudio&&!bgMusicAudio.paused)bgMusicAudio.volume=bgMusicVolume*0.15;try{activeAudio=new Audio(planet.sound_url);activeAudio.volume=vol;activeAudio.play().then(()=>{soundEl.textContent='🔊 Играет...';}).catch(()=>{soundEl.textContent='🔊 Нажми для звука';});activeAudio.onended=()=>{soundEl.textContent='🔊 Нажми снова';if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume;};}catch(e){}}else{soundEl.style.display='none';volRow.style.display='none';}const dialog=document.getElementById('planet-dialog');dialog.style.display='block';const rect=wrapEl.getBoundingClientRect();let left=rect.right+12,top=rect.top;if(left+310>window.innerWidth)left=Math.max(8,rect.left-310);top=Math.max(8,Math.min(top,window.innerHeight-380));dialog.style.left=left+'px';dialog.style.top=top+'px';}
 function playPlanetSound(){if(!currentPlanetSound)return;if(activeAudio)activeAudio.pause();const badge=document.getElementById('pd-sound-badge');if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume*0.15;try{activeAudio=new Audio(currentPlanetSound);activeAudio.volume=planetSoundVolume;activeAudio.play();badge.textContent='🔊 Играет...';activeAudio.onended=()=>{badge.textContent='🔊 Нажми снова';if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume;};}catch(e){}}
 function closePlanetDialog(){document.getElementById('planet-dialog').style.display='none';if(activeAudio){activeAudio.pause();activeAudio=null;}currentPlanetSound=null;if(bgMusicAudio)bgMusicAudio.volume=bgMusicVolume;}
@@ -4125,7 +4125,7 @@ const onMsg=async(e)=>{
         if(blue>0||gold>0)showToast('⭐ Получено: '+(blue>0?blue+' синих ':'')+(gold>0?gold+' золотых':''));
         toGame({type:'andra-award',blue,gold});
         if(currentUser&&(blue>0||gold>0)){
-          const{data:freshProfile}=await sb.from('profiles').select('*').eq('id',currentUser.id).maybeSingle();
+          const freshProfile=await freshProfileThrottled();
           if(freshProfile)currentProfile=freshProfile;
         }else if(currentGuestData?.id&&gold>0){
           const{data:freshGuest}=await guestRow(currentGuestData.id);
@@ -4140,7 +4140,7 @@ const onMsg=async(e)=>{
         toGame({type:'andra-slot-result',...result});
         try{if(window.RIFT&&RIFT.gq)RIFT.gq.ev(gameId,'slot',result||{});}catch(_){}
         if(currentUser){
-          const{data:freshProfile}=await sb.from('profiles').select('*').eq('id',currentUser.id).maybeSingle();
+          const freshProfile=await freshProfileThrottled();
           if(freshProfile)currentProfile=freshProfile;
         }else if(currentGuestData?.id){
           const{data:freshGuest}=await guestRow(currentGuestData.id);
@@ -4158,7 +4158,7 @@ const onMsg=async(e)=>{
         toGame({type:'andra-fish-claim-result',...result});
         if(result?.success){
           if(currentUser){
-            const{data:freshProfile}=await sb.from('profiles').select('*').eq('id',currentUser.id).maybeSingle();
+            const freshProfile=await freshProfileThrottled();
             if(freshProfile)currentProfile=freshProfile;
           }else if(currentGuestData?.id){
             const{data:freshGuest}=await guestRow(currentGuestData.id);
@@ -4187,7 +4187,7 @@ const onMsg=async(e)=>{
         try{if(window.RIFT&&RIFT.gq)RIFT.gq.ev(gameId,'stars',{n:(+result.blue||0)+(+result.gold||0)});}catch(_){}
         showToast('🏆 Новый рекорд! '+(result.blue>0?'+'+result.blue+' синих ':'')+(result.gold>0?'+'+result.gold+' золотых':''));
         if(currentUser){
-          const{data:freshProfile}=await sb.from('profiles').select('*').eq('id',currentUser.id).maybeSingle();
+          const freshProfile=await freshProfileThrottled();
           if(freshProfile)currentProfile=freshProfile;
         }else if(currentGuestData?.id){
           const{data:freshGuest}=await guestRow(currentGuestData.id);
@@ -6779,10 +6779,21 @@ function applyMoves(moves){
 }
 
 /* ---------- синхронизация ---------- */
+async function riftGet(){
+  if(R.noV)return rpc('rift_get');
+  let res;
+  try{res=await rpc('rift_get_v',{p_dv:R.dv||null});}
+  catch(e){if(/rift_get_v|function|schema cache|404/i.test(String(e&&e.message||e))){R.noV=true;return rpc('rift_get');}throw e;}
+  if(!res||typeof res!=='object'){R.noV=true;return rpc('rift_get');}
+  const g=res&&res.god;
+  if(g&&g.dv){if(Array.isArray(g.dialogs)){R.dv=g.dv;R.dlgC=g.dialogs;}else if(g.dv===R.dv&&R.dlgC)g.dialogs=R.dlgC;else{R.dv=null;R.dlgC=null;return rpc('rift_get');}}
+  else{R.dv=null;R.dlgC=null;}
+  return res;
+}
 async function refresh(){
   if(R.busy)return;R.busy=true;
   try{
-    const t0=Date.now(),res=await rpc('rift_get'),t1=Date.now();
+    const t0=Date.now(),res=await riftGet(),t1=Date.now();
     if(res&&res.now){const off=Date.parse(res.now)-(t0+t1)/2;R.off=Math.abs(off-R.off)>1500||!R.offSet?off:R.off*0.7+off*0.3;R.offSet=1;}
     const prev=R.st;R.st=res||{level:0};if(res&&res.tk)setTimeout(ping,250);if(window.XM)try{XM.st(R.st,prev);}catch(e){console.warn(e);}
     if(R.st.level>0&&R.st.moves)applyMoves(R.st.moves);
@@ -6805,7 +6816,7 @@ function schedule(){
   const pn=R.st&&R.st.pn?Date.parse(R.st.pn)-now():0;if(pn>0&&pn<ms)ms=pn+400+Math.random()*1500;
   R.timer=setTimeout(refresh,ms);
   clearTimeout(R.tickTimer);
-  if(eyesOn()&&R.st.eyes.some(e=>(e.b==='thief'||e.b==='guard')&&!e.gone))R.tickTimer=setTimeout(async()=>{try{if(await rpc('rift_tick')){ping();setTimeout(refresh,300);}}catch(e){}},5000);
+  if(eyesOn()&&R.st.eyes.some(e=>(e.b==='thief'||e.b==='guard')&&!e.gone))R.tickTimer=setTimeout(async()=>{if(document.hidden||(typeof PERF!=='undefined'&&PERF.paused))return;try{if(await rpc('rift_tick')){ping();setTimeout(refresh,300);}}catch(e){}},5000);
 }
 function refreshSoon(ms){clearTimeout(R.timer);R.timer=setTimeout(refresh,ms||400);}
 function ping(){try{if(R.ch)R.ch.send({type:'broadcast',event:'p',payload:{}});}catch(e){}}
@@ -7182,7 +7193,7 @@ function godSync(){
     if(!(R.cine&&R.cine.god)){godShow(true);godTheme(G.preview?(!TM.on||TM.theme):g.theme!==false,g);}
     /* диалоги сервер отдаёт только после появления — дозапросить */
     if(!(g.dialogs&&g.dialogs.length)&&G.dlgAt!==g.at&&!G.preview){G.dlgAt=g.at;refreshSoon(700+Math.random()*2500);}
-    godMe();godScareSync();
+    if(!G.me||!G.meT||now()-G.meT>90000)godMe();godScareSync();
   }
 }
 function godFire(){
@@ -7576,7 +7587,7 @@ function godScareSync(){
 function gqState(){return TM.on?TM.q:((G.me&&G.me.quests)||{});}
 function questStatus(id){const q=gqState()[id];return q?q.s:'';}
 async function godMe(){
-  if(G.meBusy){G.meAgain=true;return;}G.meBusy=true;
+  if(G.meBusy){G.meAgain=true;return;}G.meBusy=true;G.meT=now();
   try{const prev=G.me;G.me=await rpc('rift_god_me',{p_guest:guestId()});
     /* в тест-режиме берём только настоящую репутацию/отношение бога; задания там свои (TM.q) */
     if(TM.on){G.meBusy=false;questShow();gqHud();try{tRender();}catch(e){}if(G.meAgain){G.meAgain=false;setTimeout(godMe,60);}return;}
@@ -8272,11 +8283,11 @@ async function adminOpen(){
   if(!isCreator()){p.innerHTML='<div class="rfa-note">Нет доступа</div>';return;}
   if(!R.adm)p.innerHTML='<div class="rfa-note">Загрузка…</div>';
   await admLoad();clearInterval(R.admTimer);
-  R.admTimer=setInterval(()=>{const t=$('admin-tab-rift');if(!t||t.style.display==='none'||!$('admin-panel').classList.contains('open')){clearInterval(R.admTimer);return;}admLoad(true);},5000);
+  R.admTimer=setInterval(()=>{const t=$('admin-tab-rift');if(!t||t.style.display==='none'||!$('admin-panel').classList.contains('open')){clearInterval(R.admTimer);return;}admLoad(true);},15000);
 }
 async function admLoad(soft){
   if(!soft)rpc('gev_admin').then(x=>{R.evAdm=x;}).catch(()=>{});
-  try{const gp=godAdmLoad(),mp=markAdmLoad(),ap=window.ACH&&ACH.admLoad?ACH.admLoad():null;R.adm=await rpc('rift_admin_get');await gp;await mp;await ap;}catch(e){const p=$('admin-tab-rift');if(p&&!soft)p.innerHTML='<div class="rfa-note">⚠️ '+esc(errText(e))+'</div>';return;}
+  try{const hv=!soft||((R.admN=(R.admN||0)+1)%4===0);const gp=hv?godAdmLoad():null,mp=hv?markAdmLoad():null,ap=hv&&window.ACH&&ACH.admLoad?ACH.admLoad():null;R.adm=await rpc('rift_admin_get');await gp;await mp;await ap;}catch(e){const p=$('admin-tab-rift');if(p&&!soft)p.innerHTML='<div class="rfa-note">⚠️ '+esc(errText(e))+'</div>';return;}
   if(soft){admStatus();admEyes();godAdmSoft();}else admRender();kick();
 }
 async function admDo(fn,args,msg,after){
@@ -15790,6 +15801,30 @@ function vTick(){
 V.t0=now();setInterval(vTick,1000);addEventListener('resize',()=>{try{vPlace();}catch(e){}});setTimeout(vTick,1200);
 
 window.PRANK={play:id=>{run(id);},adm,sum,save,list:LIST.map(x=>x.id),get busy(){return P.busy;},vessel:{tick:vTick,place:vPlace,quest:VQ}};
+})();
+</script>
+<script>
+/* ===== экономия трафика Supabase =====
+   • боты (скриншоты Vercel при каждой выкладке, превью ссылок) не качают картинки карты;
+   • картинки берутся из зеркала st/ в репозитории (файл sw.js рядом с index.html), а из Supabase — только пока их там ещё нет;
+   • после наград в играх профиль перечитывается не чаще раза в 5 секунд. */
+(function(){
+var ua=navigator.userAgent||'',ok=false;try{ok=localStorage.getItem('andra_bot_ok')==='1';}catch(e){}
+window.__BOT=!ok&&(navigator.webdriver===true||/HeadlessChrome|Lighthouse|Googlebot|bingbot|YandexBot|TelegramBot|facebookexternalhit|crawler|spider/i.test(ua));
+if(!window.__BOT&&'serviceWorker' in navigator&&location.protocol==='https:'){
+  addEventListener('load',function(){setTimeout(function(){try{navigator.serviceWorker.register('/sw.js').catch(function(){});}catch(e){}},2500);});
+}
+var FP={p:null,t:0,tr:0};
+window.freshProfileThrottled=function(){
+  var uid=(typeof currentUser!=='undefined'&&currentUser)?currentUser.id:null;if(!uid)return Promise.resolve(null);
+  var go=function(){FP.t=Date.now();FP.p=sb.from('profiles').select('*').eq('id',uid).maybeSingle().then(function(r){return (r&&r.data)||null;},function(){return null;});return FP.p;};
+  var dt=Date.now()-FP.t;
+  if(FP.p&&dt<5000){
+    if(!FP.tr)FP.tr=setTimeout(function(){FP.tr=0;go().then(function(d){try{if(d&&typeof currentUser!=='undefined'&&currentUser&&currentUser.id===d.id){currentProfile=d;if(typeof refreshTabletHeader==='function')refreshTabletHeader();}}catch(e){}});},5000-dt);
+    return FP.p;
+  }
+  return go();
+};
 })();
 </script>
 </body>
