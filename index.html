@@ -7401,7 +7401,7 @@ function placeFog(){
   f.style.setProperty('--gdd-room',Math.max(130,innerHeight-t-(innerWidth<700?80:14))+'px');
   if(!placeFog.r){placeFog.r=1;addEventListener('resize',()=>{if(G.dlg&&G.dlg.alive)placeFog();});}
 }
-function guestId(){try{return currentUser?null:(currentGuestData&&currentGuestData.id)||null;}catch(e){return null;}}
+function guestId(){try{if(currentUser)return null;const g=currentGuestData&&currentGuestData.id;if(g)return g;const s=JSON.parse(localStorage.getItem('na_guest')||'null');return s&&s.id&&!s.local?s.id:null;}catch(e){return null;}}
 const PH_CLS={angry:'angry',wrath:'angry',shout:'shout',whisper:'whisper',bless:'bless',glitch:'glitch'};
 function phO(l){return (l&&typeof l==='object')?l:{t:String(l==null?'':l)};}
 function phT(l){return String(phO(l).t||'');}
@@ -7632,6 +7632,12 @@ function refreshWallet(){try{setTimeout(async()=>{if(currentUser){const r=await 
 function qBy(d){return d.by||((d.goals&&d.goals.some(x=>x&&x.m))?'goals':((d.ask||String(d.secret||'').trim())?'secret':'manual'));}
 function qGoals(d){return ((d&&d.goals)||[]).filter(x=>x&&x.m);}
 function qReply(a,def){return a&&a.length?a:def;}
+function hasWho(){try{return !!(currentUser||guestId()||(typeof TM!=='undefined'&&TM.on));}catch(e){return false;}}
+/* задание записывается на игрока: у новичка без аккаунта и гостя создаём гостя тем же способом, что и в планшете с играми */
+async function ensureWho(){
+  if(hasWho())return true;
+  try{const g=await getGuestProfile();if(!g)return false;currentGuestData=g;return true;}catch(e){return false;}
+}
 async function questTalk(d){
   const st=questStatus(d.id);
   if(st==='done')return godSayAll(qReply(d.done_reply,['Ты уже служил мне.','Я помню это.']));
@@ -7662,9 +7668,15 @@ async function questTalk(d){
   const gl=qGoals(d);
   if(gl.length&&!d.hide_goals)tx.insertAdjacentHTML('beforeend','<div class="gdd-goals">'+gl.map(go=>'<div>'+goalIcon(go)+' '+esc(goalText(go))+'</div>').join('')+'</div>');
   const i=await chooseOpts(d.norefuse?['Принять']:['Принять','Отказаться']);if(i===null||i===undefined)return false;
-  if(i===0){const res=await questAct(d,'accept');await godMe();if(res&&res.ok===false&&res.err!=='inactive')showToast('⚠️ Не удалось принять задание');
+  if(i===0){if(!(await ensureWho()))return false;const res=await questAct(d,'accept');await godMe();
+    if(res&&res.ok===false&&res.err!=='inactive'){
+      const er=String(res.err||'неизвестная ошибка');
+      try{console.warn('Не удалось принять задание',d.id,res);}catch(e){}
+      if(!/already|accepted|taken|уже/i.test(er))showToast('⚠️ Не удалось принять задание: '+(er.length>110?er.slice(0,110)+'…':er));
+    }
     lsSet('god_qhide_'+d.id,'');questShow();gqHud();
     return godSayAll(qReply(d.accept_reply,['Ступай.']));}
+  if(!(await ensureWho()))return false;
   const res=await questAct(d,'refuse');
   if(scareFor('refuse'))await wait(2100);
   godWrathFx();
