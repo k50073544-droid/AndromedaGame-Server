@@ -12297,6 +12297,174 @@ window.MVOL={tick,open:()=>openPop(true)};
 .sk-rwl .sk-jp{font-weight:800;color:#f472b6;animation:skRisk 1s infinite}
 html.god-theme .sk-box{background:linear-gradient(180deg,#07060e,#000);border-color:rgba(255,255,255,.3)}
 </style>
+<style id="streak2-css">
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&display=swap');
+/* ===== 🔥 ОГОНЁК 2.0 — компактное окно в духе Duolingo / Brawl Stars ===== */
+#sk-win:not(#_) .sk-box.sk-box{width:min(372px,100%);padding:12px 12px 12px}
+#sk-rw:not(#_) .sk-box.sk-box{width:min(340px,100%);padding:16px 14px 14px;overflow:hidden}
+#sk-win:not(#_) .sk-x.sk-x{top:20px;right:20px;z-index:5}
+.s2{font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#fff;text-align:left}
+.s2 *{box-sizing:border-box}
+/* --- герой: большое число и пламя --- */
+.s2-hero{position:relative;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:2px 12px;padding:14px 14px 12px;border-radius:20px;overflow:hidden;isolation:isolate;
+  background:linear-gradient(165deg,#323849,#212534);box-shadow:inset 0 -4px 0 rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.08)}
+.s2-hero.done{background:linear-gradient(160deg,var(--h1),var(--h2));box-shadow:inset 0 -5px 0 rgba(0,0,0,.22),inset 0 2px 0 rgba(255,255,255,.3),0 8px 24px -6px var(--hg)}
+.s2-hero::before{content:'';position:absolute;inset:-40% -10% auto auto;width:70%;aspect-ratio:1;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.18),transparent);z-index:-1;pointer-events:none}
+.s2-hero.done::after{content:'';position:absolute;left:0;right:0;top:0;height:46%;background:linear-gradient(180deg,rgba(255,255,255,.16),transparent);z-index:-1;pointer-events:none}
+.s2-fl{grid-row:1/3;width:78px;height:96px;display:flex;align-items:flex-end;justify-content:center}
+.s2-fl .sk-fw{--r:46px}
+.s2-fl .sk-flame{width:72px;height:90px}
+.s2-ht{min-width:0;padding-right:30px}
+.s2-num{font-weight:900;font-size:60px;line-height:.86;letter-spacing:-1.5px;color:var(--nc,#fff);
+  text-shadow:2px 2px 0 var(--ns),-2px 2px 0 var(--ns),2px -2px 0 var(--ns),-2px -2px 0 var(--ns),0 2px 0 var(--ns),0 -2px 0 var(--ns),2px 0 0 var(--ns),-2px 0 0 var(--ns),0 5px 0 var(--ns)}
+.s2-lbl{font-weight:900;font-size:17px;line-height:1.1;margin-top:6px;letter-spacing:.01em}
+.s2-tier{display:inline-block;margin-top:6px;padding:3px 9px;border-radius:10px;font-weight:800;font-size:11px;line-height:1.3;background:rgba(0,0,0,.22);color:rgba(255,255,255,.92);max-width:100%}
+.s2-hero:not(.done) .s2-tier{color:var(--c2)}
+.s2-st{grid-column:1/-1;margin-top:10px;font-weight:800;font-size:13px}
+.s2-ok{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.2);box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)}
+.s2-ok b{font-weight:900}
+.s2-ok small{font-weight:700;opacity:.85;margin-left:auto;font-size:11.5px;text-align:right}
+.s2-wt{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.s2-wt small{font-weight:700;font-size:11.5px;color:rgba(255,255,255,.7)}
+.s2-bar{position:relative;height:16px;border-radius:99px;background:rgba(0,0,0,.35);overflow:hidden;box-shadow:inset 0 2px 0 rgba(0,0,0,.25)}
+.s2-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:linear-gradient(180deg,#ffd84d,#ff9600);box-shadow:inset 0 -3px 0 rgba(0,0,0,.15);transition:width .6s cubic-bezier(.2,.8,.2,1);min-width:16px}
+.s2-bar i::after{content:'';position:absolute;left:8px;right:8px;top:3px;height:3px;border-radius:3px;background:rgba(255,255,255,.55)}
+.s2-bar span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;letter-spacing:.03em;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+/* --- неделя, как в Duolingo --- */
+.s2-week{position:relative;z-index:0;display:grid;grid-template-columns:repeat(7,1fr);gap:0;margin:12px 2px 2px}
+.s2-d{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px}
+.s2-d>span{font-weight:800;font-size:11px;color:rgba(255,255,255,.5)}
+.s2-d.is-t>span{color:#ffb020}
+.s2-d>i{position:relative;z-index:1;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:15px;background:rgba(255,255,255,.07)}
+.s2-d.fut>i{background:transparent;box-shadow:inset 0 0 0 2px rgba(255,255,255,.1)}
+.s2-d.ok>i{background:linear-gradient(180deg,#ffbe2e,#ff8a00);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 0 10px -2px rgba(255,150,0,.6)}
+.s2-d.ok>i svg{width:15px;height:19px;fill:#fff;filter:drop-shadow(0 1px 0 rgba(0,0,0,.2))}
+.s2-d.frz>i{background:linear-gradient(180deg,#7dd3fc,#3b82f6);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 0 10px -2px rgba(96,165,250,.7);color:#fff;font-size:16px}
+.s2-d.today>i::before{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(#ff9600 calc(var(--p,0)*1%),rgba(255,255,255,.14) 0);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3.5px));mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3.5px))}
+.s2-d.today>i svg{position:relative;width:14px;height:18px;fill:rgba(255,255,255,.3)}
+.s2-d.cl::before{content:'';position:absolute;z-index:0;top:26px;right:50%;width:100%;height:14px;background:linear-gradient(180deg,#ffbe2e,#ff8a00)}
+.s2-d.cl.fz2::before{background:linear-gradient(90deg,#ff9a1a,#5aa8f8)}
+.s2-d.cl.zf::before{background:linear-gradient(90deg,#5aa8f8,#ff9a1a)}
+.s2-d.cl.zz::before{background:#5aa8f8}
+.s2-d.pop>i{animation:s2Pop .55s cubic-bezier(.2,1.6,.4,1)}
+@keyframes s2Pop{0%{transform:scale(.4)}100%{transform:scale(1)}}
+/* --- путь огонька (награды впереди), как дорога наград в Brawl Stars --- */
+.s2-rh{display:flex;justify-content:space-between;align-items:baseline;margin:14px 2px 8px;font-weight:900;font-size:13px;letter-spacing:.02em}
+.s2-rh small{font-weight:800;font-size:11px;color:rgba(255,255,255,.55)}
+.s2-road{position:relative;z-index:0;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;padding:0 2px}
+.s2-n{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;min-width:0}
+.s2-n::before,.s2-n::after{content:'';position:absolute;z-index:0;top:20px;right:50%;width:100%;height:6px;border-radius:3px;background:rgba(255,255,255,.1)}
+.s2-n::after{background:linear-gradient(90deg,#ffbe2e,#ff8a00);width:calc(var(--k,0)*100%);right:auto;left:-50%}
+.s2-n:first-child::before,.s2-n:first-child::after{display:none}
+.s2-ni{position:relative;z-index:1;width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:#2b3042;box-shadow:inset 0 -3px 0 rgba(0,0,0,.3),inset 0 0 0 2px rgba(255,255,255,.08)}
+.s2-ni .sk-fw.mini .sk-flame{width:22px;height:28px}
+.s2-ni>div{transform:scale(.82)}
+.s2-n.lock .s2-ni>*:not(em){opacity:.5;filter:saturate(.5)}
+.s2-n.got .s2-ni{background:linear-gradient(180deg,#3a3f52,#2b3042);box-shadow:inset 0 -3px 0 rgba(0,0,0,.3),inset 0 0 0 2px var(--c)}
+.s2-n.nx .s2-ni{background:linear-gradient(180deg,#463a2a,#2f2a2a);box-shadow:inset 0 -3px 0 rgba(0,0,0,.3),inset 0 0 0 2px #ffb020,0 0 14px -2px rgba(255,170,0,.7);animation:s2Bob 2.4s ease-in-out infinite}
+@keyframes s2Bob{50%{transform:translateY(-3px)}}
+.s2-ni em{position:absolute;right:-5px;bottom:-5px;width:18px;height:18px;border-radius:50%;background:#58cc02;box-shadow:0 2px 0 #46a302;color:#fff;font:900 11px/18px system-ui,sans-serif;font-style:normal;text-align:center}
+.s2-n b{font-weight:900;font-size:13px;line-height:1;margin-top:2px}
+.s2-n small{font-weight:700;font-size:10px;line-height:1.2;color:rgba(255,255,255,.6);max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;padding:0 2px}
+.s2-n.nx small{color:#ffcf5a}
+/* --- заморозка и мини-статистика --- */
+.s2-frz{display:flex;align-items:center;gap:10px;margin-top:12px;padding:9px 10px;border-radius:16px;background:linear-gradient(135deg,rgba(28,176,246,.16),rgba(99,102,241,.1));box-shadow:inset 0 0 0 1.5px rgba(125,211,252,.28)}
+.s2-fi{display:flex;gap:1px;flex:0 0 auto;font-size:19px;line-height:1}
+.s2-fi i{font-style:normal;color:rgba(148,163,184,.3)}
+.s2-fi i.on{color:#bae6fd;text-shadow:0 0 8px rgba(125,211,252,.9)}
+.s2-ft{flex:1;min-width:0;line-height:1.2}
+.s2-ft b{font-weight:900;font-size:13px}
+.s2-ft small{display:block;font-weight:700;font-size:11px;color:rgba(255,255,255,.6);margin-top:1px}
+.s2-max{font-weight:900;font-size:11px;color:#7dd3fc;text-transform:uppercase}
+.s2-chips{display:flex;gap:6px;margin-top:8px}
+.s2-chip{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px 6px;border-radius:12px;background:rgba(255,255,255,.06);font-weight:800;font-size:11.5px;color:rgba(255,255,255,.65);white-space:nowrap}
+.s2-chip b{font-weight:900;font-size:14px;color:#fff}
+/* --- кнопки 3D, как в Duolingo --- */
+.s2-btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 13px;border-radius:14px;font:900 13px/1.1 'Nunito',system-ui,sans-serif;letter-spacing:.03em;text-transform:uppercase;color:#fff;
+  background:#58cc02;box-shadow:0 4px 0 #46a302;transition:transform .08s,box-shadow .08s,filter .15s;white-space:nowrap;-webkit-tap-highlight-color:transparent;user-select:none}
+.s2-btn:hover{filter:brightness(1.07)}
+.s2-btn:active{transform:translateY(4px);box-shadow:0 0 0 transparent}
+.s2-btn.blue{background:#1cb0f6;box-shadow:0 4px 0 #1899d6}
+.s2-btn.orange{background:#ff9600;box-shadow:0 4px 0 #cd7900}
+.s2-btn.big{display:flex;width:100%;padding:14px;font-size:16px;border-radius:16px;margin-top:16px}
+.s2-gift>div:first-child{flex:0 0 auto}
+/* --- скрытые разделы --- */
+.s2-more{margin-top:8px;border-radius:14px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+.s2-more>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:10px 12px;font-weight:900;font-size:12.5px;color:rgba(255,255,255,.82)}
+.s2-more>summary::-webkit-details-marker{display:none}
+.s2-more>summary::after{content:'›';margin-left:auto;font-size:18px;line-height:1;transform:rotate(90deg);transition:transform .2s;color:rgba(255,255,255,.5)}
+.s2-more[open]>summary::after{transform:rotate(-90deg)}
+.s2-more>div{padding:0 10px 10px}
+.s2-more .sk-note{margin-top:0;font-family:system-ui,sans-serif}
+.s2-more .sk-fl{gap:5px}
+.s2-more .sk-grid{gap:4px}
+.s2-more .sk-c{font-family:system-ui,sans-serif}
+#sk-win .sk-box #sk-adm .sk-adm,#sk-win .sk-box #sk-test .sk-adm{margin-top:8px}
+/* --- праздник: день засчитан --- */
+.s2-cel{text-align:center;position:relative}
+.s2-cv{position:relative;width:150px;height:150px;margin:0 auto -6px;display:flex;align-items:flex-end;justify-content:center}
+.s2-rays{position:absolute;left:50%;top:50%;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;pointer-events:none;opacity:.55;
+  background:repeating-conic-gradient(from 0deg,var(--rc) 0deg 9deg,transparent 9deg 22.5deg);-webkit-mask:radial-gradient(closest-side,#000 20%,transparent 72%);mask:radial-gradient(closest-side,#000 20%,transparent 72%);animation:s2Spin 14s linear infinite}
+@keyframes s2Spin{to{transform:rotate(360deg)}}
+.s2-cfl{position:relative;animation:s2Grow .7s cubic-bezier(.2,1.5,.4,1) both}
+.s2-cfl .sk-fw{--r:66px}
+.s2-cfl .sk-flame{width:104px;height:130px}
+@keyframes s2Grow{0%{transform:scale(.2) translateY(30px);opacity:0}100%{transform:none;opacity:1}}
+.s2-spk{position:absolute;left:50%;top:55%;width:8px;height:8px;margin:-4px;border-radius:50%;background:var(--sc);box-shadow:0 0 6px var(--sc);opacity:0;animation:s2Spk 1.1s cubic-bezier(.2,.8,.3,1) forwards;animation-delay:var(--dl)}
+@keyframes s2Spk{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.3)}}
+.s2-cn{position:relative;height:66px;overflow:hidden;font-weight:900;font-size:64px;line-height:66px;letter-spacing:-1.5px}
+.s2-cn span{position:absolute;left:0;right:0;color:#fff;text-shadow:2px 2px 0 var(--ns),-2px 2px 0 var(--ns),2px -2px 0 var(--ns),-2px -2px 0 var(--ns),0 5px 0 var(--ns)}
+.s2-cn .a{animation:s2Out .45s ease-in .55s forwards}
+.s2-cn .b{transform:translateY(100%);animation:s2In .6s cubic-bezier(.2,1.6,.4,1) .75s forwards}
+@keyframes s2Out{to{transform:translateY(-100%);opacity:0}}
+@keyframes s2In{to{transform:none}}
+.s2-cl{font-weight:900;font-size:21px;margin-top:2px;color:var(--c2)}
+.s2-ctier{display:inline-block;margin-top:6px;padding:4px 12px;border-radius:99px;font-weight:900;font-size:12px;background:rgba(255,255,255,.1)}
+.s2-ctier.up{background:linear-gradient(90deg,var(--c1),var(--c2));color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.25);animation:s2Pop .6s cubic-bezier(.2,1.6,.4,1) 1.1s both}
+.s2-cel .s2-week{margin:14px 0 4px}
+.s2-rws{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:12px}
+.s2-rw{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:14px;font-weight:900;font-size:17px;background:rgba(255,200,0,.14);box-shadow:inset 0 0 0 2px rgba(255,200,0,.45);color:#ffd84d;animation:s2Pop .55s cubic-bezier(.2,1.6,.4,1) 1.3s both}
+.s2-rw.jp{background:rgba(244,114,182,.16);box-shadow:inset 0 0 0 2px rgba(244,114,182,.6);color:#f9a8d4}
+.s2-rw.cmp{font-size:13px;background:rgba(167,139,250,.14);box-shadow:inset 0 0 0 2px rgba(167,139,250,.45);color:#ddd6fe}
+.s2-gift{display:flex;align-items:center;gap:10px;margin-top:10px;padding:10px;border-radius:16px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 2px rgba(255,200,0,.35);text-align:left;animation:s2Pop .55s cubic-bezier(.2,1.6,.4,1) 1.5s both}
+.s2-gift b{font-weight:900;font-size:14px;display:block}
+.s2-gift small{font-weight:700;font-size:11px;color:rgba(255,255,255,.6)}
+.s2-ice{--rc:rgba(125,211,252,.55)}
+.s2-ice .s2-cv{align-items:center}
+.s2-rw.ice{color:#bae6fd;background:rgba(56,189,248,.14);box-shadow:inset 0 0 0 2px rgba(125,211,252,.5);font-size:15px;animation-delay:.4s}
+.s2-icebig{font-size:84px;line-height:1;filter:drop-shadow(0 0 16px rgba(125,211,252,.8));animation:s2Grow .7s cubic-bezier(.2,1.5,.4,1) both}
+.s2-txt{font-weight:800;font-size:13.5px;line-height:1.4;color:rgba(255,255,255,.78);margin-top:6px}
+/* --- значок в шапке --- */
+#streak-btn b{font-family:'Nunito',system-ui,sans-serif;font-weight:900}
+#streak-btn:has(.sk-flame.lit) b{color:#ffb020;text-shadow:0 0 8px rgba(255,150,0,.45)}
+#streak-btn:has(.sk-flame.dim) b{color:rgba(255,255,255,.6)}
+html.god-theme #streak-btn:has(.sk-flame.lit) b{color:#fff;text-shadow:0 0 8px #fff}
+/* --- новое пламя: обводка, блик, живые язычки, короны --- */
+.sk-flame .sk-o1{vector-effect:none}
+.sk-flame g.sk-tg{opacity:1}
+.sk-tw{transform-box:fill-box;transform-origin:center;opacity:0;filter:drop-shadow(0 0 2px #fff);animation:skTw 2.6s ease-in-out infinite}
+.sk-tw.b{animation-delay:1.3s}
+@keyframes skTw{0%,100%{opacity:0;transform:scale(.3) rotate(0)}45%{opacity:1;transform:scale(1) rotate(45deg)}70%{opacity:0;transform:scale(.4) rotate(90deg)}}
+.sk-fw.dim .sk-tw{display:none}
+.sk-au.soft{width:200%;height:160%}
+.sk-cr{width:38%;top:-15%;font-size:0;line-height:0;filter:drop-shadow(0 1px 0 rgba(0,0,0,.35)) drop-shadow(0 0 6px var(--fg))}
+.sk-cr svg{display:block;width:100%;height:auto;overflow:visible}
+.sk-cr.gold{width:44%;top:-19%}
+.sk-fw.leg:not(.max) .sk-cr{top:-11%}
+.sk-fw.dim .sk-cr{filter:grayscale(.6)}
+/* --- темы --- */
+html.god-theme .s2-hero.done{background:linear-gradient(165deg,#22222c,#050507);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55),0 0 22px rgba(255,255,255,.18)}
+html.god-theme .s2-hero{box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+html.god-theme .s2-d.ok>i,html.god-theme .s2-d.cl::before,html.god-theme .s2-n::after,html.god-theme .s2-bar i{background:#fff!important}
+html.god-theme .s2-d.ok>i svg{fill:#000}
+html.god-theme .s2-btn{background:#000;color:#fff;box-shadow:0 0 0 1.5px #fff,0 4px 0 rgba(255,255,255,.35)}
+html.god-theme .s2-btn:active{box-shadow:0 0 0 1.5px #fff}
+html.god-theme .s2-n.nx .s2-ni{box-shadow:inset 0 0 0 2px #fff,0 0 14px rgba(255,255,255,.5)}
+html.god-theme .s2-rw{color:#fff;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 2px rgba(255,255,255,.6)}
+html.fx-off .s2 *,html.fx-off .s2 *::before,html.fx-off .s2 *::after{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}
+@media (prefers-reduced-motion:reduce){.s2 *,.s2 *::before,.s2 *::after{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+@media (max-width:360px){.s2-num{font-size:52px}.s2-fl{width:66px;height:84px}.s2-fl .sk-flame{width:62px;height:78px}.s2-d>i{width:30px;height:30px}.s2-ni{width:40px;height:40px}}
+</style>
 
 <div id="sk-win"><div class="sk-shade" onclick="STREAK.close()"></div><div class="sk-box"><button class="sk-x" onclick="STREAK.close()">✕</button><div id="sk-body"></div><div id="sk-adm"></div><div id="sk-test"></div></div></div>
 <div id="sk-rw"><div class="sk-shade" onclick="STREAK.closeReward()"></div><div class="sk-box" id="sk-rwb"></div></div>
@@ -12334,15 +12502,38 @@ function look(n){
 }
 function nextLv(n){const T=[31,61,100,125,150,175,200,225,250,275,300,315,330,345,360,365];for(const x of T)if(n<x)return x;return 0;}
 const rnd=(i,k)=>{const x=Math.sin(i*127.1+k*311.7)*43758.5453;return x-Math.floor(x);};
+/* форма пламени: внешний язык (с левым и, с 31 дня, правым язычком), средний и раскалённое ядро */
+function fOut(t,rt){
+  const [tx,ty,lx,ly,rx,ry]=t;
+  let d='M'+tx+' '+ty;
+  d+=rt?' C'+tx+' '+(ty+11)+' 39 18 41 27 C42 23 '+(rx-4)+' '+(ry+2)+' '+rx+' '+ry+' C'+(rx+1)+' '+(ry+8)+' 56 34 55 46 C55 63 46 77 32 77'
+       :' C'+tx+' '+(ty+13)+' 52 22 54 44 C56 62 46 77 32 77';
+  return d+' C18 77 9 66 10 52 C10.5 43 14 37 '+lx+' '+ly+' C'+(lx+.5)+' '+(ly+5)+' 20 38 23 39 C21 26 25 12 '+tx+' '+ty+'Z';
+}
+function fMid(t){const [tx,ty,lx,ly]=t;return 'M'+tx+' '+ty+' C'+(tx+3)+' '+(ty+9)+' 46 43 46 57 C46 68 40 74 32 74 C24 74 18 68 18 60 C18 53 20 48 '+lx+' '+ly+' C'+(lx+1)+' '+(ly+6)+' 26 51 29 52 C28 45 30 38 '+tx+' '+ty+'Z';}
+function fCore(t){const [tx,ty]=t;return 'M'+tx+' '+ty+' C'+(tx+2)+' '+(ty+6)+' 40 59 40 65 C40 70 36.5 73 32 73 C27.5 73 24 70 24 65.5 C24 61 27 58.5 29 56 C29.5 58 30.5 59.5 32 60 C31 57 31 53 '+tx+' '+ty+'Z';}
+const KO=[[33,1,17,30,50,17],[30,3,15,32,52,20],[35,2,18,28,48,15]],KM=[[34,29,23,43],[31,31,21,45],[36,30,24,41]],KC=[[33,48],[31,50],[34,49]];
+const SPL=' calcMode="spline" keyTimes="0;.33;.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1"';
+function anim(fn,K,dur,beg){return '<animate attributeName="d" dur="'+dur.toFixed(2)+'s" begin="-'+beg.toFixed(2)+'s" repeatCount="indefinite" values="'+[K[0],K[1],K[2],K[0]].map(fn).join(';')+'"'+SPL+'/>';}
+function still(){try{return document.documentElement.classList.contains('fx-off')||matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}}
+function crown(gold,gem,id){
+  const g=gold?['#fff7c2','#fcd34d','#d97706','#7c2d12']:['#ffffff','#e2e8f0','#94a3b8','#334155'];
+  return '<svg viewBox="0 0 26 18" aria-hidden="true"><defs><linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+g[0]+'"/><stop offset=".45" stop-color="'+g[1]+'"/><stop offset="1" stop-color="'+g[2]+'"/></linearGradient></defs>'
+   +'<path d="M3 16 2 5.5 8 9.5 13 2 18 9.5 24 5.5 23 16Z" fill="url(#'+id+')" stroke="'+g[3]+'" stroke-width="1.5" stroke-linejoin="round"/>'
+   +'<path d="M3.6 13h18.8" stroke="'+g[3]+'" stroke-opacity=".45" stroke-width="1"/>'
+   +'<circle cx="13" cy="11.3" r="2" fill="'+gem+'" stroke="'+g[3]+'" stroke-width=".8"/><circle cx="7.4" cy="12" r="1.25" fill="'+gem+'"/><circle cx="18.6" cy="12" r="1.25" fill="'+gem+'"/>'
+   +'<circle cx="2" cy="5.5" r="1.3" fill="'+g[1]+'" stroke="'+g[3]+'" stroke-width=".7"/><circle cx="13" cy="2" r="1.5" fill="'+g[1]+'" stroke="'+g[3]+'" stroke-width=".7"/><circle cx="24" cy="5.5" r="1.3" fill="'+g[1]+'" stroke="'+g[3]+'" stroke-width=".7"/>'
+   +'<path d="M6 7.5 7 11" stroke="#fff" stroke-opacity=".6" stroke-width="1" stroke-linecap="round"/></svg>';
+}
 function flame(n,state,mini){
   const L=look(n),lit=state==='lit';
   const sty=L.f1?('--f1:'+L.f1+';--f2:'+L.f2+';--f3:'+L.f3+';--fg:'+L.fg+';'):'';
-    const spd=n>=365?1.9:n>=300?2.2:n>=150?2.5:2.8,sx=n>=365?1.06:n>=300?1.05:1.035,sy=n>=365?1.1:n>=300?1.08:1.055;
+  const spd=n>=365?1.9:n>=300?2.2:n>=150?2.5:2.8,sx=n>=365?1.06:n>=300?1.05:1.035,sy=n>=365?1.1:n>=300?1.08:1.055;
   const cls='sk-fw'+(state?' '+state:'')+(mini?' mini':'')+(n>=300?' hue leg':'')+(n>=365?' hue2 max':'')+(n>=330?' bolt':'');
-  let au='',sp='',obB='',obF='',cr='',rg='',tg='';
+  let au='',sp='',obB='',obF='',cr='',rg='';
   if(!mini){
-    if(n>=100)au='<i class="sk-au"></i>';
-    const ns=n>=365?10:n>=300?7:n>=200?5:n>=150?4:n>=100?3:0;
+    if(n>=61)au='<i class="sk-au'+(n<100?' soft':'')+'"></i>';
+    const ns=n>=365?10:n>=300?8:n>=200?6:n>=150?5:n>=100?4:n>=61?3:n>=31?2:0;
     for(let i=0;i<ns;i++)sp+='<u class="sk-sp" style="left:'+(18+Math.round(rnd(i,1)*64))+'%;--dx:'+(Math.round(rnd(i,2)*30)-15)+'px;animation-delay:'+(rnd(i,3)*1.8).toFixed(2)+'s;animation-duration:'+(2.4+rnd(i,4)*1.8).toFixed(2)+'s"></u>';
     if(n>=200){
       const mkO=(cnt,T,rev)=>{let s='';for(let q=0;q<cnt;q++){const k=-(T*q/cnt);s+='<span class="sk-o" style="--d:'+T+'s;animation-delay:'+k.toFixed(2)+'s"><i style="animation-delay:'+(k+(rev?1:-1)*T/4).toFixed(2)+'s"><u style="animation-delay:'+(-q*.45).toFixed(2)+'s"></u></i></span>';}return s;};
@@ -12352,14 +12543,28 @@ function flame(n,state,mini){
       else if(n>=300){A=pls('spk',3,6.5,-16,false);const B=pls('spk',2,8,22,true);obB=A[0]+B[0];obF=A[1]+B[1];}
       else{A=pls('emb',3,7,-16,false);obB=A[0];obF=A[1];}
     }
-    if(n>=300)cr='<em class="sk-cr">'+(n>=365?'👑':'✦')+'</em>';
     if(n>=330)rg='<s class="sk-rg"></s>';
-    if(n>=150)tg='<path class="sk-f1 sk-tg" d="M10 74C0 66 2 52 9 44c1 7 4 10 7 12-2 6-1 12 3 18z"/><path class="sk-f1 sk-tg" d="M54 74c10-8 8-22 1-30-1 7-4 10-7 12 2 6 1 12-3 18z"/>';
   }
   const P=L.f1?[L.f1,L.f2,L.f3]:['#475569','#64748b','#94a3b8'],gid='skg'+(++GID);
+  const OL=n>0?mix(P[0],'#000000',.58):'#1e293b',rt=n>30,hot=n>60,mv=lit&&!mini&&!still();
   const gr=(k,c1,c2,c3)=>'<linearGradient id="'+gid+k+'" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="'+c1+'"/><stop offset=".55" stop-color="'+c2+'"/><stop offset="1" stop-color="'+c3+'"/></linearGradient>';
-  const defs='<defs>'+gr('a',mix(P[0],'#000000',.32),P[0],mix(P[0],P[1],.5))+gr('b',mix(P[0],P[1],.55),P[1],mix(P[1],P[2],.55))+gr('c',P[1],mix(P[1],P[2],.65),P[2])+'</defs>';
-  const svg='<svg class="sk-flame'+(n<=0?' t0':'')+(state?' '+state:'')+'" viewBox="0 0 64 80" aria-hidden="true">'+defs+tg.replace(/class="sk-f1 sk-tg"/g,'class="sk-tg" style="fill:url(#'+gid+'a)"')+'<path style="fill:url(#'+gid+'a)" d="M32 3C34 17 49 24 52 42c3 18-8 35-20 35S9 61 12 45c1.5-9 7-14 10-21 1 7 4 10 7 11C27 24 26 12 32 3z"/><path style="fill:url(#'+gid+'b)" d="M33 38c1 7 9 11 9 20 0 7-4 12-10 12s-10-5-10-11c0-6 4-8 6-13 1 3 3 5 5 5-1-4-1-8 0-13z"/>'+(n>0?'<path class="sk-f3" style="fill:url(#'+gid+'c)" d="M33 52c1 5 5 7 5 12 0 4-2 6-6 6s-6-3-6-7c0-4 2-5 3-8 1 2 2 3 3 3-.5-2-.5-4 1-6z"/>':'')+'</svg>';
+  const defs='<defs>'+gr('a',mix(P[0],'#000000',.3),P[0],mix(P[0],P[1],.55))+gr('b',mix(P[0],P[1],.5),P[1],mix(P[1],P[2],.6))+gr('c',hot?'#ffffff':P[1],hot?mix(P[2],'#ffffff',.5):mix(P[1],P[2],.65),'#ffffff')
+    +'<radialGradient id="'+gid+'g"><stop offset="0" stop-color="'+P[0]+'" stop-opacity=".7"/><stop offset="1" stop-color="'+P[0]+'" stop-opacity="0"/></radialGradient></defs>';
+  const o=k=>fOut(KO[k],rt),m=k=>fMid(KM[k]),c=k=>fCore(KC[k]);
+  const body=(an,b0)=>'<path class="sk-o1" d="'+o(0)+'" style="fill:url(#'+gid+'a);stroke:'+OL+'" stroke-width="'+(mini?6:4.4)+'" stroke-linejoin="round" paint-order="stroke">'+(an?anim(x=>fOut(x,rt),KO,spd*.8,b0):'')+'</path>'
+    +'<path d="'+m(0)+'" style="fill:url(#'+gid+'b)">'+(an?anim(fMid,KM,spd*.62,b0+.3):'')+'</path>'
+    +(n>0?'<path class="sk-f3" d="'+c(0)+'" style="fill:url(#'+gid+'c)">'+(an?anim(fCore,KC,spd*.5,b0+.6):'')+'</path>':'');
+  let side='';
+  if(n>=150&&!mini){
+    const sd=(tr,b0)=>'<g class="sk-tg" transform="'+tr+'">'+body(mv,b0).replace(/ class="sk-f3"/,'')+'</g>';
+    side=sd('translate(-2 39.5) scale(.5) rotate(-24 32 77)',.7)+sd('translate(34 39.5) scale(.5) rotate(24 32 77)',1.3);
+  }
+  const glow=lit&&!mini&&n>0?'<ellipse cx="32" cy="76.5" rx="24" ry="4.5" fill="url(#'+gid+'g)"/>':'';
+  const shine=!mini&&n>0?'<path d="M16.5 50C15.5 57 17.5 63 21.5 67" fill="none" stroke="#fff" stroke-opacity=".42" stroke-width="3" stroke-linecap="round"/><circle cx="18" cy="44" r="1.7" fill="#fff" fill-opacity=".42"/>':'';
+  const main=side?'<g transform="translate(3.2 6.2) scale(.9)">'+body(mv,0)+shine+'</g>':body(mv,0)+shine;
+  const tw=n>=100&&!mini?'<path class="sk-tw" d="M47 30l1.3 3.7 3.7 1.3-3.7 1.3-1.3 3.7-1.3-3.7-3.7-1.3 3.7-1.3z" fill="#fff"/><path class="sk-tw b" d="M20 22l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z" fill="#fff"/>':'';
+  const svg='<svg class="sk-flame'+(n<=0?' t0':'')+(state?' '+state:'')+'" viewBox="0 0 64 80" aria-hidden="true">'+defs+glow+side+main+tw+'</svg>';
+  if(n>=300&&!mini)cr='<em class="sk-cr'+(n>=365?' gold':'')+'">'+crown(n>=365,n>=365?'#e11d48':P[0],gid+'k')+'</em>';
   return '<span class="'+cls+'" style="'+sty+'--spd:'+spd+'s;--sx:'+sx+';--sy:'+sy+'">'+au+rg+obB+svg+sp+obF+cr+'</span>';
 }
 function fm(s){s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
@@ -12383,10 +12588,53 @@ function open(){
   SK.isOpen=true;$('sk-win').classList.add('on');render();ping(0);testRender();if(cu())admLoad();
 }
 function close(){SK.isOpen=false;$('sk-win').classList.remove('on');}
+function plural(n,a,b,c){const x=Math.abs(n)%100,m=x%10;return x>10&&x<20?c:m===1?a:m>=2&&m<=4?b:c;}
+const dAdd=(s,k)=>{const d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+k);return d.toISOString().slice(0,10);};
+const FLP='<svg viewBox="0 0 64 80" aria-hidden="true"><path d="M32 3C34 17 49 24 52 42c3 18-8 35-20 35S9 61 12 45c1.5-9 7-14 10-21 1 7 4 10 7 11C27 24 26 12 32 3z"/></svg>';
+const WD=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+/* неделя Пн–Вс, как в Duolingo: 🔥 — засчитан, ❄ — спасён заморозкой, кольцо — сегодня */
+function week(st,cel){
+  const td=st.today||mskDate(),dow=(new Date(td+'T12:00:00Z').getUTCDay()+6)%7,mon=dAdd(td,-dow);
+  const frz=new Set((st.frozen||[]).map(f=>String(f.d)));
+  const ok=new Set();let c=st.eff||0,d=st.done_today?td:dAdd(td,-1),g=0;
+  while(c>0&&d>=mon&&g<30){g++;if(frz.has(d)){d=dAdd(d,-1);continue;}ok.add(d);c--;d=dAdd(d,-1);}
+  const pct=st.done_today?100:Math.round(dsec()/(st.need||300)*100);
+  let h='',pv='';
+  for(let i=0;i<7;i++){
+    const ds=dAdd(mon,i),isT=ds===td;
+    const k=ds>td?'fut':ok.has(ds)?'ok':frz.has(ds)?'frz':isT?'today':'miss';
+    const a=pv==='ok'||pv==='frz',b=k==='ok'||k==='frz';
+    const cl=a&&b?' cl'+(pv==='ok'&&k==='frz'?' fz2':pv==='frz'&&k==='ok'?' zf':pv==='frz'?' zz':''):'';
+    const ic=k==='frz'?'❄':k==='miss'?'':FLP;
+    if(cel&&isT)h+='<div class="s2-d today is-t" id="sk-wc" data-k="'+k+cl+'" style="--p:100"><span>'+WD[i]+'</span><i>'+FLP+'</i></div>';
+    else h+='<div class="s2-d '+k+(isT?' is-t':'')+cl+'"'+(isT?' id="sk-wt" style="--p:'+pct+'"':'')+'><span>'+WD[i]+'</span><i>'+ic+'</i></div>';
+    pv=k;
+  }
+  return '<div class="s2-week">'+h+'</div>';
+}
+/* путь огонька: новые уровни пламени и рамки впереди */
+function road(st){
+  const n=st.eff||0,M={};
+  [31,61,100,125,150,175,200,225,250,275,300,315,330,345,360,365].forEach(d=>M[d]={d,t:1});
+  (st.frames||[]).forEach(f=>{if(f&&f.day>0)M[f.day]=Object.assign(M[f.day]||{d:f.day},{f});});
+  const all=Object.values(M).sort((a,b)=>a.d-b.d);
+  let ix=all.findIndex(m=>m.d>n);const nx=ix<0?null:all[ix];
+  if(ix<0)ix=all.length;
+  const s=Math.max(0,Math.min(ix-1,all.length-5)),L=all.slice(s,s+5);
+  const h=L.map((m,i)=>{
+    const got=n>=m.d,isN=m===nx,pd=i>0?L[i-1].d:0,k=i>0?Math.max(0,Math.min(1,(n-pd)/(m.d-pd))):0;
+    let ic,nm,c='#ffb020';
+    if(m.f){ic=framePv(m.f.data,34);nm=st.guest?'🔒 с аккаунтом':(m.f.name||'Рамка');}
+    else{const Lk=look(m.d);ic=flame(m.d,got||isN?'lit':'dim',true);nm=Lk.lv>=103?'Максимум':Lk.name.split(' ')[0];c=Lk.c;}
+    return '<div class="s2-n '+(got?'got':isN?'nx':'lock')+'" style="--k:'+k.toFixed(3)+';--c:'+c+'"><div class="s2-ni">'+ic+(got?'<em>✓</em>':'')+'</div><b>'+m.d+'</b><small>'+E(nm)+'</small></div>';
+  }).join('');
+  const left=nx?nx.d-n:0;
+  return '<div class="s2-rh">ПУТЬ ОГОНЬКА<small>'+(nx?(left===1?'награда завтра!':'до награды '+left+' '+plural(left,'день','дня','дней')):'всё получено 🌟')+'</small></div><div class="s2-road">'+h+'</div>';
+}
 function render(){
   const el=$('sk-body');if(!el)return;const st=SK.st;
-  if(!st){el.innerHTML='<div style="padding:30px;text-align:center;color:var(--text-dim)">Загрузка…</div>';return;}
-  const n=st.eff,Lk=look(n),done=st.done_today,need=st.need||300;
+  if(!st){el.innerHTML='<div class="s2" style="padding:30px;text-align:center;opacity:.6">Загрузка…</div>';return;}
+  const n=st.eff||0,Lk=look(n),done=!!st.done_today,need=st.need||300,v=dsec(),pct=Math.round(v/need*100);
   const frames=st.frames||[],fByDay={};frames.forEach(f=>fByDay[f.day]=f);
   const dMap={};(st.days||[]).forEach(d=>dMap[d.n]=d);
   const seg=Math.max(0,Math.floor(((done?n:n+1)-1)/30)),start=seg*30+1;
@@ -12395,39 +12643,42 @@ function render(){
   for(let i=0;i<30;i++){
     const d=start+i,lg=dMap[d],ok=d<=n,isToday=!done&&d===n+1;
     const fr=fByDay[d]?'<span class="sk-fr" title="Рамка «'+E(fByDay[d].name)+'»">🖼️</span>':'';
-    const cc=look(d).c;
     const fzc=ok&&frzN[d]?'<span class="sk-fz" title="После этого дня заморозка спасла огонёк ('+frzN[d]+' дн.)">❄️</span>':'';
-    cells+='<div class="sk-c'+(ok?' done':'')+(isToday?' today':'')+(lg&&lg.jp?' jp':'')+(fzc?' frz':'')+'" style="--cc:'+cc+'">'+fr+fzc+'<i>'+d+'</i>'+(ok?(lg?(lg.jp?'🎰':'+'+lg.stars+'✨'):'✔'):(isToday?'🔥':''))+'</div>';
+    cells+='<div class="sk-c'+(ok?' done':'')+(isToday?' today':'')+(lg&&lg.jp?' jp':'')+(fzc?' frz':'')+'" style="--cc:'+look(d).c+'">'+fr+fzc+'<i>'+d+'</i>'+(ok?(lg?(lg.jp?'🎰':'+'+lg.stars+'✨'):'✔'):(isToday?'🔥':''))+'</div>';
   }
-  let nextTier='';
-  if(n<=0)nextTier='Зайди на сайт на '+fm(need)+' мин — и огонёк загорится 🔥';
-  else{const na=nextLv(n);nextTier=na?('До следующего уровня огонька: '+(na-n)+' дн. (день '+na+')'+(na===300?' — ЛЕГЕНДАРНОЕ пламя!':na===365?' — максимум!':'')):'🌟 Ты достиг МАКСИМАЛЬНОГО огонька!';if(n>=100&&n<365)nextTier+=' · до максимума '+(365-n)+' дн.';}
   const fl=frames.map(f=>{
     const left=f.day-n,own=f.owned,got=n>=f.day;
-    const stt=st.guest?'🔒 Только для аккаунта':own?'✅ Рамка у тебя':got?'Награда получена':left===1?'Завтра!':('Через '+left+' дн.');
+    const stt=st.guest?'🔒 Только для аккаунта':own?'✅ Рамка у тебя':got?'Награда получена':left===1?'Завтра!':('Через '+left+' '+plural(left,'день','дня','дней'));
     return '<div class="sk-fr-row'+(own?' own':'')+'"><div class="sk-fr-pv">'+framePv(f.data,44)+'</div><div class="sk-fr-t"><b>'+E(f.name||'Рамка')+'</b><small>День '+f.day+' · '+stt+'</small></div></div>';
   }).join('');
-  const pct=Math.round(dsec()/need*100);
-  let nf=0;frames.forEach(f=>{if(f.day>n&&(!nf||f.day<nf))nf=f.day;});if(!nf)nf=(Math.floor(n/30)+1)*30;
   const fz=st.freezes||0,fmax=st.freeze_max!=null?+st.freeze_max:2,fcost=st.freeze_cost!=null?+st.freeze_cost:300;
   let fzh='';
   if(fmax>0){let ic='';for(let i=0;i<Math.max(fmax,fz);i++)ic+='<i class="'+(i<fz?'on':'')+'">❄</i>';
-    fzh='<div class="sk-frz"><div class="sk-frz-ic">'+ic+'</div><div class="sk-frz-t"><b>Заморозка огонька</b><small>'+(fz>0?'Есть '+fz+' из '+fmax+' — пропустишь день, и огонёк не потухнет.':'Спасёт огонёк, если пропустишь день. Сработает сама.')+'</small></div>'+(fz<fmax?'<button class="sk-b ice" id="sk-fbuy" onclick="STREAK.buyFreeze()">❄ '+fcost+' ✨</button>':'<span class="sk-frz-max">максимум</span>')+'</div>';
-    if((st.frozen||[]).length)fzh+='<div class="sk-sub sk-frz-h">❄️ Заморозки спасли дни: '+st.frozen.slice(-8).map(f=>{const p=String(f.d).split('-');return p[2]+'.'+p[1];}).join(', ')+'</div>';}
-  el.innerHTML='<div class="sk-hero">'+flame(n,done?'lit':(n>0?'dim':''))+'<div><div class="sk-big" style="color:'+Lk.c+'">'+n+'</div><div class="sk-sub">'+(n===1?'день':'дн.')+' подряд</div><div class="sk-tier" style="color:'+Lk.c+'">'+Lk.name+(n>0?' · ур. '+(Lk.lv>=103?'MAX':Lk.lv):'')+'</div></div></div>'
-   +'<div class="sk-prog" id="sk-prog">'+(done?'✅ <b>Сегодня засчитано!</b> Возвращайся завтра, чтобы не потушить огонёк.':'⏳ Сегодня: <b id="sk-time">'+fm(dsec())+' / '+fm(need)+'</b> — оставайся на сайте, пока не наберётся время.')+'<div class="sk-bar"><b id="sk-bar" style="width:'+(done?100:pct)+'%"></b></div></div>'
-   +'<div class="sk-stats"><div><b>'+(st.best||0)+'</b>рекорд</div><div><b>'+(st.total_days||0)+'</b>всего дней</div>'+(st.guest?'<div><b>'+fz+'</b>заморозок</div>':'<div><b>'+(nf-n)+'</b>'+(frames.some(f=>f.day===nf)?'до рамки':'до бонуса')+'</div>')+'</div>'+fzh
-   +'<div class="sk-sub" style="margin-bottom:6px">'+nextTier+'</div>'
-   +'<div class="sk-h">ДНИ '+start+'–'+(start+29)+'</div><div class="sk-grid">'+cells+'</div>'
-   +(fl?'<div class="sk-h">'+(st.guest?'РАМКИ ЗА ОГОНЁК — ТОЛЬКО ДЛЯ АККАУНТА':'НАГРАДЫ — РАМКИ ЗА ОГОНЁК')+'</div><div class="sk-fl">'+fl+'</div>':'')
-   +'<div class="sk-note">Проведи на сайте '+fm(need)+' мин за день (по московскому времени) — день засчитан. Каждый день даёт ✨ звёзды (от 20 до 500, а с малым шансом — джекпот!). Пропустишь день — огонёк потухнет, если нет ❄️ заморозки: она стоит '+fcost+' ✨, держать можно до '+fmax+' шт., и каждая сама спасает один пропущенный день (если пропустишь больше дней, чем есть заморозок, огонёк потухнет, а заморозки останутся). Огонёк меняет цвет: оранжевый → красный → фиолетовый, а со 100-го дня каждые 25 дней загорается новое, всё более крутое пламя (искры, язычки, кружащие огни). На 300 дне оно становится легендарным, а максимума достигает на 365 дне. Рамки дают за каждые 30 дней. Если такая рамка у тебя уже есть — вместо неё ✨ звёзды.'+(st.guest?' <b>Ты играешь гостем: звёзды ✨ идут, а рамки выдаются только с аккаунтом.</b>':'')+'</div>';
+    fzh='<div class="s2-frz"><div class="s2-fi">'+ic+'</div><div class="s2-ft"><b>Заморозка</b><small>'+(fz>0?'Есть '+fz+' из '+fmax+' · спасёт пропуск':'Спасёт огонёк, если пропустишь день')+'</small></div>'+(fz<fmax?'<button class="s2-btn blue" id="sk-fbuy" onclick="STREAK.buyFreeze()">'+fcost+' ✨</button>':'<span class="s2-max">максимум</span>')+'</div>';}
+  const fzHist=(st.frozen||[]).length?'<div class="sk-note" style="margin:0 0 8px">❄️ Заморозки спасли дни: '+st.frozen.slice(-8).map(f=>{const p=String(f.d).split('-');return p[2]+'.'+p[1];}).join(', ')+'</div>':'';
+  const hs=Lk.f1?('--h1:'+mix(Lk.f1,Lk.f2,.3)+';--h2:'+mix(Lk.f1,'#000000',.3)+';--hg:'+rgba(Lk.f1,.5)+';--ns:'+(done?mix(Lk.f1,'#000000',.55):'#0b0d14')+';--nc:'+(done?'#fff':Lk.c)+';--c2:'+Lk.c):'--ns:#0b0d14;--nc:#64748b;--c2:#94a3b8';
+  const stt=done
+    ?'<div class="s2-ok" id="sk-prog"><span style="font-size:20px;line-height:1">✅</span><b>День засчитан!</b><small>возвращайся<br>завтра</small></div>'
+    :'<div id="sk-prog"><div class="s2-wt"><b>'+(n>0?'🔥 Продли огонёк':'🔥 Зажги огонёк')+'</b><small id="sk-left">ещё '+fm(need-v)+' на сайте</small></div><div class="s2-bar"><i id="sk-bar" style="width:'+pct+'%"></i><span id="sk-time">'+fm(v)+' / '+fm(need)+'</span></div></div>';
+  el.innerHTML='<div class="s2">'
+   +'<div class="s2-hero'+(done&&n>0?' done':'')+'" style="'+hs+'"><div class="s2-fl">'+flame(n,done?'lit':(n>0?'dim':''))+'</div><div class="s2-ht"><div class="s2-num">'+n+'</div><div class="s2-lbl">'+plural(n,'день','дня','дней')+' подряд</div><div class="s2-tier">'+Lk.name+(n>0?' · ур. '+(Lk.lv>=103?'MAX':Lk.lv):'')+'</div></div><div class="s2-st">'+stt+'</div></div>'
+   +week(st)
+   +road(st)
+   +fzh
+   +'<div class="s2-chips"><div class="s2-chip">🏆 Рекорд <b>'+(st.best||0)+'</b></div><div class="s2-chip">📅 Всего дней <b>'+(st.total_days||0)+'</b></div></div>'
+   +'<details class="s2-more"'+(SK.d1?' open':'')+' ontoggle="STREAK._S.d1=this.open"><summary>📅 Календарь'+(fl?' и рамки':'')+'</summary><div>'+fzHist+'<div class="sk-h" style="margin-top:0">ДНИ '+start+'–'+(start+29)+'</div><div class="sk-grid">'+cells+'</div>'
+   +(fl?'<div class="sk-h">'+(st.guest?'РАМКИ ЗА ОГОНЁК — ТОЛЬКО ДЛЯ АККАУНТА':'РАМКИ ЗА ОГОНЁК')+'</div><div class="sk-fl">'+fl+'</div>':'')+'</div></details>'
+   +'<details class="s2-more"'+(SK.d2?' open':'')+' ontoggle="STREAK._S.d2=this.open"><summary>❓ Как работает огонёк</summary><div><div class="sk-note">Проведи на сайте '+fm(need)+' мин за день (по московскому времени) — день засчитан. Каждый день даёт ✨ звёзды (от 20 до 500, а с малым шансом — джекпот!). Пропустишь день — огонёк потухнет, если нет ❄️ заморозки: она стоит '+fcost+' ✨, держать можно до '+fmax+' шт., и каждая сама спасает один пропущенный день (если пропустишь больше дней, чем есть заморозок, огонёк потухнет, а заморозки останутся). Огонёк меняет цвет: оранжевый → красный → фиолетовый, а со 100-го дня каждые 25 дней загорается новое, всё более крутое пламя (искры, язычки, кружащие огни). На 300 дне оно становится легендарным, а максимума достигает на 365 дне. Рамки дают за каждые 30 дней. Если такая рамка у тебя уже есть — вместо неё ✨ звёзды.'+(st.guest?' <b>Ты играешь гостем: звёзды ✨ идут, а рамки выдаются только с аккаунтом.</b>':'')+'</div></div></details>'
+   +'</div>';
 }
 function live(){
   if(!SK.st||SK.st.done_today)return;
-  const need=SK.st.need||300,v=dsec();
+  const need=SK.st.need||300,v=dsec(),p=Math.round(v/need*100);
   const t=$('sk-time');if(t)t.textContent=fm(v)+' / '+fm(need);
-  const b=$('sk-bar');if(b)b.style.width=Math.round(v/need*100)+'%';
-  const m=document.querySelector('#streak-btn .sk-mini u');if(m)m.style.width=Math.round(v/need*100)+'%';
+  const b=$('sk-bar');if(b)b.style.width=p+'%';
+  const l=$('sk-left');if(l)l.textContent='ещё '+fm(need-v)+' на сайте';
+  const w=$('sk-wt');if(w)w.style.setProperty('--p',p);
+  const m=document.querySelector('#streak-btn .sk-mini u');if(m)m.style.width=p+'%';
 }
 /* ---------- активность и пинг ---------- */
 ['pointerdown','keydown','touchstart','mousemove','wheel','scroll'].forEach(ev=>addEventListener(ev,()=>{SK.lastInput=Date.now();},{passive:true,capture:true}));
@@ -12469,20 +12720,33 @@ function reward(r,st,pv){
   try{if(!cu()&&typeof refreshWallet==='function')refreshWallet();}catch(e){}
   try{const L=window.LAVKA&&LAVKA._L;if(L&&L.my&&typeof L.my.gold==='number')L.my.gold+=add;}catch(e){}
   try{refreshTabletHeader();}catch(e){}}
-  const n=r.n,Lk=look(n);
-  let h='<div class="sk-rwbox">'+flame(n,'lit')+'<h3 style="color:'+Lk.c+'">Огонёк горит! '+n+' '+(n===1?'день':'дн.')+'</h3><div class="sk-sub">'+Lk.name+'</div><div class="sk-rwl">';
-  if(r.jackpot)h+='<div class="sk-jp">🎰 ДЖЕКПОТ!</div>';
-  h+='<div class="sk-star">+'+(r.stars||0)+' ✨</div>';
-  if(r.frame)h+='<div>🎁 Новая рамка за огонёк!</div><div>'+framePv(r.frame.data,72)+'</div><div><b>'+E(r.frame.name||'Рамка')+'</b><br><small style="color:var(--text-dim)">Уже лежит в «Мои вещи» в лавке</small></div>';
-  if(r.comp>0)h+='<div>💫 +'+r.comp+' ✨ компенсацией'+(r.frame_failed?' (рамку выдать не вышло)':' — такая рамка у тебя уже есть')+'</div>';
-  h+='</div><button class="sk-b" onclick="STREAK.closeReward()">Круто!</button></div>';
+  const n=r.n||1,Lk=look(n),up=n>1&&look(n-1).name!==Lk.name;
+  const S=Object.assign({},SK.st||{},{eff:n,done_today:true});
+  const f1=Lk.f1||'#fb923c',f2=Lk.f2||'#fde047',cs=[f1,f2,'#ffffff'];
+  let sp='';for(let i=0;i<14;i++){const a=i/14*Math.PI*2+rnd(i,7),R=70+rnd(i,8)*50;sp+='<b class="s2-spk" style="--x:'+Math.round(Math.cos(a)*R)+'px;--y:'+Math.round(Math.sin(a)*R-20)+'px;--dl:'+(.3+rnd(i,9)*.35).toFixed(2)+'s;--sc:'+cs[i%3]+'"></b>';}
+  let h='<div class="s2 s2-cel" style="--c1:'+f1+';--c2:'+Lk.c+';--rc:'+rgba(f1,.5)+';--ns:'+mix(f1,'#000000',.55)+'">'
+   +'<div class="s2-cv"><div class="s2-rays"></div>'+sp+'<div class="s2-cfl">'+flame(n,'lit')+'</div></div>'
+   +'<div class="s2-cn"><span class="a">'+(n-1)+'</span><span class="b">'+n+'</span></div>'
+   +'<div class="s2-cl">'+plural(n,'день','дня','дней')+' подряд!</div>'
+   +(up?'<div class="s2-ctier up">⬆ Новый уровень: '+Lk.name+'</div>':'<div class="s2-ctier">'+Lk.name+'</div>')
+   +week(S,true)
+   +'<div class="s2-rws">'+(r.jackpot?'<span class="s2-rw jp">🎰 ДЖЕКПОТ!</span>':'')+'<span class="s2-rw">+'+(r.stars||0)+' ✨</span>'
+   +(r.comp>0?'<span class="s2-rw cmp">💫 +'+r.comp+' ✨ · '+(r.frame_failed?'вместо рамки':'рамка уже есть')+'</span>':'')+'</div>';
+  if(r.frame)h+='<div class="s2-gift">'+framePv(r.frame.data,52)+'<div><b>🎁 Новая рамка «'+E(r.frame.name||'Рамка')+'»</b><small>Уже лежит в «Мои вещи» в лавке</small></div></div>';
+  h+='<button class="s2-btn orange big" onclick="STREAK.closeReward()">Продолжить</button></div>';
   $('sk-rwb').innerHTML=h;$('sk-rw').classList.add('on');
+  clearTimeout(SK.flipT);SK.flipT=setTimeout(()=>{const w=$('sk-wc');if(w){w.className='s2-d is-t pop '+(w.dataset.k||'ok');w.innerHTML='<span>'+w.firstChild.textContent+'</span><i>'+FLP+'</i>';}},1050);
   if(!pv){try{showToast('🔥 День '+n+' засчитан: +'+add+' ✨');}catch(e){}}
 }
 function closeReward(){$('sk-rw').classList.remove('on');}
 function froze(k,st){
-  const n=(st&&st.eff)||0;
-  $('sk-rwb').innerHTML='<div class="sk-rwbox"><div class="sk-ice-big">❄️</div><h3 style="color:#7dd3fc">Заморозка сработала!</h3><div class="sk-sub">Ты пропустил '+k+' '+(k===1?'день':'дн.')+', но огонёк не потух — серия <b>'+n+' '+(n===1?'день':'дн.')+'</b> сохранена.</div><div class="sk-rwl"><div>Осталось заморозок: <b>'+((st&&st.freezes)||0)+'</b></div></div><button class="sk-b" onclick="STREAK.closeReward()">Отлично!</button></div>';
+  const n=(st&&st.eff)||0,left=(st&&st.freezes)||0;
+  $('sk-rwb').innerHTML='<div class="s2 s2-cel s2-ice"><div class="s2-cv"><div class="s2-rays"></div><div class="s2-icebig">❄️</div></div>'
+   +'<div class="s2-cl" style="color:#7dd3fc">Заморозка сработала!</div>'
+   +'<div class="s2-txt">Ты пропустил '+k+' '+plural(k,'день','дня','дней')+', но огонёк не потух — серия <b>'+n+' '+plural(n,'день','дня','дней')+'</b> сохранена.</div>'
+   +(st&&st.today?week(st):'')
+   +'<div class="s2-rws"><span class="s2-rw ice">❄ осталось: '+left+'</span></div>'
+   +'<button class="s2-btn blue big" onclick="STREAK.closeReward()">Отлично!</button></div>';
   $('sk-rw').classList.add('on');
 }
 async function buyFreeze(){
