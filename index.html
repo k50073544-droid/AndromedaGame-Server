@@ -4175,6 +4175,7 @@ const onMsg=async(e)=>{
   const{data:result}=await sb.rpc('set_fish_lore',{p_key:e.data.key,p_text:e.data.text});
   toGame({type:'andra-fish-lore-result',key:e.data.key,text:e.data.text,...(result||{ok:false})});
   }if(e.data?.type==='andra-doors-start'){const{data:r}=await sb.rpc('doors_run_start',{p_game_id:gameId});try{if(r?.success&&window.RIFT&&RIFT.gq)RIFT.gq.ev(gameId,'doors',r);}catch(_){}toGame({type:'andra-doors-start-result',...(r||{success:false})});}if(e.data?.type==='andra-doors-star'){const{data:r}=await sb.rpc('doors_star_claim',{p_run:e.data.run,p_star:parseInt(e.data.star,10)});try{if(r?.success&&window.RIFT&&RIFT.gq)RIFT.gq.ev(gameId,'stars',{n:+r.amount||1});}catch(_){}toGame({type:'andra-doors-star-result',...(r||{success:false})});if(r?.success&&currentUser){const{data:fp}=await sb.from('profiles').select('*').eq('id',currentUser.id).maybeSingle();if(fp)currentProfile=fp;refreshTabletHeader();}}
+  {const t=e.data?.type,gid=currentUser?null:(currentGuestData?.id||null),F={'andra-doors-eggs':['doors_eggs_open',{p_guest_id:gid,p_tz:parseInt(e.data?.tz,10)||0}],'andra-doors-egg':['doors_egg_claim',{p_session:String(e.data?.session||''),p_egg:String(e.data?.egg||'').slice(0,40),p_guest_id:gid}],'andra-doors-eggs-admin':['doors_eggs_admin',{p_guest_id:gid}],'andra-doors-eggs-reset':['doors_eggs_reset',{p_guest_id:gid}]}[t];if(F){let r;try{const q=await sb.rpc(F[0],F[1]);r=q.error?{success:false,message:'net'}:q.data;}catch(_){r={success:false,message:'net'};}toGame({type:t+'-result',egg:e.data.egg,...(r||{success:false,message:'net'})});}}
   if(e.data?.type==='andra-fish-cat'){const{error:catErr}=await sb.rpc('fish_cat_steal',{p_amount:parseInt(e.data.amount,10)||0,p_guest_id:currentUser?null:(currentGuestData?.id||null)});if(!catErr){if(currentUser){const{data:fp}=await sb.from('profiles').select('*').eq('id',currentUser.id).maybeSingle();if(fp)currentProfile=fp;}else if(currentGuestData?.id){const{data:fg}=await guestRow(currentGuestData.id);if(fg)currentGuestData=fg;}refreshTabletHeader();}}
     };
     const onRec=async(e)=>{
@@ -7747,8 +7748,8 @@ function godClick(){
 }
 /* ---------- цели заданий в играх: у каждой игры свои действия ---------- */
 /* вид игры: по типу кода, а у игр без типа — по названию */
-const GK_N={citysurf:'Побег от Извилины',fishing:'Быбалка',tetris:'Тетрис',g2048:'2048',blockboom:'Блок Бум',ninja:'Планетный ниндзя',kosti:'Кости',slot:'Игровой автомат',doors2d:'Двери'};
-const GK_T=[[/извилин/i,'citysurf'],[/[бр]ыбалк/i,'fishing'],[/тетрис|tetris/i,'tetris'],[/2048/,'g2048'],[/блок\s*бум|block\s*boom/i,'blockboom'],[/ниндз|ninja/i,'ninja'],[/^кости|dice/i,'kosti'],[/автомат|слот|slot/i,'slot'],[/^двери|doors/i,'doors2d']];
+const GK_N={citysurf:'Побег от Извилины',fishing:'Быбалка',tetris:'Тетрис',g2048:'2048',blockboom:'Блок Бум',ninja:'Планетный ниндзя',kosti:'Кости',slot:'Игровой автомат',doors2d:'Отель'};
+const GK_T=[[/извилин/i,'citysurf'],[/[бр]ыбалк/i,'fishing'],[/тетрис|tetris/i,'tetris'],[/2048/,'g2048'],[/блок\s*бум|block\s*boom/i,'blockboom'],[/ниндз|ninja/i,'ninja'],[/^кости|dice/i,'kosti'],[/автомат|слот|slot/i,'slot'],[/^двери|^отель|doors/i,'doors2d']];
 function gameKind(g){if(!g)return '';const t=String(g.type||(g.code&&g.code.type)||'');if(GK_N[t])return t;const s=String(g.title||g.t||'');for(const x of GK_T)if(x[0].test(s))return x[1];return t;}
 /* ki: any — «любая игра», other — игра без своего набора действий */
 function goalKi(go){if(!go||!go.g||go.g==='*')return 'any';return GK_N[go.gy]?go.gy:'other';}
